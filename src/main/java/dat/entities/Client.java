@@ -1,7 +1,7 @@
 package dat.entities;
 
-import dat.dto.AnimalDTO;
-import dat.dto.UserDTO;
+
+import dat.dto.ClientDTO;
 import dat.enums.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Builder
-//@ToString(exclude = "animals")
+@ToString(exclude = "animals")
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
-public class User {
+@Table(name = "clients")
+public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,29 +63,30 @@ public class User {
     @Pattern(regexp = "\\+\\d{1,4} \\d{2} \\d{2} \\d{2} \\d{2}", message = "Phone must be a valid format (e.g., +45 XX XX XX XX)")
     private String phone;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Animal> animals = new HashSet<>();  // Initialize with empty set
 
-    public User(String username, String password, String firstName, String lastName, String email, String phone) {
+    public Client(String username, String password, String firstName, String lastName, Gender gender, String email, String phone) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.gender = gender;
         this.email = email;
         this.phone = phone;
     }
 
     public void addAnimal(Animal animal) {
         animals.add(animal);
-        animal.setUser(this);  // Ensure bidirectional relationship
+        animal.setClient(this);  // Ensure bidirectional relationship
     }
 
     public void removeAnimal(Animal animal) {
         animals.remove(animal);
-        animal.setUser(null);
+        animal.setClient(null);
     }
 
-    public User(UserDTO dto) {
+    public Client(ClientDTO dto) {
         this.username = dto.getFullName().toLowerCase().replaceAll(" ", "_");
         this.firstName = dto.getFullName().split(" ")[0];
         this.lastName = dto.getFullName().split(" ")[1];
@@ -93,18 +94,18 @@ public class User {
         this.phone = dto.getPhone();
         if (dto.getAnimals() != null) {
             this.animals = dto.getAnimals().stream().map(Animal::new).collect(Collectors.toSet());
-            this.animals.forEach(animal -> animal.setUser(this));  // Ensure bidirectional association
+            this.animals.forEach(animal -> animal.setClient(this));  // Ensure bidirectional association
         }
     }
 
-    public void updateFromDTO(UserDTO dto) {
+    public void updateFromDTO(ClientDTO dto) {
         this.firstName = dto.getFullName().split(" ")[0];
         this.lastName = dto.getFullName().split(" ")[1];
         this.email = dto.getEmail();
         this.phone = dto.getPhone();
         if (dto.getAnimals() != null) {
             this.animals = dto.getAnimals().stream().map(Animal::new).collect(Collectors.toSet());
-            this.animals.forEach(animal -> animal.setUser(this));  // Ensure bidirectional association
+            this.animals.forEach(animal -> animal.setClient(this));  // Ensure bidirectional association
         }
     }
 }

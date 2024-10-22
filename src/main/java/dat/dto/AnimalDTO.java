@@ -21,6 +21,6 @@ public class AnimalDTO {
         this.name = animal.getName();
         this.species = animal.getSpecies();
         this.age = animal.getAge();
-        this.userId = animal.getUser() != null ? animal.getUser().getId() : null;
+        this.userId = animal.getClient() != null ? animal.getClient().getId() : null;
     }
 }

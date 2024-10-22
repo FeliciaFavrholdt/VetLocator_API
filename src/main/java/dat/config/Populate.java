@@ -1,13 +1,16 @@
 package dat.config;
 
-import dat.entities.Animal;
-import dat.entities.Clinic;
-import dat.entities.City;
-import dat.entities.User;
+import dat.entities.*;
+import dat.enums.AppointmentStatus;
+import dat.enums.Gender;
+import dat.enums.Specialization;
+import dat.enums.Weekday;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Set;
 
 public class Populate {
@@ -15,59 +18,63 @@ public class Populate {
 
         EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
 
-        // Create animals for John and Jane
-        Set<Animal> johnsAnimals = getJohnsAnimals();
-        Set<Animal> janesAnimals = getJanesAnimals();
-
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
 
-            // Create City entities
+            // Populate Cities
             City copenhagen = new City(null, "Copenhagen", "Main Street 123", "1000");
             City aarhus = new City(null, "Aarhus", "Central Street 456", "8000");
-
-            // Persist cities
             em.persist(copenhagen);
             em.persist(aarhus);
 
-            // Create Users
-            User johnDoe = new User("johndoe", "password123", "John", "Doe", "johndoe@example.com", "+45 12 34 56 78");
-            User janeDoe = new User("janedoe", "password123", "Jane", "Doe", "janedoe@example.com", "+45 98 76 54 32");
-
-            // Assign animals to users
-            johnDoe.setAnimals(johnsAnimals);
-            janesAnimals.forEach(animal -> animal.setUser(janeDoe));  // Assign animals to Jane Doe
-            johnsAnimals.forEach(animal -> animal.setUser(johnDoe));  // Assign animals to John Doe
-            janeDoe.setAnimals(janesAnimals);
-
-            // Persist users
+            // Populate Clients (Users)
+            Client johnDoe = new Client("johndoe", "password123", "John", "Doe", Gender.MALE, "johndoe@example.com", "+45 12 34 56 78");
+            Client janeDoe = new Client("janedoe", "password123", "Jane", "Doe", Gender.FEMALE, "janedoe@example.com", "+45 98 76 54 32");
             em.persist(johnDoe);
             em.persist(janeDoe);
 
-            // Create Clinics with associated cities
-            Clinic happyPaws = new Clinic("Happy Paws", "+45 22 33 44 55", "contact@happypaws.dk", "Clinic Street 12", copenhagen);
-            Clinic petCare = new Clinic("Pet Care", "+45 44 33 22 11", "contact@petcare.dk", "Care Street 8", aarhus);
+            // Populate Animals for Clients
+            Set<Animal> johnsAnimals = getJohnsAnimals(johnDoe);
+            Set<Animal> janesAnimals = getJanesAnimals(janeDoe);
+            johnDoe.setAnimals(johnsAnimals);
+            janeDoe.setAnimals(janesAnimals);
 
-            // Persist clinics
+            johnsAnimals.forEach(em::persist);
+            janesAnimals.forEach(em::persist);
+
+            // Populate Clinics
+            Clinic happyPaws = new Clinic("Happy Paws", Specialization.BIRD, "+45 22 33 44 55", "contact@happypaws.dk", "Clinic Street 12", copenhagen);
+            Clinic petCare = new Clinic("Pet Care", Specialization.CAT, "+45 44 33 22 11", "contact@petcare.dk", "Care Street 8", aarhus);
             em.persist(happyPaws);
             em.persist(petCare);
 
-            // Commit transaction
+            // Populate Appointments
+            Appointment johnsAppointment = new Appointment(null, LocalDate.now(), LocalTime.of(10, 0), "Routine check-up", AppointmentStatus.SCHEDULED, happyPaws, johnDoe, johnsAnimals.iterator().next());
+            Appointment janesAppointment = new Appointment(null, LocalDate.now().plusDays(1), LocalTime.of(11, 0), "Vaccination", AppointmentStatus.SCHEDULED, petCare, janeDoe, janesAnimals.iterator().next());
+            em.persist(johnsAppointment);
+            em.persist(janesAppointment);
+
+            // Populate Opening Hours for Clinics
+            OpeningHours happyPawsOpening = new OpeningHours(null, Weekday.MONDAY, LocalTime.of(8, 0), LocalTime.of(18, 0), happyPaws);
+            OpeningHours petCareOpening = new OpeningHours(null, Weekday.TUESDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), petCare);
+            em.persist(happyPawsOpening);
+            em.persist(petCareOpening);
+
             em.getTransaction().commit();
         }
     }
 
     @NotNull
-    private static Set<Animal> getJohnsAnimals() {
-        Animal buddy = new Animal(null, "Buddy", "Dog", 5, null);  // ID and User are set later
-        Animal whiskers = new Animal(null, "Whiskers", "Cat", 3, null);  // ID and User are set later
+    private static Set<Animal> getJohnsAnimals(Client client) {
+        Animal buddy = new Animal(null, "Buddy", "Dog", 5, client);
+        Animal whiskers = new Animal(null, "Whiskers", "Cat", 3, client);
         return Set.of(buddy, whiskers);
     }
 
     @NotNull
-    private static Set<Animal> getJanesAnimals() {
-        Animal rex = new Animal(null, "Rex", "Dog", 4, null);  // ID and User are set later
-        Animal fluffy = new Animal(null, "Fluffy", "Cat", 2, null);  // ID and User are set later
+    private static Set<Animal> getJanesAnimals(Client client) {
+        Animal rex = new Animal(null, "Rex", "Dog", 4, client);
+        Animal fluffy = new Animal(null, "Fluffy", "Cat", 2, client);
         return Set.of(rex, fluffy);
     }
 }

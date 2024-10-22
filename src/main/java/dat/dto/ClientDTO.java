@@ -1,6 +1,6 @@
 package dat.dto;
 
-import dat.entities.User;
+import dat.entities.Client;
 import lombok.*;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class ClientDTO {
 
     private Integer id;
     private String fullName;  // This will be firstName + lastName
@@ -18,13 +18,13 @@ public class UserDTO {
     private Set<AnimalDTO> animals;  // A set of AnimalDTOs to represent user's pets
 
     // Constructor to map from User entity to UserDTO
-    public UserDTO(User user) {
-        this.id = user.getId();
-        this.fullName = user.getFirstName() + " " + user.getLastName();  // Combine first and last name
-        this.email = user.getEmail();
-        this.phone = user.getPhone();
-        if (user.getAnimals() != null) {
-            this.animals = user.getAnimals().stream()
+    public ClientDTO(Client client) {
+        this.id = client.getId();
+        this.fullName = client.getFirstName() + " " + client.getLastName();  // Combine first and last name
+        this.email = client.getEmail();
+        this.phone = client.getPhone();
+        if (client.getAnimals() != null) {
+            this.animals = client.getAnimals().stream()
                     .map(AnimalDTO::new)  // Convert Animal entities to AnimalDTOs
                     .collect(Collectors.toSet());
         }

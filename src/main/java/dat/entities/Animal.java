@@ -13,7 +13,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//@ToString(exclude = "user")  // Avoid recursive toString calls
+@ToString(exclude = "clients")  // Avoid recursive toString calls
 @Table(name = "animals")
 public class Animal {
 
@@ -39,7 +39,7 @@ public class Animal {
     // Many-to-One relationship with User (owner)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Client client;
 
     // Constructor to create an Animal from AnimalDTO
     public Animal(AnimalDTO dto) {
@@ -47,13 +47,13 @@ public class Animal {
         this.name = dto.getName();
         this.species = dto.getSpecies();
         this.age = dto.getAge();
-        // User will be set after fetching from the database
+        // clients will be set after fetching from the database
     }
 
-    public void setUser(User user) {
-        this.user = user;
-        if (!user.getAnimals().contains(this)) {
-            user.getAnimals().add(this);  // Add this animal to the user's set of animals if it's not already present
+    public void setClient(Client client) {
+        this.client = client;
+        if (!client.getAnimals().contains(this)) {
+            client.getAnimals().add(this);  // Add this animal to the clients set of animals if it's not already present
         }
     }
 

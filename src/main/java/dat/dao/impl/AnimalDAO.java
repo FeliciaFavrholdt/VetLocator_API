@@ -3,7 +3,7 @@ package dat.dao.impl;
 import dat.dao.IDAO;
 import dat.dto.AnimalDTO;
 import dat.entities.Animal;
-import dat.entities.User;
+import dat.entities.Client;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
@@ -36,8 +36,8 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
             Animal animal = new Animal(animalDTO);
 
             // Find and set the User entity based on userId in the DTO
-            User user = em.find(User.class, animalDTO.getUserId());
-            animal.setUser(user);  // Set the User relationship
+            Client client = em.find(Client.class, animalDTO.getUserId());
+            animal.setClient(client);  // Set the User relationship
 
             // Persist the animal entity
             em.persist(animal);
@@ -85,9 +85,9 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
                 animal.updateFromDTO(animalDTO);
 
                 // Optionally, update the User relationship based on userId in DTO
-                if (!animal.getUser().getId().equals(animalDTO.getUserId())) {
-                    User user = em.find(User.class, animalDTO.getUserId());
-                    animal.setUser(user);
+                if (!animal.getClient().getId().equals(animalDTO.getUserId())) {
+                    Client client = em.find(Client.class, animalDTO.getUserId());
+                    animal.setClient(client);
                 }
 
                 // Merge and commit the changes

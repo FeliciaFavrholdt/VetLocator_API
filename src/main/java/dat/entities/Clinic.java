@@ -32,7 +32,7 @@ public class Clinic {
     @Column(name = "specialization", nullable = false)
     private Specialization specialization;
 
-    @Column(name = "phone", nullable = false, length = 14)
+    @Column(name = "phone", nullable = false, length = 50)
     @NotBlank(message = "Phone number cannot be blank")
     @Pattern(regexp = "\\+45 \\d{2} \\d{2} \\d{2} \\d{2}", message = "Phone number must be in the format +45 XX XX XX XX")
     private String phone;
@@ -52,8 +52,9 @@ public class Clinic {
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
-    public Clinic(String clinicName, String phone, String email, String address, City city) {
+    public Clinic(String clinicName, Specialization specialization, String phone, String email, String address, City city) {
         this.clinicName = clinicName;
+        this.specialization = specialization;
         this.phone = phone;
         this.email = email;
         this.address = address;
