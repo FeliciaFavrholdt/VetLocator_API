@@ -1,37 +1,56 @@
 package dat.entities;
 
+import dat.enums.AppointmentStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Data
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"veterinaryClinic", "user", "animal"})  // Exclude relationships from toString to avoid recursion
+@Table(name = "appointments", indexes = {
+        @Index(name = "idx_veterinarian_id", columnList = "veterinarian_id"),
+        @Index(name = "idx_user_id", columnList = "user_id"),
+        @Index(name = "idx_animal_id", columnList = "animal_id")
+})
 public class Appointment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;          // Unique identifier
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;  // Unique identifier
 
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
 
-    private String date;       // Date of the appointment
-    private String time;       // Time of the appointment
-    private String reason;     // Reason for the appointment
-    private String status;     // Status of the appointment
+    @Column(name = "time", nullable = false)
+    private LocalTime time;
 
-    @ManyToOne
-    @JoinColumn(name = "veterinarian_id", nullable = false)  // Foreign key to the Veterinarian table
+    @Column(name = "reason", nullable = false, length = 255)
+    @NotBlank(message = "Reason cannot be blank")
+    @Size(max = 255, message = "Reason must be less than or equal to 255 characters")
+    private String reason;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private AppointmentStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "veterinarian_id", nullable = false)
     private VeterinaryClinic veterinaryClinic;  // Veterinarian assigned to the appointment
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)  // Foreign key to the Person table
-    private User user;     // Person who made the appointment
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;  // Person who made the appointment
 
-    @ManyToOne
-    @JoinColumn(name = "animal_id", nullable = false)  // Foreign key to the Animal table
-    private Animal animal;           // Pet that the appointment is for
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "animal_id", nullable = false)
+    private Animal animal;  // Pet for which the appointment is scheduled
 }

@@ -7,6 +7,9 @@ public class Routes {
 
     public EndpointGroup getRoutes() {
         return () -> {
+            path("/animals", animalRoute.getRoutes());
+            path("/users", userRoute.getRoutes());
+            path("/clinics", clinicRoute.getRoutes());
         };
     }
 }
