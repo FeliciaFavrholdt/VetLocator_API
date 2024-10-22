@@ -3,7 +3,7 @@ package dat.controllers.impl;
 import dat.config.HibernateConfig;
 import dat.controllers.IController;
 import dat.dao.impl.ClinicDAO;
-import dat.dtos.ClinicDTO;
+import dat.dto.ClinicDTO;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
@@ -11,10 +11,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * Controller class for Clinic entity
+ * Controller class for Clinic entity.
  *
- * Validation: Each controller includes validation logic for both primary keys and entity data using bodyValidator and pathParamAsClass. This ensures that any request coming into the API is validated before proceeding.
- * Response Handling: The controllers handle the HTTP response by setting appropriate status codes and returning the result in JSON format.
+ * This class includes validation logic for both primary keys and entity data using bodyValidator and pathParamAsClass.
+ * It handles the HTTP response by setting appropriate status codes and returning the result in JSON format.
  */
 
 public class ClinicController implements IController<ClinicDTO, Integer> {
@@ -30,8 +30,12 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
     public void read(@NotNull Context ctx) {
         int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         ClinicDTO clinicDTO = dao.read(id);
-        ctx.res().setStatus(200);
-        ctx.json(clinicDTO, ClinicDTO.class);
+        if (clinicDTO != null) {
+            ctx.res().setStatus(200);
+            ctx.json(clinicDTO, ClinicDTO.class);
+        } else {
+           // ctx.res().setStatus(404).json("{ \"message\": \"Clinic not found\" }");
+        }
     }
 
     @Override
@@ -53,8 +57,12 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
     public void update(@NotNull Context ctx) {
         int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         ClinicDTO clinicDTO = dao.update(id, validateEntity(ctx));
-        ctx.res().setStatus(200);
-        ctx.json(clinicDTO, ClinicDTO.class);
+        if (clinicDTO != null) {
+            ctx.res().setStatus(200);
+            ctx.json(clinicDTO, ClinicDTO.class);
+        } else {
+            //ctx.res().setStatus(404).json("{ \"message\": \"Clinic not found or update failed\" }");
+        }
     }
 
     @Override
@@ -72,15 +80,13 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
     @Override
     public ClinicDTO validateEntity(@NotNull Context ctx) {
         return ctx.bodyValidator(ClinicDTO.class)
-                .check(c -> c.getName() != null && !c.getName().isEmpty(), "Clinic name must be set")
-                .check(c -> c.getCity() != null && !c.getCity().isEmpty(), "Clinic city must be set")
-                .check(c -> c.getSpecialization() != null && !c.getSpecialization().isEmpty(), "Clinic specialization must be set")
+                .check(c -> c.getClinicName() != null && !c.getClinicName().isEmpty(), "Clinic name must be set")
+                .check(c -> c.getSpecialization() != null, "Clinic specialization must be set")
+                .check(c -> c.getPhone() != null && !c.getPhone().isEmpty(), "Phone number must be set")
+                .check(c -> c.getEmail() != null && !c.getEmail().isEmpty(), "Email must be set")
+                .check(c -> c.getAddress() != null && !c.getAddress().isEmpty(), "Clinic address must be set")
+                .check(c -> c.getCityName() != null && !c.getCityName().isEmpty(), "City name must be set")
+                .check(c -> c.getPostalCode() != null && !c.getPostalCode().isEmpty(), "Postal code must be set")
                 .get();
-    }
-
-    public void populate(@NotNull Context ctx) {
-        dao.populate();
-        ctx.res().setStatus(200);
-        ctx.json("{ \"message\": \"Clinic database has been populated\" }");
     }
 }

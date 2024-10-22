@@ -3,7 +3,7 @@ package dat.controllers.impl;
 import dat.config.HibernateConfig;
 import dat.controllers.IController;
 import dat.dao.impl.AnimalDAO;
-import dat.dtos.AnimalDTO;
+import dat.dto.AnimalDTO;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
@@ -69,11 +69,5 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
                 .check(a -> a.getSpecies() != null && !a.getSpecies().isEmpty(), "Animal species must be set")
                 .check(a -> a.getAge() != null, "Animal age must be set")
                 .get();
-    }
-
-    public void populate(@NotNull Context ctx) {
-        dao.populate();
-        ctx.res().setStatus(200);
-        ctx.json("{ \"message\": \"Animal database has been populated\" }");
     }
 }

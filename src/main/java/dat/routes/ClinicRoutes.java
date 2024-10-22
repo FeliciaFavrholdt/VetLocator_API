@@ -1,5 +1,6 @@
 package dat.routes;
 
+import dat.controllers.impl.ClinicController;
 import io.javalin.apibuilder.EndpointGroup;
 
 public class ClinicRoutes {

@@ -3,7 +3,7 @@ package dat.controllers.impl;
 import dat.config.HibernateConfig;
 import dat.controllers.IController;
 import dat.dao.impl.UserDAO;
-import dat.dtos.UserDTO;
+import dat.dto.UserDTO;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
