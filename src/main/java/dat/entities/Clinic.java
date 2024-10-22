@@ -1,5 +1,6 @@
 package dat.entities;
 
+import dat.dto.ClinicDTO;
 import dat.enums.Specialization;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -20,7 +21,7 @@ public class Clinic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+    private Integer id;
 
     @Column(name = "clinic_name", nullable = false, length = 50)
     @NotBlank(message = "Clinic name cannot be blank")
@@ -31,7 +32,7 @@ public class Clinic {
     @Column(name = "specialization", nullable = false)
     private Specialization specialization;
 
-    @Column(name = "phone", nullable = false, length = 14)  // Adjust length for Danish phone number format
+    @Column(name = "phone", nullable = false, length = 14)
     @NotBlank(message = "Phone number cannot be blank")
     @Pattern(regexp = "\\+45 \\d{2} \\d{2} \\d{2} \\d{2}", message = "Phone number must be in the format +45 XX XX XX XX")
     private String phone;
@@ -50,4 +51,32 @@ public class Clinic {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
+
+    public Clinic(String clinicName, String phone, String email, String address, City city) {
+        this.clinicName = clinicName;
+        this.phone = phone;
+        this.email = email;
+        this.address = address;
+        this.city = city;
+    }
+
+    // Constructor to create a Clinic from ClinicDTO
+    public Clinic(ClinicDTO dto, City city) {
+        this.clinicName = dto.getClinicName();
+        this.specialization = dto.getSpecialization();
+        this.phone = dto.getPhone();
+        this.email = dto.getEmail();
+        this.address = dto.getAddress();
+        this.city = city;  // Set city based on City entity
+    }
+
+    // Method to update Clinic entity from ClinicDTO
+    public void updateFromDTO(ClinicDTO dto, City city) {
+        this.clinicName = dto.getClinicName();
+        this.specialization = dto.getSpecialization();
+        this.phone = dto.getPhone();
+        this.email = dto.getEmail();
+        this.address = dto.getAddress();
+        this.city = city;  // Update city
+    }
 }

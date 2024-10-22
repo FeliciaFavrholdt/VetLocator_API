@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ClinicDTO {
 
-    private Long id;
+    private Integer id;
     private String clinicName;
     private Specialization specialization;
     private String phone;

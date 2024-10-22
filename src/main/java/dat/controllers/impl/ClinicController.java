@@ -28,7 +28,7 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
 
     @Override
     public void read(@NotNull Context ctx) {
-        int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
+        Integer id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         ClinicDTO clinicDTO = dao.read(id);
         if (clinicDTO != null) {
             ctx.res().setStatus(200);
@@ -55,7 +55,7 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
 
     @Override
     public void update(@NotNull Context ctx) {
-        int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
+        Integer id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         ClinicDTO clinicDTO = dao.update(id, validateEntity(ctx));
         if (clinicDTO != null) {
             ctx.res().setStatus(200);
