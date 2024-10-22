@@ -5,6 +5,10 @@ import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class Routes {
 
+    private final AnimalRoutes animalRoute = new AnimalRoutes();
+    private final UserRoutes userRoute = new UserRoutes();
+    private final ClinicRoutes clinicRoute = new ClinicRoutes();
+
     public EndpointGroup getRoutes() {
         return () -> {
             path("/animals", animalRoute.getRoutes());
