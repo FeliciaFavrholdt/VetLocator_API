@@ -20,5 +20,4 @@ public class ExceptionController {
         ctx.status(500);
         ctx.json(new Message(500, e.getMessage()));
     }
-
 }
