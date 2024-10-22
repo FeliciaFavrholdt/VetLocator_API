@@ -3,7 +3,7 @@ package dat.security.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nimbusds.jose.JOSEException;
-import dat.utils.Utils;
+import dat.util.Utils;
 import dat.config.HibernateConfig;
 import dat.security.daos.ISecurityDAO;
 import dat.security.daos.SecurityDAO;

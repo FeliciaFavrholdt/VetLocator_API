@@ -1,4 +1,4 @@
-package dat.exceptions;
+package dat.exception;
 
 public class ApiException extends Exception{
 

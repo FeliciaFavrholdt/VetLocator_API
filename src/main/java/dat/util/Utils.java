@@ -1,4 +1,4 @@
-package dat.utils;
+package dat.util;
 
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.DeserializationFeature;

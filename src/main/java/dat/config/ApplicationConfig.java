@@ -7,7 +7,7 @@ import dat.security.controllers.SecurityController;
 import dat.security.enums.Role;
 import dat.security.exceptions.ApiException;
 import dat.security.routes.SecurityRoutes;
-import dat.utils.Utils;
+import dat.util.Utils;
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;

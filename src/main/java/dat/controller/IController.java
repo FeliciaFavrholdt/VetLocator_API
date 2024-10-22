@@ -1,4 +1,4 @@
-package dat.controllers;
+package dat.controller;
 
 import io.javalin.http.Context;
 
