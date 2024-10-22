@@ -2,7 +2,7 @@ package dat.controllers.impl;
 
 import dat.config.HibernateConfig;
 import dat.controllers.IController;
-import dat.daos.impl.ClinicDAO;
+import dat.dao.impl.ClinicDAO;
 import dat.dtos.ClinicDTO;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;

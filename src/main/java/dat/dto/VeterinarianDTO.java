@@ -1,4 +1,4 @@
-package dat.dtos;
+package dat.dto;
 
 import lombok.*;
 

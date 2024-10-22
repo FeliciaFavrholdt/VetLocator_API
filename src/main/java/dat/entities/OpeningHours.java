@@ -39,7 +39,7 @@ public class OpeningHours {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinary_clinic_id", nullable = false)
     @NotNull(message = "Veterinary clinic cannot be null")
-    private VeterinaryClinic veterinaryClinic;
+    private Clinic veterinaryClinic;
 
     // Method to check if a vet is currently on duty for the given day and time
     public boolean isOnDuty(LocalTime currentTime, Weekday currentWeekday) {

@@ -44,7 +44,7 @@ public class Appointment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinarian_id", nullable = false)
-    private VeterinaryClinic veterinaryClinic;  // Veterinarian assigned to the appointment
+    private Clinic veterinaryClinic;  // Veterinarian assigned to the appointment
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

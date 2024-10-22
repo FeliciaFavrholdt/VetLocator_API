@@ -2,7 +2,7 @@ package dat.controllers.impl;
 
 import dat.config.HibernateConfig;
 import dat.controllers.IController;
-import dat.daos.impl.AnimalDAO;
+import dat.dao.impl.AnimalDAO;
 import dat.dtos.AnimalDTO;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
