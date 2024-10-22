@@ -1,0 +1,37 @@
+
+### Populate the database with some animals
+GET {{url}}/api/animals/populate
+Accept: application/json
+
+### Create a new animal
+POST {{url}}/api/animals
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+
+}
+
+### Retrieve all animals
+GET {{url}}/api/animals
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+### Retrieve a specific animal by ID (ID=1)
+GET {{url}}/api/animals/1
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+### Update a specific animal by ID (ID=1)
+PUT {{url}}/api/animals/1
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+
+}
+
+### Delete a specific animal by ID (ID=1)
+DELETE {{url}}/api/animals/1
+Accept: application/json
+Authorization: Bearer {{jwt_token}}

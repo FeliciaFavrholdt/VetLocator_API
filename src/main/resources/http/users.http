@@ -1,0 +1,40 @@
+
+### Retrieve all users
+GET {{url}}/api/users
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+### Retrieve a specific user by ID (ID=1)
+GET {{url}}/api/users/1
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+### Retrieve animals of a specific user (ID=1)
+GET {{url}}/api/users/1/animals
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+### Create a new user
+POST {{url}}/api/users
+Content-Type: application/json
+
+{
+    "username": "newuser",
+    "password": "password123",
+    "email": "newuser@example.com"
+}
+
+### Update a specific user by ID (ID=1)
+PUT {{url}}/api/users/1
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+    "username": "updateduser",
+    "email": "updateduser@example.com"
+}
+
+### Delete a specific user by ID (ID=1)
+DELETE {{url}}/api/users/1
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
