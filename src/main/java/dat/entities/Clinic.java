@@ -14,7 +14,6 @@ import java.util.Set;
 @Entity
 @Data
 @Builder
-@ToString(exclude = "city")
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "veterinary_clinic")
@@ -50,30 +49,30 @@ public class Clinic {
     @Size(max = 255, message = "Address must be 255 characters or less")
     private String address;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "city_id", nullable = false)
-    private City city;
+    @Column(name = "postal_code", nullable = false)
+    private int postalCode;
 
     @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Veterinarian> veterinarians;
 
-    public Clinic(String clinicName, Specialization specialization, String phone, String email, String address, City city) {
-        this.clinicName = clinicName;
-        this.specialization = specialization;
-        this.phone = phone;
-        this.email = email;
-        this.address = address;
-        this.city = city;
-    }
-
-    // Constructor to create a Clinic from ClinicDTO
+    // Constructor to create a Clinic from ClinicDTO and City
     public Clinic(ClinicDTO dto, City city) {
         this.clinicName = dto.getClinicName();
         this.specialization = dto.getSpecialization();
         this.phone = dto.getPhone();
         this.email = dto.getEmail();
         this.address = dto.getAddress();
-        this.city = city;  // Set city based on City entity
+        this.postalCode = city.getPostalCode();  // Use the postal code from the City entity
+    }
+
+    // Additional constructor (in case you need it for other cases)
+    public Clinic(String clinicName, Specialization specialization, String phone, String email, String address, int postalCode) {
+        this.clinicName = clinicName;
+        this.specialization = specialization;
+        this.phone = phone;
+        this.email = email;
+        this.address = address;
+        this.postalCode = postalCode;
     }
 
     // Method to update Clinic entity from ClinicDTO
@@ -83,6 +82,6 @@ public class Clinic {
         this.phone = dto.getPhone();
         this.email = dto.getEmail();
         this.address = dto.getAddress();
-        this.city = city;  // Update city
+        // Postal code may come from a City update process
     }
 }

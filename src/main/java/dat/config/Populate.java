@@ -22,8 +22,8 @@ public class Populate {
             em.getTransaction().begin();
 
             // Populate Cities
-            City copenhagen = new City(null, "Copenhagen", "Main Street 123", "1000");
-            City aarhus = new City(null, "Aarhus", "Central Street 456", "8000");
+            City copenhagen = new City(null, "Copenhagen",  1000);
+            City aarhus = new City(null, "Aarhus", 8000);
             em.persist(copenhagen);
             em.persist(aarhus);
 
@@ -42,8 +42,8 @@ public class Populate {
             janesAnimals.forEach(em::persist);
 
             // Populate Clinics
-            Clinic happyPaws = new Clinic("Happy Paws", Specialization.BIRD, "+45 22 33 44 55", "contact@happypaws.dk", "Clinic Street 12", copenhagen);
-            Clinic petCare = new Clinic("Pet Care", Specialization.CAT, "+45 44 33 22 11", "contact@petcare.dk", "Care Street 8", aarhus);
+            Clinic happyPaws = new Clinic("Happy Paws", Specialization.BIRD, "+45 22 33 44 55", "contact@happypaws.dk", "Clinic Street 12", 2222);
+            Clinic petCare = new Clinic("Pet Care", Specialization.CAT, "+45 44 33 22 11", "contact@petcare.dk", "Care Street 8", 2552);
             em.persist(happyPaws);
             em.persist(petCare);
 

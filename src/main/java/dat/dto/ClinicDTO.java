@@ -17,9 +17,8 @@ public class ClinicDTO {
     private String phone;
     private String email;
     private String address;       // Clinic's address
-    private String cityName;      // City name from the City entity
-    private String cityAddress;   // City address from the City entity
-    private String postalCode;    // City postal code
+    private String cityName;      // City name
+    private int postalCode;       // City postal code
 
     // Constructor to create ClinicDTO from Clinic entity
     public ClinicDTO(Clinic clinic) {
@@ -29,10 +28,6 @@ public class ClinicDTO {
         this.phone = clinic.getPhone();
         this.email = clinic.getEmail();
         this.address = clinic.getAddress();
-
-        // Extracting city details from the City entity
-        this.cityName = clinic.getCity().getCityName();
-        this.cityAddress = clinic.getCity().getAddress();
-        this.postalCode = clinic.getCity().getPostalCode();
+        this.postalCode = clinic.getPostalCode();
     }
 }
