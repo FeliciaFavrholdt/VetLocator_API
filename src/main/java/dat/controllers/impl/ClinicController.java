@@ -16,7 +16,6 @@ import java.util.List;
  * This class includes validation logic for both primary keys and entity data using bodyValidator and pathParamAsClass.
  * It handles the HTTP response by setting appropriate status codes and returning the result in JSON format.
  */
-
 public class ClinicController implements IController<ClinicDTO, Integer> {
 
     private final ClinicDAO dao;
@@ -34,7 +33,8 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
             ctx.res().setStatus(200);
             ctx.json(clinicDTO, ClinicDTO.class);
         } else {
-           // ctx.res().setStatus(404).json("{ \"message\": \"Clinic not found\" }");
+            ctx.res().setStatus(404);
+            ctx.result("Clinic not found");
         }
     }
 
@@ -61,7 +61,8 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
             ctx.res().setStatus(200);
             ctx.json(clinicDTO, ClinicDTO.class);
         } else {
-            //ctx.res().setStatus(404).json("{ \"message\": \"Clinic not found or update failed\" }");
+            ctx.res().setStatus(404);
+            ctx.result("Clinic not found or update failed");
         }
     }
 

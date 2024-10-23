@@ -12,15 +12,15 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-public class UserDAO implements IDAO<ClientDTO, Integer> {
+public class ClientDAO implements IDAO<ClientDTO, Integer> {
 
-    public static UserDAO instance;
+    public static ClientDAO instance;
     public static EntityManagerFactory emf;
 
-    public static UserDAO getInstance(EntityManagerFactory _emf) {
+    public static ClientDAO getInstance(EntityManagerFactory _emf) {
         if (instance == null) {
             emf = _emf;
-            instance = new UserDAO();
+            instance = new ClientDAO();
         }
         return instance;
     }

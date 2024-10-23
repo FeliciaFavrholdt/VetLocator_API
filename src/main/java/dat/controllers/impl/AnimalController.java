@@ -23,8 +23,13 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
     public void read(@NotNull Context ctx) {
         int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         AnimalDTO animalDTO = dao.read(id);
-        ctx.res().setStatus(200);
-        ctx.json(animalDTO, AnimalDTO.class);
+        if (animalDTO != null) {
+            ctx.res().setStatus(200);
+            ctx.json(animalDTO, AnimalDTO.class);
+        } else {
+            ctx.res().setStatus(404);
+            ctx.result("Animal not found");
+        }
     }
 
     @Override
@@ -46,8 +51,13 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
     public void update(@NotNull Context ctx) {
         int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         AnimalDTO animalDTO = dao.update(id, validateEntity(ctx));
-        ctx.res().setStatus(200);
-        ctx.json(animalDTO, AnimalDTO.class);
+        if (animalDTO != null) {
+            ctx.res().setStatus(200);
+            ctx.json(animalDTO, AnimalDTO.class);
+        } else {
+            ctx.res().setStatus(404);
+            ctx.result("Animal not found or update failed");
+        }
     }
 
     @Override
@@ -67,7 +77,8 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
         return ctx.bodyValidator(AnimalDTO.class)
                 .check(a -> a.getName() != null && !a.getName().isEmpty(), "Animal name must be set")
                 .check(a -> a.getSpecies() != null && !a.getSpecies().isEmpty(), "Animal species must be set")
-                .check(a -> a.getAge() >= 0, "Animal age must be a non-negative number")  // Check that age is valid
+                .check(a -> a.getAge() >= 0, "Animal age must be a non-negative number")
+                .check(a -> a.getUserId() != null, "Owner (user) ID must be set")
                 .get();
     }
 
