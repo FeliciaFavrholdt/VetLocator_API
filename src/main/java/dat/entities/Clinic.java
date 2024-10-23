@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.Set;
+
 @Entity
 @Data
 @Builder
@@ -51,6 +53,9 @@ public class Clinic {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
+
+    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Veterinarian> veterinarians;
 
     public Clinic(String clinicName, Specialization specialization, String phone, String email, String address, City city) {
         this.clinicName = clinicName;

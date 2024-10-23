@@ -47,6 +47,7 @@ public class HibernateConfig {
         configuration.addAnnotatedClass(City.class);
         configuration.addAnnotatedClass(Clinic.class);
         configuration.addAnnotatedClass(OpeningHours.class);
+        configuration.addAnnotatedClass(Veterinarian.class);
     }
 
     private static EntityManagerFactory createEMF(boolean forTest) {

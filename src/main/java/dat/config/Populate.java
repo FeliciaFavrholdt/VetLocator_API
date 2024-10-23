@@ -38,7 +38,6 @@ public class Populate {
             Set<Animal> janesAnimals = getJanesAnimals(janeDoe);
             johnDoe.setAnimals(johnsAnimals);
             janeDoe.setAnimals(janesAnimals);
-
             johnsAnimals.forEach(em::persist);
             janesAnimals.forEach(em::persist);
 
@@ -47,6 +46,12 @@ public class Populate {
             Clinic petCare = new Clinic("Pet Care", Specialization.CAT, "+45 44 33 22 11", "contact@petcare.dk", "Care Street 8", aarhus);
             em.persist(happyPaws);
             em.persist(petCare);
+
+            // Populate Veterinarians
+            Veterinarian vet1 = new Veterinarian(null, "Dr. Smith", "+45 55 55 55 55", Veterinarian.Availability.AVAILABLE, happyPaws);
+            Veterinarian vet2 = new Veterinarian(null, "Dr. Johnson", "+45 66 66 66 66", Veterinarian.Availability.AVAILABLE, petCare);
+            em.persist(vet1);
+            em.persist(vet2);
 
             // Populate Appointments
             Appointment johnsAppointment = new Appointment(null, LocalDate.now(), LocalTime.of(10, 0), "Routine check-up", AppointmentStatus.SCHEDULED, happyPaws, johnDoe, johnsAnimals.iterator().next());
