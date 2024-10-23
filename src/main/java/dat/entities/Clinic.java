@@ -9,10 +9,12 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -51,6 +53,19 @@ public class Clinic {
 
     @Column(name = "postal_code", nullable = false)
     private int postalCode;
+
+    // OneToMany relationship with OpeningHours
+    @OneToMany(mappedBy = "veterinaryClinic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<OpeningHours> openingHours;
+
+    // Add convenience method to populate opening hours
+    public void addOpeningHour(OpeningHours openingHour) {
+        if (openingHours == null) {
+            openingHours = new HashSet<>();
+        }
+        openingHours.add(openingHour);
+        openingHour.setVeterinaryClinic(this);
+    }
 
     @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Veterinarian> veterinarians;

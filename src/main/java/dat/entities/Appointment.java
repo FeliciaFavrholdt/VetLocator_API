@@ -25,7 +25,7 @@ public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    private Long id;  // Unique identifier
+    private Integer id;  // Unique identifier
 
     @Column(name = "date", nullable = false)
     private LocalDate date;
