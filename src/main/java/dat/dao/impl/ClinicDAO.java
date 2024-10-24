@@ -109,8 +109,6 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
         }
     }
 
-
-
     @Override
     public void delete(Integer id) {
         try (EntityManager em = emf.createEntityManager()) {
