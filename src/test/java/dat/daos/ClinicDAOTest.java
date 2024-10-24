@@ -113,7 +113,6 @@ import static org.junit.jupiter.api.Assertions.*;
             ClinicDTO updatedClinicDTO = new ClinicDTO();
             updatedClinicDTO.setClinicName("Updated Clinic");
             updatedClinicDTO.setAddress("789 Updated St");
-            updatedClinicDTO.setCityName("Test City");
             updatedClinicDTO.setPostalCode(12345);
 
             // Use the update method to update the clinic

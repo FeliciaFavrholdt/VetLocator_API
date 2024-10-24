@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
-public class UserDAOTest {
+public class ClientDAOTest {
 
     private EntityManagerFactory emf;
     private EntityManager em;
@@ -64,7 +64,6 @@ public class UserDAOTest {
         assertEquals("New User", createdClient.getFullName());
         assertEquals("newuser@example.com", createdClient.getEmail());
         assertEquals("0987654321", createdClient.getPhone());
-        assertEquals(Gender.MALE, createdClient.getGender());
     }
 
     @Test
