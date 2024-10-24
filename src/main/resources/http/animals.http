@@ -1,13 +1,28 @@
-### POST Create a new animal
+### POST Create a new animal (valid request)
 POST {{url}}/api/animals
 Content-Type: application/json
 
 {
-  "name": "Lion",
-  "species": "Panthera leo",
-  "age": "5",
+  "name": "Elephant",
+  "species": "Loxodonta",
+  "age": 10,
   "userId": "123"
 }
+
+###
+
+### POST Create a new animal (invalid request - missing name)
+POST {{url}}/api/animals
+Content-Type: application/json
+
+{
+  "species": "Loxodonta",
+  "age": 10,
+  "userId": "123"
+}
+
+### Expected response:
+### { "error": "Animal name must be provided" }
 
 ###
 
@@ -16,24 +31,53 @@ GET {{url}}/api/animals
 
 ###
 
-### GET Retrieve specific animal by id
+### GET Retrieve specific animal by id (valid)
 GET {{url}}/api/animals/1
 
 ###
 
-### PUT Update animal details
+### GET Retrieve specific animal by id (invalid - not found)
+GET {{url}}/api/animals/999
+
+### Expected response:
+### { "error": "Animal not found" }
+
+###
+
+### PUT Update animal details (valid request)
 PUT {{url}}/api/animals/1
 Content-Type: application/json
 
 {
-  "name": "Lioness",
-  "species": "Panthera leo",
-  "age": "6"
+  "name": "Updated Elephant",
+  "species": "Loxodonta",
+  "age": 12
 }
 
 ###
 
-### DELETE Delete specific animal by id
+### PUT Update animal details (invalid request - invalid ID)
+PUT {{url}}/api/animals/invalid-id
+Content-Type: application/json
+
+{
+  "name": "Updated Elephant",
+  "species": "Loxodonta",
+  "age": 12
+}
+
+### Expected response:
+### { "error": "Invalid animal ID format" }
+
+###
+
+### DELETE Delete specific animal by id (valid)
 DELETE {{url}}/api/animals/1
 
 ###
+
+### DELETE Delete specific animal by id (not found)
+DELETE {{url}}/api/animals/999
+
+### Expected response:
+### { "error": "Animal not found" }

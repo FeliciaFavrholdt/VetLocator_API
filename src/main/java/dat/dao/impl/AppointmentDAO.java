@@ -85,7 +85,7 @@ public class AppointmentDAO implements IDAO<AppointmentDTO, Integer> {
     }
 
     @Override
-    public void delete(Integer id) {
+    public boolean delete(Integer id) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -97,6 +97,7 @@ public class AppointmentDAO implements IDAO<AppointmentDTO, Integer> {
         } finally {
             em.close();
         }
+        return false;
     }
 
     @Override

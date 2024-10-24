@@ -109,7 +109,7 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
     }
 
     @Override
-    public void delete(Integer id) {
+    public boolean delete(Integer id) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -121,6 +121,7 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
         } finally {
             em.close();
         }
+        return false;
     }
 
     @Override

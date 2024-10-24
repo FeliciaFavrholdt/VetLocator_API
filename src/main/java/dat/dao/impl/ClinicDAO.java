@@ -92,7 +92,7 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
     }
 
     @Override
-    public void delete(Integer id) {
+    public boolean delete(Integer id) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             Clinic clinic = em.find(Clinic.class, id);
@@ -101,6 +101,7 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
             }
             em.getTransaction().commit();
         }
+        return false;
     }
 
     @Override

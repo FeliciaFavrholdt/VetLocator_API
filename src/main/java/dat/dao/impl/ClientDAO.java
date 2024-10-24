@@ -83,7 +83,7 @@ public class ClientDAO implements IDAO<ClientDTO, Integer> {
     }
 
     @Override
-    public void delete(Integer id) {
+    public boolean delete(Integer id) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -95,6 +95,7 @@ public class ClientDAO implements IDAO<ClientDTO, Integer> {
         } finally {
             em.close();
         }
+        return false;
     }
 
     @Override
