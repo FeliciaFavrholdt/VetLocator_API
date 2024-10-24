@@ -4,6 +4,8 @@ import dat.config.HibernateConfig;
 import dat.controllers.IController;
 import dat.dao.impl.AnimalDAO;
 import dat.dto.AnimalDTO;
+import dat.exceptions.ApiException;
+import dat.exceptions.JpaException;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
@@ -32,18 +34,23 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             AnimalDTO animalDTO = dao.read(id);
 
             if (animalDTO != null) {
-                ctx.res().setStatus(200);
-                ctx.json(animalDTO, AnimalDTO.class);
+                ctx.status(200);
+                ctx.json(animalDTO);
                 logger.info("Animal with ID: {} found and returned", id);
             } else {
-                ctx.res().setStatus(404);
-                ctx.result("Animal not found");
-                logger.warn("Animal with ID: {} not found", id);
+                throw new ApiException(404, "Animal not found");
             }
+        } catch (ApiException e) {
+            logger.warn("API Error: {}", e.getMessage(), e);
+            ctx.status(e.getStatusCode());
+            ctx.json(e.getMessageRecord());
+        } catch (JpaException e) {
+            logger.error("JPA Error: {}", e.getMessage(), e);
+            ctx.status(e.getStatusCode());
+            ctx.json(e.getMessageRecord());
         } catch (Exception e) {
-            logger.error("Error reading animal: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            logger.error("General Error: {}", e.getMessage(), e);
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -52,13 +59,15 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
         try {
             logger.info("Fetching all animals");
             List<AnimalDTO> animalDTOS = dao.readAll();
-            ctx.res().setStatus(200);
-            ctx.json(animalDTOS, AnimalDTO.class);
+            ctx.status(200);
+            ctx.json(animalDTOS);
             logger.info("All animals fetched successfully, count: {}", animalDTOS.size());
+        } catch (JpaException e) {
+            logger.error("JPA Error fetching animals: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error fetching animals from database");
         } catch (Exception e) {
             logger.error("Error fetching all animals: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -68,13 +77,15 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             AnimalDTO jsonRequest = ctx.bodyAsClass(AnimalDTO.class);
             logger.info("Creating new animal: {}", jsonRequest);
             AnimalDTO animalDTO = dao.create(jsonRequest);
-            ctx.res().setStatus(201);
-            ctx.json(animalDTO, AnimalDTO.class);
+            ctx.status(201);
+            ctx.json(animalDTO);
             logger.info("Animal created successfully with ID: {}", animalDTO.getId());
+        } catch (JpaException e) {
+            logger.error("JPA Error creating animal: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error creating animal in the database");
         } catch (Exception e) {
             logger.error("Error creating animal: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -88,18 +99,18 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             AnimalDTO animalDTO = dao.update(id, validateEntity(ctx));
 
             if (animalDTO != null) {
-                ctx.res().setStatus(200);
-                ctx.json(animalDTO, AnimalDTO.class);
+                ctx.status(200);
+                ctx.json(animalDTO);
                 logger.info("Animal with ID: {} updated successfully", id);
             } else {
-                ctx.res().setStatus(404);
-                ctx.result("Animal not found or update failed");
-                logger.warn("Animal with ID: {} not found or update failed", id);
+                throw new ApiException(404, "Animal not found or update failed");
             }
+        } catch (JpaException e) {
+            logger.error("JPA Error updating animal: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error updating animal in the database");
         } catch (Exception e) {
-            logger.error("Error updating animal with ID: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            logger.error("Error updating animal: {}", e.getMessage(), e);
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -111,12 +122,14 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
                     .get();
             logger.info("Deleting animal with ID: {}", id);
             dao.delete(id);
-            ctx.res().setStatus(204);
+            ctx.status(204);
             logger.info("Animal with ID: {} deleted successfully", id);
+        } catch (JpaException e) {
+            logger.error("JPA Error deleting animal: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error deleting animal from the database");
         } catch (Exception e) {
-            logger.error("Error deleting animal with ID: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            logger.error("Error deleting animal: {}", e.getMessage(), e);
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -125,12 +138,12 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
         try {
             boolean isValid = dao.validatePrimaryKey(id);
             if (!isValid) {
-                logger.warn("Invalid primary key: {}", id);
+                throw new ApiException(400, "Invalid primary key: " + id);
             }
             return isValid;
-        } catch (Exception e) {
-            logger.error("Error validating primary key: {}", e.getMessage(), e);
-            return false;
+        } catch (JpaException e) {
+            logger.error("JPA Error validating primary key: {}", e.getMessage(), e);
+            throw new ApiException(500, "Database error during primary key validation");
         }
     }
 
@@ -147,7 +160,7 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             return animalDTO;
         } catch (Exception e) {
             logger.error("Error validating animal entity: {}", e.getMessage(), e);
-            throw e;  // Let the exception bubble up to be handled in the calling method.
+            throw new ApiException(400, "Invalid animal entity");
         }
     }
 }

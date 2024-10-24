@@ -4,23 +4,28 @@ import dat.dao.IDAO;
 import dat.dto.AnimalDTO;
 import dat.entities.Animal;
 import dat.entities.Client;
+import dat.exceptions.JpaException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.PersistenceException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
 
+    private static final Logger logger = LoggerFactory.getLogger(AnimalDAO.class);
+
     private static AnimalDAO instance;
     private static EntityManagerFactory emf;
 
-
     public AnimalDAO(EntityManagerFactory emf) {
-        this.emf = emf;
+        AnimalDAO.emf = emf;
     }
 
     public static AnimalDAO getInstance(EntityManagerFactory _emf) {
@@ -40,9 +45,12 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
             // Convert DTO to entity
             Animal animal = new Animal(animalDTO);
 
-            // Find and set the User entity based on userId in the DTO
+            // Find and set the Client entity based on userId in the DTO
             Client client = em.find(Client.class, animalDTO.getUserId());
-            animal.setClient(client);  // Set the User relationship
+            if (client == null) {
+                throw new JpaException(400, "Client not found for userId: " + animalDTO.getUserId());
+            }
+            animal.setClient(client);
 
             // Persist the animal entity
             em.persist(animal);
@@ -50,8 +58,14 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
 
             // Return the persisted entity as a DTO
             return new AnimalDTO(animal);
+        } catch (PersistenceException e) {
+            em.getTransaction().rollback();
+            logger.error("Error creating animal: {}", e.getMessage(), e);
+            throw new JpaException(500, "Error creating animal in the database.");
         } finally {
-            em.close();
+            if (em.isOpen()) {
+                em.close();
+            }
         }
     }
 
@@ -60,9 +74,17 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
         EntityManager em = emf.createEntityManager();
         try {
             Animal animal = em.find(Animal.class, id);
-            return animal != null ? new AnimalDTO(animal) : null;
+            if (animal == null) {
+                throw new JpaException(404, "Animal not found for ID: " + id);
+            }
+            return new AnimalDTO(animal);
+        } catch (PersistenceException e) {
+            logger.error("Error reading animal with ID {}: {}", id, e.getMessage(), e);
+            throw new JpaException(500, "Error reading animal from the database.");
         } finally {
-            em.close();
+            if (em.isOpen()) {
+                em.close();
+            }
         }
     }
 
@@ -72,8 +94,13 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
         try {
             TypedQuery<AnimalDTO> query = em.createQuery("SELECT new dat.dto.AnimalDTO(a) FROM Animal a", AnimalDTO.class);
             return query.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Error fetching all animals: {}", e.getMessage(), e);
+            throw new JpaException(500, "Error fetching animals from the database.");
         } finally {
-            em.close();
+            if (em.isOpen()) {
+                em.close();
+            }
         }
     }
 
@@ -85,26 +112,35 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
 
             // Find the existing animal by ID
             Animal animal = em.find(Animal.class, id);
-            if (animal != null) {
-                // Update the entity with the new DTO data
-                animal.updateFromDTO(animalDTO);
-
-                // Optionally, update the User relationship based on userId in DTO
-                if (!animal.getClient().getId().equals(animalDTO.getUserId())) {
-                    Client client = em.find(Client.class, animalDTO.getUserId());
-                    animal.setClient(client);
-                }
-
-                // Merge and commit the changes
-                Animal mergedAnimal = em.merge(animal);
-                em.getTransaction().commit();
-
-                return new AnimalDTO(mergedAnimal);
+            if (animal == null) {
+                throw new JpaException(404, "Animal not found for ID: " + id);
             }
 
-            return null;
+            // Update the entity with the new DTO data
+            animal.updateFromDTO(animalDTO);
+
+            // Optionally, update the Client relationship based on userId in DTO
+            if (!animal.getClient().getId().equals(animalDTO.getUserId())) {
+                Client client = em.find(Client.class, animalDTO.getUserId());
+                if (client == null) {
+                    throw new JpaException(400, "Client not found for userId: " + animalDTO.getUserId());
+                }
+                animal.setClient(client);
+            }
+
+            // Merge and commit the changes
+            Animal mergedAnimal = em.merge(animal);
+            em.getTransaction().commit();
+
+            return new AnimalDTO(mergedAnimal);
+        } catch (PersistenceException e) {
+            em.getTransaction().rollback();
+            logger.error("Error updating animal with ID {}: {}", id, e.getMessage(), e);
+            throw new JpaException(500, "Error updating animal in the database.");
         } finally {
-            em.close();
+            if (em.isOpen()) {
+                em.close();
+            }
         }
     }
 
@@ -114,12 +150,19 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
         try {
             em.getTransaction().begin();
             Animal animal = em.find(Animal.class, id);
-            if (animal != null) {
-                em.remove(animal);
+            if (animal == null) {
+                throw new JpaException(404, "Animal not found for ID: " + id);
             }
+            em.remove(animal);
             em.getTransaction().commit();
+        } catch (PersistenceException e) {
+            em.getTransaction().rollback();
+            logger.error("Error deleting animal with ID {}: {}", id, e.getMessage(), e);
+            throw new JpaException(500, "Error deleting animal from the database.");
         } finally {
-            em.close();
+            if (em.isOpen()) {
+                em.close();
+            }
         }
     }
 
@@ -129,8 +172,13 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
         try {
             Animal animal = em.find(Animal.class, id);
             return animal != null;
+        } catch (PersistenceException e) {
+            logger.error("Error validating animal primary key with ID {}: {}", id, e.getMessage(), e);
+            throw new JpaException(500, "Error validating animal primary key.");
         } finally {
-            em.close();
+            if (em.isOpen()) {
+                em.close();
+            }
         }
     }
 }

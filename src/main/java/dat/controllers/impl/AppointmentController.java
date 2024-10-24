@@ -4,6 +4,8 @@ import dat.config.HibernateConfig;
 import dat.controllers.IController;
 import dat.dao.impl.AppointmentDAO;
 import dat.dto.AppointmentDTO;
+import dat.exceptions.ApiException;
+import dat.exceptions.JpaException;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
@@ -32,18 +34,23 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
             AppointmentDTO appointmentDTO = dao.read(id);
 
             if (appointmentDTO != null) {
-                ctx.res().setStatus(200);
-                ctx.json(appointmentDTO, AppointmentDTO.class);
+                ctx.status(200);
+                ctx.json(appointmentDTO);
                 logger.info("Appointment with ID: {} found and returned", id);
             } else {
-                ctx.res().setStatus(404);
-                ctx.result("Appointment not found");
-                logger.warn("Appointment with ID: {} not found", id);
+                throw new ApiException(404, "Appointment not found");
             }
+        } catch (ApiException e) {
+            logger.warn("API Error: {}", e.getMessage(), e);
+            ctx.status(e.getStatusCode());
+            ctx.json(e.getMessageRecord());
+        } catch (JpaException e) {
+            logger.error("JPA Error: {}", e.getMessage(), e);
+            ctx.status(e.getStatusCode());
+            ctx.json(e.getMessageRecord());
         } catch (Exception e) {
-            logger.error("Error reading appointment with ID: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            logger.error("General Error: {}", e.getMessage(), e);
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -52,13 +59,15 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
         try {
             logger.info("Fetching all appointments");
             List<AppointmentDTO> appointmentDTOS = dao.readAll();
-            ctx.res().setStatus(200);
-            ctx.json(appointmentDTOS, AppointmentDTO.class);
+            ctx.status(200);
+            ctx.json(appointmentDTOS);
             logger.info("All appointments fetched successfully, count: {}", appointmentDTOS.size());
+        } catch (JpaException e) {
+            logger.error("JPA Error fetching appointments: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error fetching appointments from database");
         } catch (Exception e) {
             logger.error("Error fetching all appointments: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -68,13 +77,15 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
             AppointmentDTO jsonRequest = ctx.bodyAsClass(AppointmentDTO.class);
             logger.info("Creating new appointment: {}", jsonRequest);
             AppointmentDTO appointmentDTO = dao.create(jsonRequest);
-            ctx.res().setStatus(201);
-            ctx.json(appointmentDTO, AppointmentDTO.class);
+            ctx.status(201);
+            ctx.json(appointmentDTO);
             logger.info("Appointment created successfully with ID: {}", appointmentDTO.getId());
+        } catch (JpaException e) {
+            logger.error("JPA Error creating appointment: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error creating appointment in the database");
         } catch (Exception e) {
             logger.error("Error creating appointment: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -88,18 +99,18 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
             AppointmentDTO appointmentDTO = dao.update(id, validateEntity(ctx));
 
             if (appointmentDTO != null) {
-                ctx.res().setStatus(200);
-                ctx.json(appointmentDTO, AppointmentDTO.class);
+                ctx.status(200);
+                ctx.json(appointmentDTO);
                 logger.info("Appointment with ID: {} updated successfully", id);
             } else {
-                ctx.res().setStatus(404);
-                ctx.result("Appointment not found or update failed");
-                logger.warn("Appointment with ID: {} not found or update failed", id);
+                throw new ApiException(404, "Appointment not found or update failed");
             }
+        } catch (JpaException e) {
+            logger.error("JPA Error updating appointment: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error updating appointment in the database");
         } catch (Exception e) {
-            logger.error("Error updating appointment with ID: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            logger.error("Error updating appointment: {}", e.getMessage(), e);
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -111,12 +122,14 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
                     .get();
             logger.info("Deleting appointment with ID: {}", id);
             dao.delete(id);
-            ctx.res().setStatus(204);
+            ctx.status(204);
             logger.info("Appointment with ID: {} deleted successfully", id);
+        } catch (JpaException e) {
+            logger.error("JPA Error deleting appointment: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error deleting appointment from the database");
         } catch (Exception e) {
-            logger.error("Error deleting appointment with ID: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            logger.error("Error deleting appointment: {}", e.getMessage(), e);
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -125,12 +138,12 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
         try {
             boolean isValid = dao.validatePrimaryKey(id);
             if (!isValid) {
-                logger.warn("Invalid primary key: {}", id);
+                throw new ApiException(400, "Invalid primary key: " + id);
             }
             return isValid;
-        } catch (Exception e) {
-            logger.error("Error validating primary key: {}", e.getMessage(), e);
-            return false;
+        } catch (JpaException e) {
+            logger.error("JPA Error validating primary key: {}", e.getMessage(), e);
+            throw new ApiException(500, "Database error during primary key validation");
         }
     }
 
@@ -149,7 +162,7 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
             return appointmentDTO;
         } catch (Exception e) {
             logger.error("Error validating appointment entity: {}", e.getMessage(), e);
-            throw e;  // Let the exception bubble up to be handled in the calling method.
+            throw new ApiException(400, "Invalid appointment entity");
         }
     }
 }

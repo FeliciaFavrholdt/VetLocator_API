@@ -4,6 +4,8 @@ import dat.config.HibernateConfig;
 import dat.controllers.IController;
 import dat.dao.impl.ClinicDAO;
 import dat.dto.ClinicDTO;
+import dat.exceptions.ApiException;
+import dat.exceptions.JpaException;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
@@ -39,18 +41,23 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
             ClinicDTO clinicDTO = dao.read(id);
 
             if (clinicDTO != null) {
-                ctx.res().setStatus(200);
-                ctx.json(clinicDTO, ClinicDTO.class);
+                ctx.status(200);
+                ctx.json(clinicDTO);
                 logger.info("Clinic with ID: {} found and returned", id);
             } else {
-                ctx.res().setStatus(404);
-                ctx.result("Clinic not found");
-                logger.warn("Clinic with ID: {} not found", id);
+                throw new ApiException(404, "Clinic not found");
             }
+        } catch (ApiException e) {
+            logger.warn("API Error: {}", e.getMessage(), e);
+            ctx.status(e.getStatusCode());
+            ctx.json(e.getMessageRecord());
+        } catch (JpaException e) {
+            logger.error("JPA Error: {}", e.getMessage(), e);
+            ctx.status(e.getStatusCode());
+            ctx.json(e.getMessageRecord());
         } catch (Exception e) {
-            logger.error("Error reading clinic with ID: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            logger.error("General Error: {}", e.getMessage(), e);
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -59,13 +66,15 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
         try {
             logger.info("Fetching all clinics");
             List<ClinicDTO> clinicDTOS = dao.readAll();
-            ctx.res().setStatus(200);
-            ctx.json(clinicDTOS, ClinicDTO.class);
+            ctx.status(200);
+            ctx.json(clinicDTOS);
             logger.info("All clinics fetched successfully, count: {}", clinicDTOS.size());
+        } catch (JpaException e) {
+            logger.error("JPA Error fetching clinics: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error fetching clinics from database");
         } catch (Exception e) {
             logger.error("Error fetching all clinics: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -75,13 +84,15 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
             ClinicDTO jsonRequest = ctx.bodyAsClass(ClinicDTO.class);
             logger.info("Creating new clinic: {}", jsonRequest);
             ClinicDTO clinicDTO = dao.create(jsonRequest);
-            ctx.res().setStatus(201);
-            ctx.json(clinicDTO, ClinicDTO.class);
+            ctx.status(201);
+            ctx.json(clinicDTO);
             logger.info("Clinic created successfully with ID: {}", clinicDTO.getId());
+        } catch (JpaException e) {
+            logger.error("JPA Error creating clinic: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error creating clinic in the database");
         } catch (Exception e) {
             logger.error("Error creating clinic: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -95,18 +106,18 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
             ClinicDTO clinicDTO = dao.update(id, validateEntity(ctx));
 
             if (clinicDTO != null) {
-                ctx.res().setStatus(200);
-                ctx.json(clinicDTO, ClinicDTO.class);
+                ctx.status(200);
+                ctx.json(clinicDTO);
                 logger.info("Clinic with ID: {} updated successfully", id);
             } else {
-                ctx.res().setStatus(404);
-                ctx.result("Clinic not found or update failed");
-                logger.warn("Clinic with ID: {} not found or update failed", id);
+                throw new ApiException(404, "Clinic not found or update failed");
             }
+        } catch (JpaException e) {
+            logger.error("JPA Error updating clinic: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error updating clinic in the database");
         } catch (Exception e) {
-            logger.error("Error updating clinic with ID: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            logger.error("Error updating clinic: {}", e.getMessage(), e);
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -118,12 +129,14 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
                     .get();
             logger.info("Deleting clinic with ID: {}", id);
             dao.delete(id);
-            ctx.res().setStatus(204);
+            ctx.status(204);
             logger.info("Clinic with ID: {} deleted successfully", id);
+        } catch (JpaException e) {
+            logger.error("JPA Error deleting clinic: {}", e.getMessage(), e);
+            throw new ApiException(500, "Error deleting clinic from the database");
         } catch (Exception e) {
-            logger.error("Error deleting clinic with ID: {}", e.getMessage(), e);
-            ctx.res().setStatus(500);
-            ctx.result("Internal Server Error");
+            logger.error("Error deleting clinic: {}", e.getMessage(), e);
+            throw new ApiException(500, "Internal Server Error");
         }
     }
 
@@ -132,12 +145,12 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
         try {
             boolean isValid = dao.validatePrimaryKey(id);
             if (!isValid) {
-                logger.warn("Invalid primary key: {}", id);
+                throw new ApiException(400, "Invalid primary key: " + id);
             }
             return isValid;
-        } catch (Exception e) {
-            logger.error("Error validating primary key: {}", e.getMessage(), e);
-            return false;
+        } catch (JpaException e) {
+            logger.error("JPA Error validating primary key: {}", e.getMessage(), e);
+            throw new ApiException(500, "Database error during primary key validation");
         }
     }
 
@@ -157,7 +170,7 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
             return clinicDTO;
         } catch (Exception e) {
             logger.error("Error validating clinic entity: {}", e.getMessage(), e);
-            throw e;  // Let the exception bubble up to be handled in the calling method.
+            throw new ApiException(400, "Invalid clinic entity");
         }
     }
 }

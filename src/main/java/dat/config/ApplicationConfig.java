@@ -1,12 +1,11 @@
 package dat.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dat.controllers.impl.ExceptionController;
 import dat.routes.Routes;
 import dat.security.controllers.AccessController;
 import dat.security.controllers.SecurityController;
 import dat.security.enums.Role;
-import dat.security.exceptions.ApiException;
-import dat.exceptions.Message;
 import dat.security.routes.SecurityRoutes;
 import dat.utils.Utils;
 import io.javalin.Javalin;
@@ -21,6 +20,7 @@ public class ApplicationConfig {
     private static final ObjectMapper jsonMapper = new Utils().getObjectMapper();
     private static final SecurityController securityController = SecurityController.getInstance();
     private static final AccessController accessController = new AccessController();
+    private static final ExceptionController exceptionController = new ExceptionController();  // Use the ExceptionController
     private static final Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
     private static int count = 1;
 
@@ -50,9 +50,9 @@ public class ApplicationConfig {
         // Log after each request is handled
         app.after(ApplicationConfig::afterRequest);
 
-        // Global exception handlers
-        app.exception(Exception.class, ApplicationConfig::generalExceptionHandler);
-        app.exception(ApiException.class, ApplicationConfig::apiExceptionHandler);
+        // Global exception handlers delegated to ExceptionController
+        app.exception(Exception.class, exceptionController::exceptionHandler);
+        app.exception(dat.exceptions.ApiException.class, exceptionController::apiExceptionHandler);
 
         // Start the server
         app.start(port);
@@ -75,28 +75,5 @@ public class ApplicationConfig {
      */
     public static void stopServer(Javalin app) {
         app.stop();
-    }
-
-    /**
-     * General exception handler for uncaught exceptions.
-     * @param e The caught exception.
-     * @param ctx The context of the HTTP request.
-     */
-    private static void generalExceptionHandler(Exception e, Context ctx) {
-        logger.error("An unhandled exception occurred: {}", e.getMessage(), e);
-        // Set response status to 500 and return a new Message record
-        ctx.status(500);
-        ctx.json(new Message(500, "Internal Server Error: " + e.getMessage()));
-    }
-
-    /**
-     * Exception handler for API-specific exceptions.
-     * @param e The API exception.
-     * @param ctx The context of the HTTP request.
-     */
-    public static void apiExceptionHandler(ApiException e, Context ctx) {
-        ctx.status(e.getCode());
-        logger.warn("API Exception occurred: Code: {}, Message: {}", e.getCode(), e.getMessage());
-        ctx.json(new Message(e.getCode(), e.getMessage()));
     }
 }
