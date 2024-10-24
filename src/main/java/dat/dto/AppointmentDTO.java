@@ -1,6 +1,10 @@
 package dat.dto;
 
+import dat.enums.AppointmentStatus;
 import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 @Builder
@@ -8,19 +12,19 @@ import lombok.*;
 @AllArgsConstructor
 public class AppointmentDTO {
 
-    private Integer id;          // Unique identifier
+    private Integer id;           // Unique identifier for the appointment
 
-    private String date;       // Date of the appointment
-    private String time;       // Time of the appointment
-    private String reason;     // Reason for the appointment
-    private String status;     // Status of the appointment
+    private LocalDate date;       // Date of the appointment
+    private LocalTime time;       // Time of the appointment
+    private String reason;        // Reason for the appointment
+    private AppointmentStatus status;  // Status of the appointment (enum)
 
-    private Long veterinarianId;  // Veterinarian assigned to the appointment
-    private String veterinarianName;  // Veterinarian name (optional)
+    private Integer veterinarianId;    // ID of the veterinarian (Clinic entity in this case)
+    private String veterinarianName;   // Veterinarian's name (optional for display purposes)
 
-    private Long userId;     // Person who made the appointment
-    private String userName; // Person name (optional)
+    private Integer clientId;      // ID of the client who made the appointment
+    private String clientName;     // Client's name (optional for display purposes)
 
-    private Long animalId;     // Pet that the appointment is for
-    private String animalName; // Pet name (optional)
+    private Integer animalId;      // ID of the pet associated with the appointment
+    private String animalName;     // Pet's name (optional for display purposes)
 }

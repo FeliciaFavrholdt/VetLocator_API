@@ -1,7 +1,7 @@
 package dat.daos;
 
 import dat.config.HibernateConfig;
-import dat.dao.impl.UserDAO;
+import dat.dao.impl.ClientDAO;
 import dat.dto.ClientDTO;
 import dat.entities.Client;
 import dat.enums.Gender;
@@ -17,7 +17,7 @@ public class ClientDAOTest {
 
     private EntityManagerFactory emf;
     private EntityManager em;
-    private UserDAO userDao;
+    private ClientDAO userDao;
     private int testClientId;
 
     @BeforeEach
@@ -25,7 +25,7 @@ public class ClientDAOTest {
         // Initialize the EntityManagerFactory for test purposes
         emf = HibernateConfig.getEntityManagerFactoryForTest();
         em = emf.createEntityManager();
-        userDao = UserDAO.getInstance(emf);
+        userDao = ClientDAO.getInstance(emf);
 
         // Begin transaction
         em.getTransaction().begin();
