@@ -1,10 +1,10 @@
 package dat.exceptions;
 
-public class ApiException extends RuntimeException {
+public class JpaException extends RuntimeException {
 
     private final Message messageRecord;
 
-    public ApiException(int statusCode, String message) {
+    public JpaException(int statusCode, String message) {
         super(message);
         this.messageRecord = new Message(statusCode, message);  // Use Message record
     }
