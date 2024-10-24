@@ -5,6 +5,7 @@ import dat.dao.impl.ClinicDAO;
 import dat.dto.ClinicDTO;
 import dat.entities.City;
 import dat.entities.Clinic;
+import dat.enums.Specialization;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterEach;
@@ -36,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
             // Create and persist a City entity
             City city = new City();
             city.setCityName("Test City");
-            city.setPostalCode("12345");
+            city.setPostalCode(12345);
             em.persist(city);  // Persist the city to the test database
             testCityId = city.getId();  // Store the city ID for testing
 
@@ -44,7 +45,10 @@ import static org.junit.jupiter.api.Assertions.*;
             Clinic clinic = new Clinic();
             clinic.setClinicName("Test Clinic");
             clinic.setAddress("123 Test St");
-            clinic.setCity(city);  // Set the city for this clinic
+            clinic.setEmail("Clinic@clinic.com");
+            clinic.setPhone("+45 29 83 45 12");
+            clinic.setSpecialization(Specialization.CAT);
+            clinic.setPostalCode(city.getPostalCode());  // Set the city for this clinic
             em.persist(clinic);  // Persist the clinic to the test database
             em.getTransaction().commit();
 
@@ -58,7 +62,10 @@ import static org.junit.jupiter.api.Assertions.*;
             clinicDTO.setClinicName("New Clinic");
             clinicDTO.setAddress("456 New St");
             clinicDTO.setCityName("Test City");
-            clinicDTO.setPostalCode("12345");
+            clinicDTO.setPostalCode(12345);
+            clinicDTO.setEmail("newClinic@clinic.com");
+            clinicDTO.setSpecialization(Specialization.CAT);
+            clinicDTO.setPhone("+45 12 34 56 78");
 
             // Use the create method to add a new clinic
             ClinicDTO createdClinic = clinicDao.create(clinicDTO);
@@ -70,7 +77,7 @@ import static org.junit.jupiter.api.Assertions.*;
             assertEquals("New Clinic", createdClinic.getClinicName());
             assertEquals("456 New St", createdClinic.getAddress());
             assertEquals("Test City", createdClinic.getCityName());
-            assertEquals("12345", createdClinic.getPostalCode());
+            assertEquals(12345, createdClinic.getPostalCode());
         }
 
         @Test
@@ -85,7 +92,7 @@ import static org.junit.jupiter.api.Assertions.*;
             assertEquals("Test Clinic", clinicDTO.getClinicName());
             assertEquals("123 Test St", clinicDTO.getAddress());
             assertEquals("Test City", clinicDTO.getCityName());
-            assertEquals("12345", clinicDTO.getPostalCode());
+            assertEquals(12345, clinicDTO.getPostalCode());
         }
 
         @Test
@@ -109,7 +116,7 @@ import static org.junit.jupiter.api.Assertions.*;
             updatedClinicDTO.setClinicName("Updated Clinic");
             updatedClinicDTO.setAddress("789 Updated St");
             updatedClinicDTO.setCityName("Test City");
-            updatedClinicDTO.setPostalCode("12345");
+            updatedClinicDTO.setPostalCode(12345);
 
             // Use the update method to update the clinic
             ClinicDTO updatedClinic = clinicDao.update(testClinicId, updatedClinicDTO);
@@ -121,7 +128,7 @@ import static org.junit.jupiter.api.Assertions.*;
             assertEquals("Updated Clinic", updatedClinic.getClinicName());
             assertEquals("789 Updated St", updatedClinic.getAddress());
             assertEquals("Test City", updatedClinic.getCityName());
-            assertEquals("12345", updatedClinic.getPostalCode());
+            assertEquals(12345, updatedClinic.getPostalCode());
         }
 
         @Test

@@ -8,9 +8,7 @@ import dat.entities.Client;
 import dat.enums.Gender;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.List;
 
@@ -18,17 +16,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AnimalDAOTest {
 
-    private EntityManagerFactory emf;
-    private EntityManager em;
+    private static EntityManagerFactory emf;
+    private static EntityManager em;
     private AnimalDAO animalDao;
     private int testAnimalId;
     private int testClientId;
 
+    @BeforeAll
+    public static void setUpClass() {
+        // Initialize the EntityManagerFactory for the entire test class
+        emf = HibernateConfig.getEntityManagerFactoryForTest();
+    }
+
 
     @BeforeEach
     public void setUp() {
-        // Initialize the EntityManagerFactory for test purposes
-        emf = HibernateConfig.getEntityManagerFactoryForTest();
         em = emf.createEntityManager();
         animalDao = new AnimalDAO(emf);
 
@@ -37,7 +39,7 @@ public class AnimalDAOTest {
 
         // Create and persist a Client entity
         Client client = new Client();
-        client.setUsername("Test Client");
+        client.setUsername("Test Client" + System.currentTimeMillis());
         client.setEmail("testclient@example.com");
         client.setPassword("testpassword");
         client.setFirstName("Test Firstname");
@@ -202,8 +204,9 @@ public class AnimalDAOTest {
         em.close();
     }
 
-    @AfterEach
-    public void tearDown() {
+
+    @AfterAll
+    public static void tearDown() {
         if (em != null) {
             em.close();  // Close the EntityManager
         }
