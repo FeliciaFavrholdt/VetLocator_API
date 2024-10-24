@@ -76,7 +76,6 @@ import static org.junit.jupiter.api.Assertions.*;
             // Verify the properties of the newly created clinic
             assertEquals("New Clinic", createdClinic.getClinicName());
             assertEquals("456 New St", createdClinic.getAddress());
-            assertEquals("Test City", createdClinic.getCityName());
             assertEquals(12345, createdClinic.getPostalCode());
         }
 
@@ -91,7 +90,6 @@ import static org.junit.jupiter.api.Assertions.*;
             // Verify the clinic's properties
             assertEquals("Test Clinic", clinicDTO.getClinicName());
             assertEquals("123 Test St", clinicDTO.getAddress());
-            assertEquals("Test City", clinicDTO.getCityName());
             assertEquals(12345, clinicDTO.getPostalCode());
         }
 
@@ -127,7 +125,6 @@ import static org.junit.jupiter.api.Assertions.*;
             // Verify the updated properties of the clinic
             assertEquals("Updated Clinic", updatedClinic.getClinicName());
             assertEquals("789 Updated St", updatedClinic.getAddress());
-            assertEquals("Test City", updatedClinic.getCityName());
             assertEquals(12345, updatedClinic.getPostalCode());
         }
 

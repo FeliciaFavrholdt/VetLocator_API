@@ -31,6 +31,7 @@ public class AnimalDAOTest {
 
     @BeforeEach
     public void setUp() {
+
         em = emf.createEntityManager();
         animalDao = new AnimalDAO(emf);
 
@@ -62,6 +63,8 @@ public class AnimalDAOTest {
         testAnimalId = animal.getId();  // Store the generated ID for testing
         testClientId = client.getId();  // Store the generated ID for testing
     }
+
+
 
     @Test
     void getAll() {
@@ -205,13 +208,13 @@ public class AnimalDAOTest {
     }
 
 
-    @AfterAll
-    public static void tearDown() {
+    @AfterEach
+    public void tearDown() {
         if (em != null) {
-            em.close();  // Close the EntityManager
-        }
-        if (emf != null) {
-            emf.close();  // Close the EntityManagerFactory
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();  // Rollback to undo changes
+            }
+            em.close();
         }
     }
 
