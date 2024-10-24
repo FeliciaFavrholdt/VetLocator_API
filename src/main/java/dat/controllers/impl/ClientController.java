@@ -3,6 +3,7 @@ package dat.controllers.impl;
 import dat.config.HibernateConfig;
 import dat.controllers.IController;
 import dat.dao.impl.ClientDAO;  // Use ClientDAO, not UserDAO
+import dat.dto.ClientCreateDTO;
 import dat.dto.ClientDTO;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
@@ -41,7 +42,7 @@ public class ClientController implements IController<ClientDTO, Integer> {
 
     @Override
     public void create(@NotNull Context ctx) {
-        ClientDTO jsonRequest = ctx.bodyAsClass(ClientDTO.class);
+        ClientCreateDTO jsonRequest = ctx.bodyAsClass(ClientCreateDTO.class);
         ClientDTO clientDTO = dao.create(jsonRequest);
         ctx.res().setStatus(201);
         ctx.json(clientDTO, ClientDTO.class);

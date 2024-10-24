@@ -21,6 +21,7 @@ public class ClientCreateDTO {
     private String email;
     private String phone;
     private Gender gender;
+    private String username;    // Include username only for creation
     private String password;    // Include password only for creation
 
     // Optionally you can include the animals if needed during creation
@@ -33,6 +34,7 @@ public class ClientCreateDTO {
         this.email = client.getEmail();
         this.phone = client.getPhone();
         this.gender = client.getGender();
+        this.username = client.getUsername();
         if (client.getAnimals() != null) {
             this.animals = client.getAnimals().stream()
                     .map(AnimalDTO::new)

@@ -39,6 +39,7 @@ public class ClientDAO implements IDAO<ClientDTO, Integer> {
             client.setEmail(clientDTO.getEmail());
             client.setPhone(clientDTO.getPhone());
             client.setGender(clientDTO.getGender());
+            client.setUsername(clientDTO.getUsername());
             client.setPassword(hashPassword(clientDTO.getPassword()));  // Hash the password before storing
 
             em.persist(client);
@@ -72,6 +73,25 @@ public class ClientDAO implements IDAO<ClientDTO, Integer> {
         try {
             TypedQuery<ClientDTO> query = em.createQuery("SELECT new dat.dto.ClientDTO(u) FROM Client u", ClientDTO.class);
             return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public ClientDTO create(ClientDTO clientDTO) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // Handle creation using ClientDTO (perhaps without password handling)
+            Client client = new Client();
+            client.setFirstName(clientDTO.getFullName());
+            client.setEmail(clientDTO.getEmail());
+            client.setPhone(clientDTO.getPhone());
+            client.setGender(clientDTO.getGender());
+            em.persist(client);
+            em.getTransaction().commit();
+            return new ClientDTO(client);
         } finally {
             em.close();
         }
