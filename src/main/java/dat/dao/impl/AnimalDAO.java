@@ -18,6 +18,11 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
     private static AnimalDAO instance;
     private static EntityManagerFactory emf;
 
+
+    public AnimalDAO(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+
     public static AnimalDAO getInstance(EntityManagerFactory _emf) {
         if (instance == null) {
             emf = _emf;
