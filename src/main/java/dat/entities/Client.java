@@ -92,6 +92,7 @@ public class Client {
         this.lastName = dto.getFullName().split(" ")[1];
         this.email = dto.getEmail();
         this.phone = dto.getPhone();
+        this.gender = dto.getGender();
         if (dto.getAnimals() != null) {
             this.animals = dto.getAnimals().stream().map(Animal::new).collect(Collectors.toSet());
             this.animals.forEach(animal -> animal.setClient(this));  // Ensure bidirectional association

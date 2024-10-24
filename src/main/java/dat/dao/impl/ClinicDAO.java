@@ -4,6 +4,7 @@ import dat.dao.IDAO;
 import dat.dto.ClinicDTO;
 import dat.entities.Clinic;
 import dat.entities.City;
+import dat.exceptions.ApiException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
@@ -66,28 +67,45 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
 
     @Override
     public ClinicDTO update(Integer id, ClinicDTO clinicDTO) {
+
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
 
             // Find the existing Clinic by ID
             Clinic clinic = em.find(Clinic.class, id);
             if (clinic != null) {
-                // Find the city based on cityName and postalCode in ClinicDTO
-                TypedQuery<City> cityQuery = em.createQuery("SELECT c FROM City c WHERE c.cityName = :cityName AND c.postalCode = :postalCode", City.class);
-                cityQuery.setParameter("cityName", clinicDTO.getCityName());
-                cityQuery.setParameter("postalCode", clinicDTO.getPostalCode());
-                City city = cityQuery.getSingleResult();
+                // Update fields only if they are provided (not null)
+                if (clinicDTO.getClinicName() != null) {
+                    clinic.setClinicName(clinicDTO.getClinicName());
+                }
+                if (clinicDTO.getAddress() != null) {
+                    clinic.setAddress(clinicDTO.getAddress());
+                }
+                if (clinicDTO.getEmail() != null) {
+                    clinic.setEmail(clinicDTO.getEmail());
+                }
+                if (clinicDTO.getPhone() != null) {
+                    clinic.setPhone(clinicDTO.getPhone());
+                }
+                if (clinicDTO.getSpecialization() != null) {
+                    clinic.setSpecialization(clinicDTO.getSpecialization());
+                }
+                if (clinicDTO.getPostalCode() != 0000) {
+                    clinic.setPostalCode(clinicDTO.getPostalCode());
+                }
 
-                // Update the Clinic entity with the new DTO data
-                clinic.updateFromDTO(clinicDTO, city);
-
-                // Merge the updated entity and commit
+                // Merge and commit the changes
                 Clinic mergedClinic = em.merge(clinic);
                 em.getTransaction().commit();
 
                 return new ClinicDTO(mergedClinic);
             }
-            return null;
+            return null;  // Clinic not found
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+
         }
     }
 
