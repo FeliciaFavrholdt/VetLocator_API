@@ -1,12 +1,12 @@
 package dat.routes;
 
-import dat.controllers.impl.UserController;
+import dat.controllers.impl.ClientController;
 import io.javalin.apibuilder.EndpointGroup;
 import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class UserRoutes {
 
-    private final UserController userController = new UserController();
+    private final ClientController userController = new ClientController();
 
     protected EndpointGroup getRoutes() {
         return () -> {

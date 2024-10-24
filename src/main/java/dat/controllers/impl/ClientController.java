@@ -10,11 +10,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class UserController implements IController<ClientDTO, Integer> {
+public class ClientController implements IController<ClientDTO, Integer> {
 
     private final UserDAO dao;
 
-    public UserController() {
+    public ClientController() {
         EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
         this.dao = UserDAO.getInstance(emf);
     }
