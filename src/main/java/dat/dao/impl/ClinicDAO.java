@@ -111,4 +111,15 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
             return clinic != null;
         }
     }
+
+    //method to get opening hours of a clinic using typed query
+    public String getOpeningHoursByClinic(Integer id) {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<String> query = em.createQuery("SELECT c.openingHours FROM Clinic c WHERE c.id = :id", String.class);
+            query.setParameter("id", id);
+            return query.getSingleResult();
+        }
+    }
+
+
 }

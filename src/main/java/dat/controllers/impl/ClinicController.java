@@ -34,7 +34,7 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
             ctx.res().setStatus(200);
             ctx.json(clinicDTO, ClinicDTO.class);
         } else {
-           // ctx.res().setStatus(404).json("{ \"message\": \"Clinic not found\" }");
+            // ctx.res().setStatus(404).json("{ \"message\": \"Clinic not found\" }");
         }
     }
 

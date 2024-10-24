@@ -11,9 +11,9 @@ public class AnimalRoutes {
 
     protected EndpointGroup getRoutes() {
         return () -> {
-            post("/", animalController::create, Role.USER);          // Create a new animal
             get("/", animalController::readAll, Role.ANYONE);          // Retrieve all animals
             get("/{id}", animalController::read, Role.ANYONE);         // Retrieve specific animal by id
+            post("/", animalController::create, Role.USER);          // Create a new animal
             put("/{id}", animalController::update, Role.USER);       // Update animal details
             delete("/{id}", animalController::delete, Role.USER);    // Delete specific animal
         };

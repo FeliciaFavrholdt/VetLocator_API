@@ -31,3 +31,4 @@ public class ClinicDTO {
         this.postalCode = clinic.getPostalCode();
     }
 }
+

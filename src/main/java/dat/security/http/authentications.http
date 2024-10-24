@@ -23,12 +23,17 @@ POST {{url}}/auth/login/
 %}
 
 ###
-GET {{url}}/protected/user_demo/
+GET {{url}}/protected/user/
 Accept: application/json
 Authorization: Bearer {{jwt_token}}
 
 ###
-GET {{url}}/protected/admin_demo/
+GET {{url}}/protected/admin/
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+###
+GET {{url}}/protected/vet/
 Accept: application/json
 Authorization: Bearer {{jwt_token}}
 

@@ -11,15 +11,19 @@ public class ClinicRoutes {
     protected EndpointGroup getRoutes() {
         return () -> {
             get("/", clinicController::readAll);              // Retrieve all clinics
-//            get("/veterinarians", clinicController::readAllVets); // Retrieve all veterinarians
             get("/{id}", clinicController::read);             // Retrieve specific clinic by id
-//            get("/openinghours", clinicController::readOpeningHours); // Retrieve clinic opening hours
             post("/{id}", clinicController::create);           // Create a new clinic
-//            post("/veterinarians/{id}", clinicController::createVet); // Create a new veterinarian
-//            post("/{id}/openinghours", clinicController::addOpeningHours); // Add opening hours to a clinic
             put("/{id}", clinicController::update);            // Update clinic details
-//            delete("/veterinarians/{id}", clinicController::deleteVet); // Delete specific veterinarian
             delete("/{id}", clinicController::delete);         // Delete specific clinic
+
+            //opening hours
+            get("/{id}/openinghours", clinicController::addOpeningHours); // Add clinic opening hours
+            post("/{id}/openinghours", clinicController::createOpeningHours); // Add clinic opening hours
+
+//       // Veterinarian routes
+//            get("/veterinarians", veterinarianController::readAll); // Retrieve all veterinarians
+//            post("/veterinarians/{id}", veterinarianController::create); // Create a new veterinarian
+//            delete("/veterinarians/{id}", veterinarianController::delete); // Delete specific veterinarian
         };
     }
 }
