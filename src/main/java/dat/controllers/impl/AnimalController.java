@@ -67,7 +67,8 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
         return ctx.bodyValidator(AnimalDTO.class)
                 .check(a -> a.getName() != null && !a.getName().isEmpty(), "Animal name must be set")
                 .check(a -> a.getSpecies() != null && !a.getSpecies().isEmpty(), "Animal species must be set")
-                .check(a -> a.getAge() != null, "Animal age must be set")
+                .check(a -> a.getAge() >= 0, "Animal age must be a non-negative number")  // Check that age is valid
                 .get();
     }
+
 }

@@ -3,14 +3,16 @@ package dat.dao.impl;
 import dat.dao.IDAO;
 import dat.dto.ClinicDTO;
 import dat.entities.Clinic;
+import dat.entities.City;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
 
     private static ClinicDAO instance;
@@ -28,9 +30,20 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
     public ClinicDTO create(ClinicDTO clinicDTO) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            Clinic clinic = new Clinic(clinicDTO);
+
+            // Find City based on cityName and postalCode from ClinicDTO
+            TypedQuery<City> cityQuery = em.createQuery("SELECT c FROM City c WHERE c.cityName = :cityName AND c.postalCode = :postalCode", City.class);
+            cityQuery.setParameter("cityName", clinicDTO.getCityName());
+            cityQuery.setParameter("postalCode", clinicDTO.getPostalCode());
+            City city = cityQuery.getSingleResult();
+
+            // Convert DTO to Clinic entity and set the city
+            Clinic clinic = new Clinic(clinicDTO, city);
+
             em.persist(clinic);
             em.getTransaction().commit();
+
+            // Return the persisted Clinic entity as a DTO
             return new ClinicDTO(clinic);
         }
     }
@@ -55,11 +68,23 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
     public ClinicDTO update(Integer id, ClinicDTO clinicDTO) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
+
+            // Find the existing Clinic by ID
             Clinic clinic = em.find(Clinic.class, id);
             if (clinic != null) {
-                clinic.updateFromDTO(clinicDTO);
+                // Find the city based on cityName and postalCode in ClinicDTO
+                TypedQuery<City> cityQuery = em.createQuery("SELECT c FROM City c WHERE c.cityName = :cityName AND c.postalCode = :postalCode", City.class);
+                cityQuery.setParameter("cityName", clinicDTO.getCityName());
+                cityQuery.setParameter("postalCode", clinicDTO.getPostalCode());
+                City city = cityQuery.getSingleResult();
+
+                // Update the Clinic entity with the new DTO data
+                clinic.updateFromDTO(clinicDTO, city);
+
+                // Merge the updated entity and commit
                 Clinic mergedClinic = em.merge(clinic);
                 em.getTransaction().commit();
+
                 return new ClinicDTO(mergedClinic);
             }
             return null;

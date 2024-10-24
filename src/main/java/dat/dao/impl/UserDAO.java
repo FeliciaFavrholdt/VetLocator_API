@@ -1,20 +1,21 @@
 package dat.dao.impl;
 
 import dat.dao.IDAO;
-import dat.dto.UserDTO;
-import dat.entities.User;
+import dat.dto.ClientDTO;
+import dat.entities.Client;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public class UserDAO implements IDAO<UserDTO, Integer> {
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+public class UserDAO implements IDAO<ClientDTO, Integer> {
 
-    private static UserDAO instance;
-    private static EntityManagerFactory emf;
+    public static UserDAO instance;
+    public static EntityManagerFactory emf;
 
     public static UserDAO getInstance(EntityManagerFactory _emf) {
         if (instance == null) {
@@ -25,64 +26,85 @@ public class UserDAO implements IDAO<UserDTO, Integer> {
     }
 
     @Override
-    public UserDTO create(UserDTO userDTO) {
-        try (EntityManager em = emf.createEntityManager()) {
+    public ClientDTO create(ClientDTO clientDTO) {
+        EntityManager em = emf.createEntityManager();
+        try {
             em.getTransaction().begin();
-            User user = new User(userDTO);
-            em.persist(user);
+            // Convert DTO to User entity
+            Client client = new Client(clientDTO);
+            em.persist(client);
             em.getTransaction().commit();
-            return new UserDTO(user);
+            // Return the persisted entity as a DTO
+            return new ClientDTO(client);
+        } finally {
+            em.close();
         }
     }
 
     @Override
-    public UserDTO read(Integer id) {
-        try (EntityManager em = emf.createEntityManager()) {
-            User user = em.find(User.class, id);
-            return user != null ? new UserDTO(user) : null;
+    public ClientDTO read(Integer id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Client client = em.find(Client.class, id);
+            return client != null ? new ClientDTO(client) : null;
+        } finally {
+            em.close();
         }
     }
 
     @Override
-    public List<UserDTO> readAll() {
-        try (EntityManager em = emf.createEntityManager()) {
-            TypedQuery<UserDTO> query = em.createQuery("SELECT new dat.dto.UserDTO(u) FROM User u", UserDTO.class);
+    public List<ClientDTO> readAll() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<ClientDTO> query = em.createQuery("SELECT new dat.dto.ClientDTO(u) FROM Client u", ClientDTO.class);
             return query.getResultList();
+        } finally {
+            em.close();
         }
     }
 
     @Override
-    public UserDTO update(Integer id, UserDTO userDTO) {
-        try (EntityManager em = emf.createEntityManager()) {
+    public ClientDTO update(Integer id, ClientDTO clientDTO) {
+        EntityManager em = emf.createEntityManager();
+        try {
             em.getTransaction().begin();
-            User user = em.find(User.class, id);
-            if (user != null) {
-                user.updateFromDTO(userDTO);
-                User mergedUser = em.merge(user);
+            Client client = em.find(Client.class, id);
+            if (client != null) {
+                // Update the entity with the new DTO data
+                client.updateFromDTO(clientDTO);
+                Client mergedClient = em.merge(client);
                 em.getTransaction().commit();
-                return new UserDTO(mergedUser);
+                return new ClientDTO(mergedClient);
             }
             return null;
+        } finally {
+            em.close();
         }
     }
 
     @Override
     public void delete(Integer id) {
-        try (EntityManager em = emf.createEntityManager()) {
+        EntityManager em = emf.createEntityManager();
+        try {
             em.getTransaction().begin();
-            User user = em.find(User.class, id);
-            if (user != null) {
-                em.remove(user);
+            Client client = em.find(Client.class, id);
+            if (client != null) {
+                em.remove(client);
             }
             em.getTransaction().commit();
+        } finally {
+            em.close();
         }
     }
 
     @Override
     public boolean validatePrimaryKey(Integer id) {
-        try (EntityManager em = emf.createEntityManager()) {
-            User user = em.find(User.class, id);
-            return user != null;
+        EntityManager em = emf.createEntityManager();
+        try {
+            Client client = em.find(Client.class, id);
+            return client != null;
+        } finally {
+            em.close();
         }
     }
 }

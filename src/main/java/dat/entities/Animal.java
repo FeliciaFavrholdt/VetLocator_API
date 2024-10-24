@@ -1,5 +1,6 @@
 package dat.entities;
 
+import dat.dto.AnimalDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -7,18 +8,19 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "user")  // Avoid recursive toString calls
+@ToString(exclude = "clients")  // Avoid recursive toString calls
 @Table(name = "animals")
 public class Animal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+    private Integer id;
 
     @Column(name = "name", nullable = false, length = 50)
     @NotBlank(message = "Name cannot be blank")
@@ -36,6 +38,28 @@ public class Animal {
 
     // Many-to-One relationship with User (owner)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)  // Foreign key to the User table
-    private User user;
+    @JoinColumn(name = "user_id", nullable = false)
+    private Client client;
+
+    // Constructor to create an Animal from AnimalDTO
+    public Animal(AnimalDTO dto) {
+        this.id = dto.getId();
+        this.name = dto.getName();
+        this.species = dto.getSpecies();
+        this.age = dto.getAge();
+        // clients will be set after fetching from the database
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+        if (!client.getAnimals().contains(this)) {
+            client.getAnimals().add(this);  // Add this animal to the clients set of animals if it's not already present
+        }
+    }
+
+    public void updateFromDTO(AnimalDTO dto) {
+        this.name = dto.getName();
+        this.species = dto.getSpecies();
+        this.age = dto.getAge();
+    }
 }

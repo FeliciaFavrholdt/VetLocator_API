@@ -15,7 +15,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "users")
-@NamedQueries(@NamedQuery(name = "User.deleteAllRows", query = "DELETE from User"))
+@NamedQueries(@NamedQuery(name = "User.deleteAllRows", query = "DELETE from Client"))
 @Getter
 @Setter
 @NoArgsConstructor

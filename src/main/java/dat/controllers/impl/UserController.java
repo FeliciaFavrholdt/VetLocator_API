@@ -3,14 +3,14 @@ package dat.controllers.impl;
 import dat.config.HibernateConfig;
 import dat.controllers.IController;
 import dat.dao.impl.UserDAO;
-import dat.dto.UserDTO;
+import dat.dto.ClientDTO;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class UserController implements IController<UserDTO, Integer> {
+public class UserController implements IController<ClientDTO, Integer> {
 
     private final UserDAO dao;
 
@@ -22,32 +22,32 @@ public class UserController implements IController<UserDTO, Integer> {
     @Override
     public void read(@NotNull Context ctx) {
         int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
-        UserDTO userDTO = dao.read(id);
+        ClientDTO clientDTO = dao.read(id);
         ctx.res().setStatus(200);
-        ctx.json(userDTO, UserDTO.class);
+        ctx.json(clientDTO, ClientDTO.class);
     }
 
     @Override
     public void readAll(@NotNull Context ctx) {
-        List<UserDTO> userDTOS = dao.readAll();
+        List<ClientDTO> clientDTOS = dao.readAll();
         ctx.res().setStatus(200);
-        ctx.json(userDTOS, UserDTO.class);
+        ctx.json(clientDTOS, ClientDTO.class);
     }
 
     @Override
     public void create(@NotNull Context ctx) {
-        UserDTO jsonRequest = ctx.bodyAsClass(UserDTO.class);
-        UserDTO userDTO = dao.create(jsonRequest);
+        ClientDTO jsonRequest = ctx.bodyAsClass(ClientDTO.class);
+        ClientDTO clientDTO = dao.create(jsonRequest);
         ctx.res().setStatus(201);
-        ctx.json(userDTO, UserDTO.class);
+        ctx.json(clientDTO, ClientDTO.class);
     }
 
     @Override
     public void update(@NotNull Context ctx) {
         int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
-        UserDTO userDTO = dao.update(id, validateEntity(ctx));
+        ClientDTO clientDTO = dao.update(id, validateEntity(ctx));
         ctx.res().setStatus(200);
-        ctx.json(userDTO, UserDTO.class);
+        ctx.json(clientDTO, ClientDTO.class);
     }
 
     @Override
@@ -63,8 +63,8 @@ public class UserController implements IController<UserDTO, Integer> {
     }
 
     @Override
-    public UserDTO validateEntity(@NotNull Context ctx) {
-        return ctx.bodyValidator(UserDTO.class)
+    public ClientDTO validateEntity(@NotNull Context ctx) {
+        return ctx.bodyValidator(ClientDTO.class)
                 .check(u -> u.getFullName() != null && !u.getFullName().isEmpty(), "User full name must be set")
                 .check(u -> u.getEmail() != null && !u.getEmail().isEmpty(), "User email must be set")
                 .check(u -> u.getPhone() != null, "User phone must be set")

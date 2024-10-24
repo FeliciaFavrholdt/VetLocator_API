@@ -4,11 +4,11 @@ GET {{url}}/auth/test/
 ### Populate the database with some data
 GET {{url}}/hotels/populate/
 
-### Create a new user - this one will only get a USER role by default
+### Create a new client - this one will only get a USER role by default
 POST {{url}}/auth/register/
 
 {
-    "username": "user",
+    "username": "client",
     "password": "test123"
 }
 
@@ -16,7 +16,7 @@ POST {{url}}/auth/register/
 POST {{url}}/auth/login/
 
 {
-    "username": "user",
+    "username": "client",
     "password": "test123"
 }
 
@@ -35,8 +35,8 @@ GET {{url}}/protected/admin_demo/
 Accept: application/json
 Authorization: Bearer {{jwt_token}}
 
-### Add admin role to user
-POST {{url}}/auth/user/addrole/
+### Add admin role to client
+POST {{url}}/auth/client/addrole/
 Accept: application/json
 Authorization: Bearer {{jwt_token}}
 

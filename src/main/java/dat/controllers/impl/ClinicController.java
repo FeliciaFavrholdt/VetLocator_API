@@ -28,7 +28,7 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
 
     @Override
     public void read(@NotNull Context ctx) {
-        int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
+        Integer id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         ClinicDTO clinicDTO = dao.read(id);
         if (clinicDTO != null) {
             ctx.res().setStatus(200);
@@ -55,7 +55,7 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
 
     @Override
     public void update(@NotNull Context ctx) {
-        int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
+        Integer id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         ClinicDTO clinicDTO = dao.update(id, validateEntity(ctx));
         if (clinicDTO != null) {
             ctx.res().setStatus(200);
@@ -86,7 +86,7 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
                 .check(c -> c.getEmail() != null && !c.getEmail().isEmpty(), "Email must be set")
                 .check(c -> c.getAddress() != null && !c.getAddress().isEmpty(), "Clinic address must be set")
                 .check(c -> c.getCityName() != null && !c.getCityName().isEmpty(), "City name must be set")
-                .check(c -> c.getPostalCode() != null && !c.getPostalCode().isEmpty(), "Postal code must be set")
+                .check(c -> c.getPostalCode() > 0, "Postal code must be set and greater than zero")
                 .get();
     }
 }

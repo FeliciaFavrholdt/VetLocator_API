@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 public class AppointmentDTO {
 
-    private Long id;          // Unique identifier
+    private Integer id;          // Unique identifier
 
     private String date;       // Date of the appointment
     private String time;       // Time of the appointment
