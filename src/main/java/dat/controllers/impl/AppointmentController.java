@@ -67,7 +67,7 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
             throw new ApiException(500, "Error fetching appointments from database");
         } catch (Exception e) {
             logger.error("Error fetching all appointments: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
@@ -85,7 +85,7 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
             throw new ApiException(500, "Error creating appointment in the database");
         } catch (Exception e) {
             logger.error("Error creating appointment: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
@@ -110,7 +110,7 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
             throw new ApiException(500, "Error updating appointment in the database");
         } catch (Exception e) {
             logger.error("Error updating appointment: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
@@ -129,7 +129,7 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
             throw new ApiException(500, "Error deleting appointment from the database");
         } catch (Exception e) {
             logger.error("Error deleting appointment: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
@@ -138,7 +138,7 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
         try {
             boolean isValid = dao.validatePrimaryKey(id);
             if (!isValid) {
-                throw new ApiException(400, "Invalid primary key: " + id);
+                throw new ApiException(400, "Invalid or missing primary key: " + id);
             }
             return isValid;
         } catch (JpaException e) {
@@ -162,7 +162,7 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
             return appointmentDTO;
         } catch (Exception e) {
             logger.error("Error validating appointment entity: {}", e.getMessage(), e);
-            throw new ApiException(400, "Invalid appointment entity");
+            throw new ApiException(400, "Invalid or missing parameters in the appointment entity");
         }
     }
 }

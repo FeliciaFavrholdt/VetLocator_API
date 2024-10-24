@@ -67,7 +67,7 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             throw new ApiException(500, "Error fetching animals from database");
         } catch (Exception e) {
             logger.error("Error fetching all animals: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
@@ -85,7 +85,7 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             throw new ApiException(500, "Error creating animal in the database");
         } catch (Exception e) {
             logger.error("Error creating animal: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "A");
         }
     }
 
@@ -110,7 +110,7 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             throw new ApiException(500, "Error updating animal in the database");
         } catch (Exception e) {
             logger.error("Error updating animal: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
@@ -129,7 +129,7 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             throw new ApiException(500, "Error deleting animal from the database");
         } catch (Exception e) {
             logger.error("Error deleting animal: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
@@ -160,7 +160,7 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             return animalDTO;
         } catch (Exception e) {
             logger.error("Error validating animal entity: {}", e.getMessage(), e);
-            throw new ApiException(400, "Invalid animal entity");
+            throw new ApiException(400, "Invalid or missing parameters in the animal entity");
         }
     }
 }

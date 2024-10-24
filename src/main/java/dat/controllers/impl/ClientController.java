@@ -50,7 +50,7 @@ public class ClientController implements IController<ClientDTO, Integer> {
             ctx.json(e.getMessageRecord());
         } catch (Exception e) {
             logger.error("General Error: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
@@ -67,7 +67,7 @@ public class ClientController implements IController<ClientDTO, Integer> {
             throw new ApiException(500, "Error fetching clients from database");
         } catch (Exception e) {
             logger.error("Error fetching all clients: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
@@ -85,7 +85,7 @@ public class ClientController implements IController<ClientDTO, Integer> {
             throw new ApiException(500, "Error creating client in the database");
         } catch (Exception e) {
             logger.error("Error creating client: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
@@ -110,7 +110,7 @@ public class ClientController implements IController<ClientDTO, Integer> {
             throw new ApiException(500, "Error updating client in the database");
         } catch (Exception e) {
             logger.error("Error updating client: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
@@ -129,7 +129,7 @@ public class ClientController implements IController<ClientDTO, Integer> {
             throw new ApiException(500, "Error deleting client from the database");
         } catch (Exception e) {
             logger.error("Error deleting client: {}", e.getMessage(), e);
-            throw new ApiException(500, "Internal Server Error");
+            throw new ApiException(500, "An unexpected error occurred on the server");
         }
     }
 
