@@ -2,7 +2,7 @@ package dat.controllers.impl;
 
 import dat.config.HibernateConfig;
 import dat.controllers.IController;
-import dat.dao.impl.UserDAO;
+import dat.dao.impl.ClientDAO;  // Use ClientDAO, not UserDAO
 import dat.dto.ClientDTO;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
@@ -12,19 +12,24 @@ import java.util.List;
 
 public class ClientController implements IController<ClientDTO, Integer> {
 
-    private final UserDAO dao;
+    private final ClientDAO dao;  // Change from UserDAO to ClientDAO
 
     public ClientController() {
         EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
-        this.dao = UserDAO.getInstance(emf);
+        this.dao = ClientDAO.getInstance(emf);  // Ensure ClientDAO is used here
     }
 
     @Override
     public void read(@NotNull Context ctx) {
         int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         ClientDTO clientDTO = dao.read(id);
-        ctx.res().setStatus(200);
-        ctx.json(clientDTO, ClientDTO.class);
+        if (clientDTO != null) {
+            ctx.res().setStatus(200);
+            ctx.json(clientDTO, ClientDTO.class);
+        } else {
+            ctx.res().setStatus(404);
+            ctx.result("Client not found");
+        }
     }
 
     @Override
@@ -46,8 +51,13 @@ public class ClientController implements IController<ClientDTO, Integer> {
     public void update(@NotNull Context ctx) {
         int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
         ClientDTO clientDTO = dao.update(id, validateEntity(ctx));
-        ctx.res().setStatus(200);
-        ctx.json(clientDTO, ClientDTO.class);
+        if (clientDTO != null) {
+            ctx.res().setStatus(200);
+            ctx.json(clientDTO, ClientDTO.class);
+        } else {
+            ctx.res().setStatus(404);
+            ctx.result("Client not found or update failed");
+        }
     }
 
     @Override
