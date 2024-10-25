@@ -21,10 +21,10 @@ public class VetenarianRoutes {
             post("/api/vetenarians/{id}/appointments", vetenarianController::addAppointment, Role.VETERINARIAN, Role.ADMIN);
 
             // update appointment of a vetenarian
-            put("/api/vetenarians/{id}/appointments/:appointmentId", vetenarianController::updateAppointment, Role.VETERINARIAN, Role.ADMIN);
+            put("/api/vetenarians/{id}/appointments/{appointmentId}", vetenarianController::updateAppointment, Role.VETERINARIAN, Role.ADMIN);
 
             // delete appointment of a vetenarian
-            delete("/api/vetenarians/{id}/appointments/:appointmentId", vetenarianController::deleteAppointment, Role.VETERINARIAN, Role.ADMIN);
+            delete("/api/vetenarians/{id}/appointments/{appointmentId}", vetenarianController::deleteAppointment, Role.VETERINARIAN, Role.ADMIN);
         };
     }
 
