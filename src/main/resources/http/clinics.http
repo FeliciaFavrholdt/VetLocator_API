@@ -1,5 +1,5 @@
 ### Retrieve all clinics
-GET http://localhost:7000/api/clinics
+GET {{url}}/api/clinics
 Content-Type: application/json
 [
 {
@@ -22,7 +22,7 @@ Content-Type: application/json
 ---
 
 ### Retrieve all veterinarians
-GET http://localhost:7000/api/clinics/veterinarians
+GET {{url}}/api/clinics/veterinarians
 Content-Type: application/json
 
 ### Response
@@ -45,7 +45,7 @@ Content-Type: application/json
 ---
 
 ### Retrieve a specific clinic by id
-GET http://localhost:7000/api/clinics/1
+GET {{url}}/api/clinics/1
 Content-Type: application/json
 
 ### Response
@@ -68,7 +68,7 @@ Content-Type: application/json
 ---
 
 ### Retrieve clinic opening hours
-GET http://localhost:7000/api/clinics/openinghours
+GET {{url}}/api/clinics/openinghours
 Content-Type: application/json
 
 ### Response
@@ -93,7 +93,7 @@ Content-Type: application/json
 ---
 
 ### Populate clinic data into the DB
-GET http://localhost:7000/api/clinics/populate
+GET {{url}}/api/clinics/populate
 Content-Type: application/json
 
 ### Response
@@ -109,7 +109,7 @@ Content-Type: application/json
 ---
 
 ### Create a new veterinarian
-POST http://localhost:7000/api/clinics/veterinarians/1
+POST {{url}}/api/clinics/veterinarians/1
 Content-Type: application/json
 
 ### Request Body
@@ -141,7 +141,7 @@ Content-Type: application/json
 ---
 
 ### Create a new clinic
-POST http://localhost:7000/api/clinics/1
+POST {{url}}/api/clinics/1
 Content-Type: application/json
 
 ### Request Body
@@ -173,7 +173,7 @@ Content-Type: application/json
 ---
 
 ### Add opening hours to a clinic
-POST http://localhost:7000/api/clinics/1/openinghours
+POST {{url}}/api/clinics/1/openinghours
 Content-Type: application/json
 
 ### Response
@@ -194,7 +194,7 @@ Content-Type: application/json
 ---
 
 ### Update clinic details
-PUT http://localhost:7000/api/clinics/1
+PUT {{url}}/api/clinics/1
 Content-Type: application/json
 
 ### Request Body
@@ -226,7 +226,7 @@ Content-Type: application/json
 ---
 
 ### Delete a specific veterinarian
-DELETE http://localhost:7000/api/clinics/veterinarians/1
+DELETE {{url}}/api/clinics/veterinarians/1
 Content-Type: application/json
 
 ### Response
@@ -247,7 +247,7 @@ Content-Type: application/json
 ---
 
 ### Delete a specific clinic
-DELETE http://localhost:7000/api/clinics/1
+DELETE {{url}}/api/clinics/1
 Content-Type: application/json
 
 ### Response

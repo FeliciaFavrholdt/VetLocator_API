@@ -1,13 +1,13 @@
 ### Retrieve all animals
-GET http://localhost:7000/api/animals
+GET {{url}}/api/animals
 Content-Type: application/json
 
 ### Retrieve a specific animal by id
-GET http://localhost:7000/api/animals/1
+GET {{url}}/api/animals/1
 Content-Type: application/json
 
 ### Populate animals into the DB
-GET http://localhost:7000/api/animals/populate
+GET {{url}}/api/animals/populate
 Content-Type: application/json
 
 ### Body
@@ -16,7 +16,7 @@ Content-Type: application/json
 }
 
 ### Create a new animal
-POST http://localhost:7000/api/animals
+POST {{url}}/api/animals
 Content-Type: application/json
 
 ### Body
@@ -40,7 +40,7 @@ Content-Type: application/json
 }
 
 ### Update animal details
-PUT http://localhost:7000/api/animals/1
+PUT {{url}}/api/animals/1
 Content-Type: application/json
 
 ### Body
@@ -63,7 +63,7 @@ Content-Type: application/json
 }
 
 ### Delete a specific animal
-DELETE http://localhost:7000/api/animals/1
+DELETE {{url}}/api/animals/1
 Content-Type: application/json
 
 ### Response
