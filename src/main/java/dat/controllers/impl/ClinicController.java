@@ -173,4 +173,22 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
             throw new ApiException(400, "Invalid clinic entity");
         }
     }
+
+    public void readAllVets(@NotNull Context context) {
+    }
+
+    public void readOpeningHours(@NotNull Context context) {
+    }
+
+    public void populate(@NotNull Context context) {
+    }
+
+    public void createVet(@NotNull Context context) {
+    }
+
+    public void addOpeningHours(@NotNull Context context) {
+    }
+
+    public void deleteVet(@NotNull Context context) {
+    }
 }

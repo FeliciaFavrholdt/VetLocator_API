@@ -162,4 +162,7 @@ public class ClientController implements IController<ClientDTO, Integer> {
             throw new ApiException(400, "Invalid client entity");
         }
     }
+
+    public void getAnimals(@NotNull Context context) {
+    }
 }

@@ -1,0 +1,266 @@
+### Retrieve all clinics
+GET http://localhost:7000/api/clinics
+Content-Type: application/json
+[
+{
+    "id": "1",
+    "name": "Healthy Pets Clinic",
+    "city": "San Francisco"
+},
+{
+"id": "2",
+"name": "VetCare",
+"city": "New York"
+}
+]
+
+### Error (e4)
+{
+  "error": "Failed to retrieve clinics"
+}
+
+---
+
+### Retrieve all veterinarians
+GET http://localhost:7000/api/clinics/veterinarians
+Content-Type: application/json
+
+### Response
+[
+  {
+    "id": "1",
+    "name": "Dr. John Doe"
+  },
+  {
+    "id": "2",
+    "name": "Dr. Jane Smith"
+  }
+]
+
+### Error (e4)
+{
+  "error": "Failed to retrieve veterinarians"
+}
+
+---
+
+### Retrieve a specific clinic by id
+GET http://localhost:7000/api/clinics/1
+Content-Type: application/json
+
+### Response
+{
+  "id": "1",
+  "name": "Healthy Pets Clinic",
+  "city": "San Francisco"
+}
+
+### Error (e1)
+{
+  "error": "Clinic not found"
+}
+
+### Error (e4)
+{
+  "error": "Failed to retrieve clinic"
+}
+
+---
+
+### Retrieve clinic opening hours
+GET http://localhost:7000/api/clinics/openinghours
+Content-Type: application/json
+
+### Response
+[
+  {
+    "day": "Monday",
+    "openingTime": "09:00",
+    "closingTime": "17:00"
+  },
+  {
+    "day": "Tuesday",
+    "openingTime": "09:00",
+    "closingTime": "17:00"
+  }
+]
+
+### Error (e4)
+{
+  "error": "Failed to retrieve opening hours"
+}
+
+---
+
+### Populate clinic data into the DB
+GET http://localhost:7000/api/clinics/populate
+Content-Type: application/json
+
+### Response
+{
+  "msg": "Clinics populated successfully"
+}
+
+### Error (e4)
+{
+  "error": "Failed to populate clinics"
+}
+
+---
+
+### Create a new veterinarian
+POST http://localhost:7000/api/clinics/veterinarians/1
+Content-Type: application/json
+
+### Request Body
+{
+  "name": "Dr. Emily Johnson",
+  "specialty": "Dentistry"
+}
+
+### Response
+{
+  "msg": "Veterinarian created",
+  "veterinarian": {
+    "id": "3",
+    "name": "Dr. Emily Johnson",
+    "specialty": "Dentistry"
+  }
+}
+
+### Error (e2)
+{
+  "error": "Invalid data provided"
+}
+
+### Error (e4)
+{
+  "error": "Failed to create veterinarian"
+}
+
+---
+
+### Create a new clinic
+POST http://localhost:7000/api/clinics/1
+Content-Type: application/json
+
+### Request Body
+{
+  "name": "City Vet",
+  "city": "Los Angeles"
+}
+
+### Response
+{
+  "msg": "Clinic created",
+  "clinic": {
+    "id": "3",
+    "name": "City Vet",
+    "city": "Los Angeles"
+  }
+}
+
+### Error (e2)
+{
+  "error": "Invalid data provided"
+}
+
+### Error (e4)
+{
+  "error": "Failed to create clinic"
+}
+
+---
+
+### Add opening hours to a clinic
+POST http://localhost:7000/api/clinics/1/openinghours
+Content-Type: application/json
+
+### Response
+{
+  "msg": "Opening hours for clinic added successfully"
+}
+
+### Error (e2)
+{
+  "error": "Invalid data provided"
+}
+
+### Error (e4)
+{
+  "error": "Failed to add opening hours"
+}
+
+---
+
+### Update clinic details
+PUT http://localhost:7000/api/clinics/1
+Content-Type: application/json
+
+### Request Body
+{
+  "name": "Healthy Pets Clinic Updated",
+  "city": "San Francisco"
+}
+
+### Response
+{
+  "msg": "Clinic details updated successfully"
+}
+
+### Error (e1)
+{
+  "error": "Clinic not found"
+}
+
+### Error (e2)
+{
+  "error": "Invalid data provided"
+}
+
+### Error (e4)
+{
+  "error": "Failed to update clinic"
+}
+
+---
+
+### Delete a specific veterinarian
+DELETE http://localhost:7000/api/clinics/veterinarians/1
+Content-Type: application/json
+
+### Response
+{
+  "msg": "Veterinarian deleted successfully"
+}
+
+### Error (e1)
+{
+  "error": "Veterinarian not found"
+}
+
+### Error (e4)
+{
+  "error": "Failed to delete veterinarian"
+}
+
+---
+
+### Delete a specific clinic
+DELETE http://localhost:7000/api/clinics/1
+Content-Type: application/json
+
+### Response
+{
+  "msg": "Clinic deleted successfully"
+}
+
+### Error (e1)
+{
+  "error": "Clinic not found"
+}
+
+### Error (e4)
+{
+  "error": "Failed to delete clinic"
+}
