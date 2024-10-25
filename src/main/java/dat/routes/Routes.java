@@ -15,7 +15,7 @@ public class Routes {
 
     public EndpointGroup getRoutes() {
         return () -> {
-            path("/users", clientRoutes.getRoutes());
+            path("/clients", clientRoutes.getRoutes());
             path("/clinics", clinicRoutes.getRoutes());
             path("/animals", animalRoutes.getRoutes());
             path("/veterinarians", vetenarianRoutes.getRoutes());

@@ -15,16 +15,16 @@ public class VetenarianRoutes {
     protected EndpointGroup getRoutes() {
         return () -> {
             // get all appointments of a vetenarian
-            get("/api/vetenarians/{id}/appointments", vetenarianController::getAppointments, Role.VETERINARIAN, Role.ADMIN);
+            get("/{id}/appointments", vetenarianController::getAppointments, Role.VETERINARIAN, Role.ADMIN);
 
             // add appointment to a vetenarian
-            post("/api/vetenarians/{id}/appointments", vetenarianController::addAppointment, Role.VETERINARIAN, Role.ADMIN);
+            post("/{id}/appointments", vetenarianController::addAppointment, Role.VETERINARIAN, Role.ADMIN);
 
             // update appointment of a vetenarian
-            put("/api/vetenarians/{id}/appointments/{appointmentId}", vetenarianController::updateAppointment, Role.VETERINARIAN, Role.ADMIN);
+            put("/{id}/appointments/{appointmentId}", vetenarianController::updateAppointment, Role.VETERINARIAN, Role.ADMIN);
 
             // delete appointment of a vetenarian
-            delete("/api/vetenarians/{id}/appointments/{appointmentId}", vetenarianController::deleteAppointment, Role.VETERINARIAN, Role.ADMIN);
+            delete("/{id}/appointments/{appointmentId}", vetenarianController::deleteAppointment, Role.VETERINARIAN, Role.ADMIN);
         };
     }
 

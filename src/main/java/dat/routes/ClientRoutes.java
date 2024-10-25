@@ -14,22 +14,22 @@ public class ClientRoutes {
     protected EndpointGroup getRoutes() {
         return () -> {
             // Retrieve all users
-            get("/api/users", clientController::readAll, Role.ADMIN);
+            get("/", clientController::readAll, Role.ADMIN);
 
             // Retrieve a specific user by ID
-            get("/api/users/{id}", clientController::read, Role.ADMIN);
+            get("/{id}", clientController::read, Role.ADMIN);
 
             // Retrieve animals of a specific user by ID
-            get("/api/users/{id}/animals", clientController::getAnimals, Role.ADMIN);
+            get("/{id}/animals", clientController::getAnimals, Role.ADMIN);
 
             // Create a new user
-            post("/api/users", clientController::create, Role.ADMIN);
+            post("/", clientController::create, Role.ADMIN);
 
             // Update a specific user by ID
-            put("/api/users/{id}", clientController::update, Role.ADMIN);
+            put("/{id}", clientController::update, Role.ADMIN);
 
             // Delete a specific user by ID
-            delete("/api/users/{id}", clientController::delete, Role.ADMIN);
+            delete("/{id}", clientController::delete, Role.ADMIN);
         };
     }
 }
