@@ -15,7 +15,7 @@ public class AnimalRoutes {
             get("/animals", animalController::readAll, Role.USER, Role.ADMIN, Role.VETERINARIAN);
 
             // Retrieve specific animal by id
-            get("/animals/:id", animalController::read, Role.USER, Role.ADMIN, Role.VETERINARIAN);
+            get("/animals/{id}", animalController::read, Role.USER, Role.ADMIN, Role.VETERINARIAN);
 
             // populate animals into the DB
             //get("/animals/populate", animalController::populate, Role.ADMIN);
@@ -24,10 +24,10 @@ public class AnimalRoutes {
             post("/animals", animalController::create, Role.USER, Role.ADMIN, Role.VETERINARIAN);
 
             // Update animal details
-            put("/animals/:id", animalController::update, Role.USER, Role.ADMIN, Role.VETERINARIAN);
+            put("/animals/{id}", animalController::update, Role.USER, Role.ADMIN, Role.VETERINARIAN);
 
             // Delete specific animal
-            delete("/animals/:id", animalController::delete, Role.USER, Role.ADMIN, Role.VETERINARIAN);
+            delete("/animals/{id}", animalController::delete, Role.USER, Role.ADMIN, Role.VETERINARIAN);
         };
     }
 }
