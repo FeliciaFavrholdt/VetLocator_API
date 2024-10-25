@@ -1,37 +1,72 @@
+### Retrieve all animals
+GET http://localhost:7000/api/animals
+Content-Type: application/json
 
-### Populate the database with some animals
-GET {{url}}/api/animals/populate
-Accept: application/json
+### Retrieve a specific animal by id
+GET http://localhost:7000/api/animals/1
+Content-Type: application/json
+
+### Populate animals into the DB
+GET http://localhost:7000/api/animals/populate
+Content-Type: application/json
+
+### Body
+{
+  "msg": "Data populated"
+}
 
 ### Create a new animal
-POST {{url}}/api/animals
+POST http://localhost:7000/api/animals
 Content-Type: application/json
-Authorization: Bearer {{jwt_token}}
 
+### Body
 {
-
+  "name": "Charlie",
+  "species": "Dog",
+  "age": "3",
+  "userId": "1"
 }
 
-### Retrieve all animals
-GET {{url}}/api/animals
-Accept: application/json
-Authorization: Bearer {{jwt_token}}
-
-### Retrieve a specific animal by ID (ID=1)
-GET {{url}}/api/animals/1
-Accept: application/json
-Authorization: Bearer {{jwt_token}}
-
-### Update a specific animal by ID (ID=1)
-PUT {{url}}/api/animals/1
-Content-Type: application/json
-Authorization: Bearer {{jwt_token}}
-
+### Response
 {
-
+  "msg": "Animal created",
+  "animal": {
+    "id": "1",
+    "name": "Charlie",
+    "species": "Dog",
+    "age": "3",
+    "userId": "1"
+  }
 }
 
-### Delete a specific animal by ID (ID=1)
-DELETE {{url}}/api/animals/1
-Accept: application/json
-Authorization: Bearer {{jwt_token}}
+### Update animal details
+PUT http://localhost:7000/api/animals/1
+Content-Type: application/json
+
+### Body
+{
+  "name": "Charlie",
+  "species": "Dog",
+  "age": "4"
+}
+
+### Response
+{
+  "msg": "Animal updated",
+  "animal": {
+    "id": "1",
+    "name": "Charlie",
+    "species": "Dog",
+    "age": "4",
+    "userId": "1"
+  }
+}
+
+### Delete a specific animal
+DELETE http://localhost:7000/api/animals/1
+Content-Type: application/json
+
+### Response
+{
+  "msg": "Animal deleted"
+}
