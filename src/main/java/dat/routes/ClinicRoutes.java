@@ -12,13 +12,13 @@ public class ClinicRoutes {
     protected EndpointGroup getRoutes() {
         return () -> {
             // Retrieve all clinics
-            get("/api/clinics", clinicController::readAll, Role.ANYONE, Role.USER, Role.ADMIN);
+            get("/api/clinics", clinicController::readAll, Role.ANYONE, Role.USER, Role.ADMIN, Role.VETERINARIAN);
 
             // Retrieve all veterinarians
-            get("/api/clinics/veterinarians", clinicController::readAllVets, Role.ANYONE, Role.USER, Role.ADMIN);
+            get("/api/clinics/veterinarians", clinicController::readAllVets, Role.ANYONE, Role.VETERINARIAN, Role.ADMIN, Role.USER);
 
             // Retrieve a specific clinic by id
-            get("/api/clinics/:id", clinicController::read, Role.ANYONE, Role.USER, Role.ADMIN);
+            get("/api/clinics/:id", clinicController::read, Role.ANYONE, Role.USER, Role.ADMIN, Role.VETERINARIAN);
 
             // Retrieve clinic opening hours
             get("/api/clinics/{id}/openinghours", clinicController::readOpeningHours, Role.ANYONE, Role.USER, Role.ADMIN);

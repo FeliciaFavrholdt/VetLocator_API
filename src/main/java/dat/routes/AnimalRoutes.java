@@ -12,22 +12,22 @@ public class AnimalRoutes {
     protected EndpointGroup getRoutes() {
         return () -> {
             // Retrieve all animals
-            get("/animals", animalController::readAll, Role.ANYONE, Role.USER, Role.ADMIN);
+            get("/animals", animalController::readAll, Role.USER, Role.ADMIN, Role.VETERINARIAN);
 
             // Retrieve specific animal by id
-            get("/animals/:id", animalController::read, Role.ANYONE, Role.USER, Role.ADMIN);
+            get("/animals/:id", animalController::read, Role.USER, Role.ADMIN, Role.VETERINARIAN);
 
             // populate animals into the DB
             //get("/animals/populate", animalController::populate, Role.ADMIN);
 
             // Create a new animal
-            post("/animals", animalController::create, Role.USER, Role.ADMIN);
+            post("/animals", animalController::create, Role.USER, Role.ADMIN, Role.VETERINARIAN);
 
             // Update animal details
-            put("/animals/:id", animalController::update, Role.USER, Role.ADMIN);
+            put("/animals/:id", animalController::update, Role.USER, Role.ADMIN, Role.VETERINARIAN);
 
             // Delete specific animal
-            delete("/animals/:id", animalController::delete, Role.USER, Role.ADMIN);
+            delete("/animals/:id", animalController::delete, Role.USER, Role.ADMIN, Role.VETERINARIAN);
         };
     }
 }

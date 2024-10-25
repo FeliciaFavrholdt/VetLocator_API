@@ -32,6 +32,7 @@ public class SecurityRoutes {
             path("/protected", ()->{
                 get("/user_demo", (ctx)->ctx.json(jsonMapper.createObjectNode().put("msg", "Hello from USER Protected")), Role.USER);
                 get("/admin_demo", (ctx)->ctx.json(jsonMapper.createObjectNode().put("msg", "Hello from ADMIN Protected")), Role.ADMIN);
+                get("/vet_demo", (ctx)->ctx.json(jsonMapper.createObjectNode().put("msg", "Hello from VETERNARIAN Protected")), Role.VETERINARIAN);
             });
         };
     }
