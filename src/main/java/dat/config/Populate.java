@@ -149,13 +149,18 @@ public class Populate {
             clinicHorsens.addOpeningHour(new OpeningHours(null, Weekday.WEDNESDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), clinicHorsens));
             clinicHorsens.addOpeningHour(new OpeningHours(null, Weekday.THURSDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), clinicHorsens));
             clinicHorsens.addOpeningHour(new OpeningHours(null, Weekday.FRIDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), clinicHorsens));
-
+            clinicHorsens.addOpeningHour(new OpeningHours(null, Weekday.SATURDAY, LocalTime.of(10, 0), LocalTime.of(18, 0), clinicHorsens));
+            clinicHorsens.addOpeningHour(new OpeningHours(null, Weekday.SUNDAY, LocalTime.of(10, 0), LocalTime.of(18, 0), clinicHorsens));
+            clinicHorsens.addOpeningHour(new OpeningHours(null, Weekday.FRIDAY, LocalTime.of(16, 0), LocalTime.of(22, 0), clinicHorsens)); // Evening hours
 // Clinic Vejle opening hours
             clinicVejle.addOpeningHour(new OpeningHours(null, Weekday.MONDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), clinicVejle));
             clinicVejle.addOpeningHour(new OpeningHours(null, Weekday.TUESDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), clinicVejle));
             clinicVejle.addOpeningHour(new OpeningHours(null, Weekday.WEDNESDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), clinicVejle));
             clinicVejle.addOpeningHour(new OpeningHours(null, Weekday.THURSDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), clinicVejle));
             clinicVejle.addOpeningHour(new OpeningHours(null, Weekday.FRIDAY, LocalTime.of(9, 0), LocalTime.of(17, 0), clinicVejle));
+            clinicVejle.addOpeningHour(new OpeningHours(null, Weekday.SATURDAY, LocalTime.of(20, 0), LocalTime.of(6, 0), clinicVejle)); // Night shift
+            clinicVejle.addOpeningHour(new OpeningHours(null, Weekday.SUNDAY, LocalTime.of(20, 0), LocalTime.of(6, 0), clinicVejle));   // Night shift
+            clinicVejle.addOpeningHour(new OpeningHours(null, Weekday.FRIDAY, LocalTime.of(16, 0), LocalTime.of(23, 0), clinicVejle)); // Evening hours
 
 // Clinic Roskilde opening hours
             clinicRoskilde.addOpeningHour(new OpeningHours(null, Weekday.MONDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), clinicRoskilde));
@@ -163,7 +168,9 @@ public class Populate {
             clinicRoskilde.addOpeningHour(new OpeningHours(null, Weekday.WEDNESDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), clinicRoskilde));
             clinicRoskilde.addOpeningHour(new OpeningHours(null, Weekday.THURSDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), clinicRoskilde));
             clinicRoskilde.addOpeningHour(new OpeningHours(null, Weekday.FRIDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), clinicRoskilde));
-
+            clinicRoskilde.addOpeningHour(new OpeningHours(null, Weekday.SATURDAY, LocalTime.of(9, 0), LocalTime.of(15, 0), clinicRoskilde)); // Daytime weekend
+            clinicRoskilde.addOpeningHour(new OpeningHours(null, Weekday.SUNDAY, LocalTime.of(9, 0), LocalTime.of(15, 0), clinicRoskilde));   // Daytime weekend
+            clinicRoskilde.addOpeningHour(new OpeningHours(null, Weekday.FRIDAY, LocalTime.of(16, 0), LocalTime.of(22, 0), clinicRoskilde)); // Evening hours
             // Fetching clinics (example: by ID or any appropriate way)
             // Populate Clients (Users)
             Client client1 = new Client("john_doe", "password123", "John", "Doe", Gender.MALE, "john.doe@example.com", "+45 12 34 56 78");

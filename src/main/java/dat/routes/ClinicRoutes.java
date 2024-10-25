@@ -1,6 +1,7 @@
 package dat.routes;
 
 import dat.controllers.impl.ClinicController;
+import dat.security.enums.Role;
 import io.javalin.apibuilder.EndpointGroup;
 import static io.javalin.apibuilder.ApiBuilder.*;
 
@@ -10,7 +11,8 @@ public class ClinicRoutes {
 
     protected EndpointGroup getRoutes() {
         return () -> {
-            get("/", clinicController::readAll);              // Retrieve all clinics
+            get("/", clinicController::readAll); // Retrieve all clinics
+            get("/clinicsonduty", clinicController::getOnDutyClinics); // Retrieve clinics on duty
 //            get("/veterinarians", clinicController::readAllVets); // Retrieve all veterinarians
             get("/{id}", clinicController::read);             // Retrieve specific clinic by id
 //            get("/openinghours", clinicController::readOpeningHours); // Retrieve clinic opening hours

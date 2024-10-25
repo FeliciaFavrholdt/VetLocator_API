@@ -5,13 +5,17 @@ import dat.dao.impl.ClinicDAO;
 import dat.dto.ClinicDTO;
 import dat.entities.City;
 import dat.entities.Clinic;
+import dat.entities.OpeningHours;
 import dat.enums.Specialization;
+import dat.enums.Weekday;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,7 +53,21 @@ import static org.junit.jupiter.api.Assertions.*;
             clinic.setPhone("+45 29 83 45 12");
             clinic.setSpecialization(Specialization.CAT);
             clinic.setPostalCode(city.getPostalCode());  // Set the city for this clinic
-            em.persist(clinic);  // Persist the clinic to the test database
+            em.persist(clinic);  // Persistér Clinic, så det har en ID i databasen
+
+            em.getTransaction().commit(); // Afslut transaktionen for at gemme Clinic
+
+            // Start en ny transaktion for at tilføje OpeningHours
+            em.getTransaction().begin();
+
+            // Define opening hours for the clinic to cover the current day and time
+            OpeningHours openingHours = new OpeningHours();
+            openingHours.setWeekday(Weekday.valueOf(LocalDate.now().getDayOfWeek().name().toUpperCase())); // Today's weekday
+            openingHours.setStartTime(LocalTime.of(8, 0));
+            openingHours.setEndTime(LocalTime.of(22, 0)); // Clinic is open from 8:00 to 18:00
+            openingHours.setVeterinaryClinic(clinic);  // Associate the opening hours with the clinic
+            em.persist(openingHours);
+
             em.getTransaction().commit();
 
             testClinicId = clinic.getId();  // Store the generated clinic ID for testing
@@ -146,6 +164,20 @@ import static org.junit.jupiter.api.Assertions.*;
             // Validate that a non-existent primary key returns false
             boolean isInvalid = clinicDao.validatePrimaryKey(9999);
             assertFalse(isInvalid);
+        }
+
+        @Test
+        void onDutyClinics() throws Exception {
+            // Act: Fetch clinics on duty via DAO
+            List<ClinicDTO> clinicsOnDuty = clinicDao.onDutyClinics();
+
+            // Assert: Verify that there is at least one clinic returned
+            assertNotNull(clinicsOnDuty);
+            assertFalse(clinicsOnDuty.isEmpty());
+
+            // Check that the clinic we added is in the result list
+            ClinicDTO clinicDTO = clinicsOnDuty.get(0);
+            assertEquals("Test Clinic", clinicDTO.getClinicName());
         }
 
         @AfterEach

@@ -68,3 +68,9 @@ Authorization: Bearer {{jwt_token}}
 DELETE {{url}}/api/clinics/1
 Accept: application/json
 Authorization: Bearer {{jwt_token}}
+
+
+### Get all clinics on duty
+GET http://localhost:7071/api/clinicsonduty
+Accept: application/json
+

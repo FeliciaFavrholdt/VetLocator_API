@@ -4,6 +4,7 @@ import dat.config.HibernateConfig;
 import dat.controllers.IController;
 import dat.dao.impl.ClinicDAO;
 import dat.dto.ClinicDTO;
+import dat.exceptions.ApiException;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
@@ -89,4 +90,21 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
                 .check(c -> c.getPostalCode() > 0, "Postal code must be set and greater than zero")
                 .get();
     }
+
+    // Endpoint to get clinics on duty
+
+    public void getOnDutyClinics(Context ctx) throws ApiException {
+        try {
+            List<ClinicDTO> onDutyClinics = dao.onDutyClinics(); // Hent data fra DAO
+            ctx.json(onDutyClinics); // Send resultatet som JSON-svar til klienten
+        } catch (ApiException e) {
+            e.printStackTrace();
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiException(500, "An unexpected error occurred while fetching on-duty clinics");
+        }
+    }
+
+
 }
