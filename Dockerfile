@@ -13,3 +13,5 @@ EXPOSE 7071
 # Command to run your app
 CMD ["java", "-jar", "/app.jar"]
 
+# Populate the database
+ENTRYPOINT ["sh", "-c", "java -jar /app.jar && java -cp /app.jar dat.config.Populate"]
