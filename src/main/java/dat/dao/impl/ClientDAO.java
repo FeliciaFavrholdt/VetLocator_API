@@ -41,19 +41,15 @@ public class ClientDAO implements IDAO<ClientDTO, Integer> {
 
             // Convert DTO to Client entity
             Client client = new Client();
-            client.setFirstName(clientDTO.getFirstName());
-            client.setLastName(clientDTO.getLastName());
+            client.setFirstName(clientDTO.getFullName());
             client.setEmail(clientDTO.getEmail());
             client.setPhone(clientDTO.getPhone());
             client.setGender(clientDTO.getGender());
-            client.setUsername(clientDTO.getUsername());
-            client.setPassword(hashPassword(clientDTO.getPassword()));  // Hash the password before storing
 
             em.persist(client);
             em.getTransaction().commit();
-
             logger.info("Client created successfully with ID: {}", client.getId());
-            return new ClientDTO(client);  // Return standard ClientDTO without sensitive fields
+            return new ClientDTO(client);
         } catch (PersistenceException e) {
             em.getTransaction().rollback();
             logger.error("Error creating client: {}", e.getMessage(), e);
@@ -64,6 +60,39 @@ public class ClientDAO implements IDAO<ClientDTO, Integer> {
             }
         }
     }
+
+
+//    @Override
+//    public ClientDTO create(ClientDTO clientDTO) {
+//        EntityManager em = emf.createEntityManager();
+//        try {
+//            em.getTransaction().begin();
+//
+//            // Convert DTO to Client entity
+//            Client client = new Client();
+//            client.setFirstName(clientDTO.getFirstName());
+//            client.setLastName(clientDTO.getLastName());
+//            client.setEmail(clientDTO.getEmail());
+//            client.setPhone(clientDTO.getPhone());
+//            client.setGender(clientDTO.getGender());
+//            client.setUsername(clientDTO.getUsername());
+//            client.setPassword(hashPassword(clientDTO.getPassword()));  // Hash the password before storing
+//
+//            em.persist(client);
+//            em.getTransaction().commit();
+//
+//            logger.info("Client created successfully with ID: {}", client.getId());
+//            return new ClientDTO(client);  // Return standard ClientDTO without sensitive fields
+//        } catch (PersistenceException e) {
+//            em.getTransaction().rollback();
+//            logger.error("Error creating client: {}", e.getMessage(), e);
+//            throw new JpaException(500, "Error creating client in the database.");
+//        } finally {
+//            if (em.isOpen()) {
+//                em.close();
+//            }
+//        }
+//    }
 
     private String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
@@ -106,33 +135,6 @@ public class ClientDAO implements IDAO<ClientDTO, Integer> {
         }
     }
 
-    @Override
-    public ClientDTO create(ClientDTO clientDTO) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            // Convert DTO to Client entity
-            Client client = new Client();
-            client.setFirstName(clientDTO.getFullName());
-            client.setEmail(clientDTO.getEmail());
-            client.setPhone(clientDTO.getPhone());
-            client.setGender(clientDTO.getGender());
-
-            em.persist(client);
-            em.getTransaction().commit();
-            logger.info("Client created successfully with ID: {}", client.getId());
-            return new ClientDTO(client);
-        } catch (PersistenceException e) {
-            em.getTransaction().rollback();
-            logger.error("Error creating client: {}", e.getMessage(), e);
-            throw new JpaException(500, "Error creating client in the database.");
-        } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
-        }
-    }
 
     @Override
     public ClientDTO update(Integer id, ClientDTO clientDTO) {

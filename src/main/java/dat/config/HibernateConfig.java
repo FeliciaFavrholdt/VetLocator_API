@@ -2,6 +2,8 @@ package dat.config;
 
 import dat.entities.*;
 import dat.entities.Client;
+import dat.security.entities.Role;
+import dat.security.entities.User;
 import dat.utils.Utils;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
@@ -48,6 +50,8 @@ public class HibernateConfig {
         configuration.addAnnotatedClass(Clinic.class);
         configuration.addAnnotatedClass(OpeningHours.class);
         configuration.addAnnotatedClass(Veterinarian.class);
+        configuration.addAnnotatedClass((User.class));
+        configuration.addAnnotatedClass((Role.class));
     }
 
     private static EntityManagerFactory createEMF(boolean forTest) {

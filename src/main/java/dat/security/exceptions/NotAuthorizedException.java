@@ -1,9 +1,12 @@
 package dat.security.exceptions;
 
+import lombok.Getter;
+
 /**
  * Purpose: To handle No authorized exceptions in the API
  * Author: Thomas Hartmann
  */
+@Getter
 public class NotAuthorizedException extends Exception {
     private final int statusCode;
 

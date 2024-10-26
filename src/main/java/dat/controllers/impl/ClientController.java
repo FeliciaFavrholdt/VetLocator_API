@@ -4,9 +4,13 @@ import dat.config.HibernateConfig;
 import dat.controllers.IController;
 import dat.dao.impl.ClientDAO;  // Use ClientDAO, not UserDAO
 import dat.dto.ClientDTO;
+import dat.exceptions.JpaException;
+import dat.security.exceptions.ApiException;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 

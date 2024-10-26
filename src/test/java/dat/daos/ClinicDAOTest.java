@@ -79,7 +79,7 @@ import static org.junit.jupiter.api.Assertions.*;
             ClinicDTO clinicDTO = new ClinicDTO();
             clinicDTO.setClinicName("New Clinic");
             clinicDTO.setAddress("456 New St");
-            clinicDTO.setCityName("Test City");
+//            clinicDTO.setCityName("Test City");
             clinicDTO.setPostalCode(12345);
             clinicDTO.setEmail("newClinic@clinic.com");
             clinicDTO.setSpecialization(Specialization.CAT);

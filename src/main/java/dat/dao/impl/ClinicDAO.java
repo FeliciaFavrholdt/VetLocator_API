@@ -70,18 +70,16 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
         try {
             em.getTransaction().begin();
 
-            // Find City based on cityName and postalCode from ClinicDTO
-            TypedQuery<City> cityQuery = em.createQuery("SELECT c FROM City c WHERE c.cityName = :cityName AND c.postalCode = :postalCode", City.class);
-            cityQuery.setParameter("cityName", clinicDTO.getCityName());
-            cityQuery.setParameter("postalCode", clinicDTO.getPostalCode());
-            City city = cityQuery.getSingleResult();
+            // Create a Clinic entity directly from ClinicDTO
+            Clinic clinic = new Clinic(
+                    clinicDTO.getClinicName(),
+                    clinicDTO.getSpecialization(),
+                    clinicDTO.getPhone(),
+                    clinicDTO.getEmail(),
+                    clinicDTO.getAddress(),
+                    clinicDTO.getPostalCode()  // Use postal code directly
+            );
 
-            if (city == null) {
-                throw new JpaException(400, "City not found for provided cityName and postalCode.");
-            }
-
-            // Convert DTO to Clinic entity and set the city
-            Clinic clinic = new Clinic(clinicDTO, city);
             em.persist(clinic);
             em.getTransaction().commit();
 
@@ -97,6 +95,8 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
             }
         }
     }
+
+
 
     @Override
     public ClinicDTO read(Integer id) {

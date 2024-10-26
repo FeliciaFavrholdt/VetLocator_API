@@ -1,11 +1,15 @@
 package dat.security.exceptions;
 
 import dat.utils.Utils;
+import lombok.Getter;
+
+import java.util.Map;
 
 /**
  * Purpose: To handle exceptions in the API
  * Author: Thomas Hartmann
  */
+@Getter
 public class ApiException extends RuntimeException {
     private int code;
 
@@ -14,7 +18,10 @@ public class ApiException extends RuntimeException {
         this.code = code;
     }
 
-    public int getCode() {
+    public int getStatusCode() {
         return code;
+    }
+    public Map<String, String> getMessageRecord() {
+        return Map.of("status", String.valueOf(code), "message", getMessage());
     }
 }

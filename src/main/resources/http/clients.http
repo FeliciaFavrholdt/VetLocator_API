@@ -1,11 +1,15 @@
 
 ###
-GET http://localhost:7071/api/clients
+GET {{url}}/clients
 Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
 
 ###
-GET http://localhost:7071/api/clients/1
+GET {{url}}/clients/5
 Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
 
 ###
 POST http://localhost:7071/api/clients
@@ -19,7 +23,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:7071/api/clients/1
+PUT http://localhost:7071/api/clients/5
 Content-Type: application/json
 
 {
@@ -30,5 +34,5 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:7071/api/clients/1
+DELETE http://localhost:7071/api/clients/5
 Accept: application/json

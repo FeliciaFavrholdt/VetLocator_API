@@ -163,7 +163,6 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
                     .check(c -> c.getPhone() != null && !c.getPhone().isEmpty(), "Phone number must be set")
                     .check(c -> c.getEmail() != null && !c.getEmail().isEmpty(), "Email must be set")
                     .check(c -> c.getAddress() != null && !c.getAddress().isEmpty(), "Clinic address must be set")
-                    .check(c -> c.getCityName() != null && !c.getCityName().isEmpty(), "City name must be set")
                     .check(c -> c.getPostalCode() > 0, "Postal code must be set and greater than zero")
                     .get();
             logger.info("Clinic entity validated successfully: {}", clinicDTO);

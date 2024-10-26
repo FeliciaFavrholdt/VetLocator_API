@@ -40,7 +40,8 @@ public class SecurityController implements ISecurityController {
     private static SecurityController instance;
     private static Logger logger = LoggerFactory.getLogger(SecurityController.class);
 
-    private SecurityController() { }
+    private SecurityController() {
+    }
 
     public static SecurityController getInstance() { // Singleton because we don't want multiple instances of the same class
         if (instance == null) {
@@ -128,12 +129,12 @@ public class SecurityController implements ISecurityController {
             throw new UnauthorizedResponse("You need to log in, dude!");
         }
         Set<String> roleNames = allowedRoles.stream()
-                   .map(RouteRole::toString)  // Convert RouteRoles to  Set of Strings
-                   .collect(Collectors.toSet());
+                .map(RouteRole::toString)  // Convert RouteRoles to  Set of Strings
+                .collect(Collectors.toSet());
         return user.getRoles().stream()
-                   .map(String::toUpperCase)
-                   .anyMatch(roleNames::contains);
-        }
+                .map(String::toUpperCase)
+                .anyMatch(roleNames::contains);
+    }
 
     @Override
     public String createToken(UserDTO user) {
