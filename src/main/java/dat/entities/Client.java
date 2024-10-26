@@ -82,6 +82,11 @@ public class Client {
         animal.setClient(this);  // Ensure bidirectional relationship
     }
 
+    public void removeAnimal(Animal animal) {
+        animals.remove(animal);
+        animal.setClient(null);
+    }
+
     public Client(ClientDTO dto) {
         this.username = dto.getFullName().toLowerCase().replaceAll(" ", "_");
         this.firstName = dto.getFullName().split(" ")[0];

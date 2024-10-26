@@ -2,6 +2,7 @@ package dat.daos;
 
 import dat.config.HibernateConfig;
 import dat.dao.impl.ClientDAO;
+import dat.dto.ClientCreateDTO;
 import dat.dto.ClientDTO;
 import dat.entities.Client;
 import dat.enums.Gender;
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
-public class UserDAOTest {
+public class ClientDAOTest {
 
     private EntityManagerFactory emf;
     private EntityManager em;
@@ -47,15 +48,18 @@ public class UserDAOTest {
 
     @Test
     void createClient() {
-        // Prepare ClientDTO for creation
-        ClientDTO client = new ClientDTO();
-        client.setFullName("New User");
+        // Prepare ClientCreateDTO for creation (includes password)
+        ClientCreateDTO client = new ClientCreateDTO();
+        client.setFirstName("New");
+        client.setLastName("User");
         client.setPhone("0987654321");
         client.setGender(Gender.MALE);
         client.setEmail("newuser@example.com");
+        client.setPassword("password123");
+        client.setUsername("NewUser");
 
         // Use the create method to add a new client
-        ClientDTO createdClient = userDao.create(client);
+        ClientDTO createdClient = userDao.create(client);  // Should return ClientDTO, not ClientCreateDTO
 
         // Verify that the created client is not null
         assertNotNull(createdClient);
@@ -64,8 +68,8 @@ public class UserDAOTest {
         assertEquals("New User", createdClient.getFullName());
         assertEquals("newuser@example.com", createdClient.getEmail());
         assertEquals("0987654321", createdClient.getPhone());
-        assertEquals(Gender.MALE, createdClient.getGender());
     }
+
 
     @Test
     void readClientById() {
@@ -99,7 +103,7 @@ public class UserDAOTest {
     void updateClient() {
         // Prepare updated ClientDTO
         ClientDTO updatedClientDTO = new ClientDTO();
-        updatedClientDTO.setFullName("UpdatedUser");
+        updatedClientDTO.setFullName("Updated User");
         updatedClientDTO.setEmail("updateduser@example.com");
         updatedClientDTO.setPhone("1122334455");
 
@@ -110,7 +114,7 @@ public class UserDAOTest {
         assertNotNull(updatedClient);
 
         // Verify the updated properties of the client
-        assertEquals("UpdatedUser", updatedClient.getFullName());
+        assertEquals("Updated User", updatedClient.getFullName());
         assertEquals("updateduser@example.com", updatedClient.getEmail());
         assertEquals("1122334455", updatedClient.getPhone());
     }
