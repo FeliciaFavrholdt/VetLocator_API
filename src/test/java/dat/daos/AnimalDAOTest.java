@@ -217,7 +217,4 @@ public class AnimalDAOTest {
             em.close();
         }
     }
-
-
-
 }
