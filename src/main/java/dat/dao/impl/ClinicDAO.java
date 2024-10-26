@@ -31,15 +31,10 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
 
-            // Find City based on cityName and postalCode from ClinicDTO
-            TypedQuery<City> cityQuery = em.createQuery("SELECT c FROM City c WHERE c.cityName = :cityName AND c.postalCode = :postalCode", City.class);
-            cityQuery.setParameter("cityName", clinicDTO.getCityName());
-            cityQuery.setParameter("postalCode", clinicDTO.getPostalCode());
-            City city = cityQuery.getSingleResult();
+            // Convert DTO to Clinic entity
+            Clinic clinic = new Clinic(clinicDTO);
 
-            // Convert DTO to Clinic entity and set the city
-            Clinic clinic = new Clinic(clinicDTO, city);
-
+            // Persist the new clinic
             em.persist(clinic);
             em.getTransaction().commit();
 
@@ -47,6 +42,7 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
             return new ClinicDTO(clinic);
         }
     }
+
 
     @Override
     public ClinicDTO read(Integer id) {
@@ -64,6 +60,7 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
         }
     }
 
+
     @Override
     public ClinicDTO update(Integer id, ClinicDTO clinicDTO) {
         try (EntityManager em = emf.createEntityManager()) {
@@ -72,14 +69,8 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
             // Find the existing Clinic by ID
             Clinic clinic = em.find(Clinic.class, id);
             if (clinic != null) {
-                // Find the city based on cityName and postalCode in ClinicDTO
-                TypedQuery<City> cityQuery = em.createQuery("SELECT c FROM City c WHERE c.cityName = :cityName AND c.postalCode = :postalCode", City.class);
-                cityQuery.setParameter("cityName", clinicDTO.getCityName());
-                cityQuery.setParameter("postalCode", clinicDTO.getPostalCode());
-                City city = cityQuery.getSingleResult();
-
                 // Update the Clinic entity with the new DTO data
-                clinic.updateFromDTO(clinicDTO, city);
+                clinic.updateFromDTO(clinicDTO);
 
                 // Merge the updated entity and commit
                 Clinic mergedClinic = em.merge(clinic);
@@ -90,6 +81,7 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
             return null;
         }
     }
+
 
     @Override
     public void delete(Integer id) {

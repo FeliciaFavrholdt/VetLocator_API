@@ -6,15 +6,15 @@ import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class ClientRoutes {
 
-    private final ClientController userController = new ClientController();
+    private final ClientController clientController = new ClientController();
 
     protected EndpointGroup getRoutes() {
         return () -> {
-            get("/", userController::readAll);
-            get("/{id}", userController::read);
-            post("/", userController::create);
-            put("/{id}", userController::update);
-            delete("/{id}", userController::delete);
+            get("/", clientController::readAll);
+            get("/{id}", clientController::read);
+            post("/", clientController::create);
+            put("/{id}", clientController::update);
+            delete("/{id}", clientController::delete);
         };
     }
 }

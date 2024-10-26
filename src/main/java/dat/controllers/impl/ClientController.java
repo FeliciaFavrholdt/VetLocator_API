@@ -34,9 +34,8 @@ public class ClientController implements IController<ClientDTO, Integer> {
 
     @Override
     public void readAll(@NotNull Context ctx) {
-        List<ClientDTO> clientDTOS = dao.readAll();
-        ctx.res().setStatus(200);
-        ctx.json(clientDTOS, ClientDTO.class);
+        List<ClientDTO> clientDTOS = dao.readAll();  // Fetch all clients
+        ctx.json(clientDTOS);  // Return the list of clients as JSON
     }
 
     @Override
@@ -62,10 +61,22 @@ public class ClientController implements IController<ClientDTO, Integer> {
 
     @Override
     public void delete(@NotNull Context ctx) {
-        int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
-        dao.delete(id);
-        ctx.res().setStatus(204);
+        int id = ctx.pathParamAsClass("id", Integer.class)
+                .check(this::validatePrimaryKey, "Not a valid id")
+                .get();
+
+        try {
+            dao.delete(id);
+            ctx.status(204);  // No content
+        } catch (IllegalArgumentException e) {
+            ctx.status(404).json("Client with id: " + id + " not found.");
+        } catch (Exception e) {
+            ctx.status(500).json("Failed to delete Client with id: " + id + ". Error: " + e.getMessage());
+        }
     }
+
+
+
 
     @Override
     public boolean validatePrimaryKey(Integer id) {

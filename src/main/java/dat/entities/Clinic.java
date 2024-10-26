@@ -54,6 +54,7 @@ public class Clinic {
     @Column(name = "postal_code", nullable = false)
     private int postalCode;
 
+
     // OneToMany relationship with OpeningHours
     @OneToMany(mappedBy = "veterinaryClinic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<OpeningHours> openingHours;
@@ -71,13 +72,13 @@ public class Clinic {
     private Set<Veterinarian> veterinarians;
 
     // Constructor to create a Clinic from ClinicDTO and City
-    public Clinic(ClinicDTO dto, City city) {
+    public Clinic(ClinicDTO dto) {
         this.clinicName = dto.getClinicName();
         this.specialization = dto.getSpecialization();
         this.phone = dto.getPhone();
         this.email = dto.getEmail();
         this.address = dto.getAddress();
-        this.postalCode = city.getPostalCode();  // Use the postal code from the City entity
+        this.postalCode = dto.getPostalCode();  // Use the postal code from the City entity
     }
 
     // Additional constructor (in case you need it for other cases)
@@ -91,12 +92,13 @@ public class Clinic {
     }
 
     // Method to update Clinic entity from ClinicDTO
-    public void updateFromDTO(ClinicDTO dto, City city) {
+    public void updateFromDTO(ClinicDTO dto) {
         this.clinicName = dto.getClinicName();
         this.specialization = dto.getSpecialization();
         this.phone = dto.getPhone();
         this.email = dto.getEmail();
         this.address = dto.getAddress();
+        this.postalCode = dto.getPostalCode();
         // Postal code may come from a City update process
     }
 }

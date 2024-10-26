@@ -63,8 +63,9 @@ public class Client {
     @Pattern(regexp = "\\+\\d{1,4} \\d{2} \\d{2} \\d{2} \\d{2}", message = "Phone must be a valid format (e.g., +45 XX XX XX XX)")
     private String phone;
 
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Animal> animals = new HashSet<>();  // Initialize with empty set
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Animal> animals = new HashSet<>();
+
 
     public Client(String username, String password, String firstName, String lastName, Gender gender, String email, String phone) {
         this.username = username;
@@ -81,17 +82,14 @@ public class Client {
         animal.setClient(this);  // Ensure bidirectional relationship
     }
 
-    public void removeAnimal(Animal animal) {
-        animals.remove(animal);
-        animal.setClient(null);
-    }
-
     public Client(ClientDTO dto) {
         this.username = dto.getFullName().toLowerCase().replaceAll(" ", "_");
         this.firstName = dto.getFullName().split(" ")[0];
         this.lastName = dto.getFullName().split(" ")[1];
         this.email = dto.getEmail();
         this.phone = dto.getPhone();
+        this.gender = dto.getGender();
+        this.password = "password";
         if (dto.getAnimals() != null) {
             this.animals = dto.getAnimals().stream().map(Animal::new).collect(Collectors.toSet());
             this.animals.forEach(animal -> animal.setClient(this));  // Ensure bidirectional association

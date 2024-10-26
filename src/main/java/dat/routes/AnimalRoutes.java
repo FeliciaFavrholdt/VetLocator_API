@@ -5,16 +5,15 @@ import io.javalin.apibuilder.EndpointGroup;
 import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class AnimalRoutes {
-
     private final AnimalController animalController = new AnimalController();
 
-    protected EndpointGroup getRoutes() {
+    public EndpointGroup getRoutes() {
         return () -> {
-            post("/", animalController::create);          // Create a new animal
-            get("/", animalController::readAll);          // Retrieve all animals
-            get("/{id}", animalController::read);         // Retrieve specific animal by id
-            put("/{id}", animalController::update);       // Update animal details
-            delete("/{id}", animalController::delete);    // Delete specific animal
+            get("/", animalController::readAll);   // GET /api/animals
+            get("/{id}", animalController::read);  // GET /api/animals/{id}
+            post("/", animalController::create);   // POST /api/animals
+            put("/{id}", animalController::update);// PUT /api/animals/{id}
+            delete("/{id}", animalController::delete); // DELETE /api/animals/{id}
         };
     }
 }

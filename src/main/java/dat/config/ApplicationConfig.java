@@ -35,8 +35,6 @@ public class ApplicationConfig {
     public static Javalin startServer(int port) {
         Javalin app = Javalin.create(ApplicationConfig::configuration);
 
-        app.beforeMatched(accessController::accessHandler);
-
         app.beforeMatched(ctx -> accessController.accessHandler(ctx));
         app.after(ApplicationConfig::afterRequest);
 

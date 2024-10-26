@@ -6,13 +6,13 @@ import static io.javalin.apibuilder.ApiBuilder.*;
 public class Routes {
 
     private final AnimalRoutes animalRoute = new AnimalRoutes();
-    private final ClientRoutes userRoute = new ClientRoutes();
     private final ClinicRoutes clinicRoute = new ClinicRoutes();
+    private final ClientRoutes clientRoutes = new ClientRoutes();
 
     public EndpointGroup getRoutes() {
         return () -> {
             path("/animals", animalRoute.getRoutes());
-            path("/users", userRoute.getRoutes());
+            path("/clients", clientRoutes.getRoutes());
             path("/clinics", clinicRoute.getRoutes());
         };
     }

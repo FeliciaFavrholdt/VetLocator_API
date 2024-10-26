@@ -1,37 +1,38 @@
 
-### Populate the database with some animals
-GET {{url}}/api/animals/populate
+###
+GET http://localhost:7071/api/animals
 Accept: application/json
 
-### Create a new animal
-POST {{url}}/api/animals
+###
+POST http://localhost:7071/api/animals
 Content-Type: application/json
-Authorization: Bearer {{jwt_token}}
 
 {
-
+  "name": "Hannah",
+  "species": "Cat",
+  "age": 2,
+  "userId": 1
 }
 
-### Retrieve all animals
-GET {{url}}/api/animals
+###
+GET /api/animals
 Accept: application/json
-Authorization: Bearer {{jwt_token}}
 
-### Retrieve a specific animal by ID (ID=1)
-GET {{url}}/api/animals/1
+###
+GET http://localhost:7071/api/animals/1
 Accept: application/json
-Authorization: Bearer {{jwt_token}}
 
-### Update a specific animal by ID (ID=1)
-PUT {{url}}/api/animals/1
+###
+PUT http://localhost:7071/api/animals/13
 Content-Type: application/json
-Authorization: Bearer {{jwt_token}}
 
 {
-
+  "name": "Updated Name",
+  "species": "Updated Species",
+  "age": 3,
+  "userId": 2
 }
 
-### Delete a specific animal by ID (ID=1)
-DELETE {{url}}/api/animals/1
+###
+DELETE http://localhost:7071/api/animals/13
 Accept: application/json
-Authorization: Bearer {{jwt_token}}

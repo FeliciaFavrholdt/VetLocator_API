@@ -17,7 +17,6 @@ public class ClinicDTO {
     private String phone;
     private String email;
     private String address;       // Clinic's address
-    private String cityName;      // City name
     private int postalCode;       // City postal code
 
     // Constructor to create ClinicDTO from Clinic entity

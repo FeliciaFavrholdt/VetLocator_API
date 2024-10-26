@@ -7,6 +7,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -36,10 +39,21 @@ public class Animal {
     @Min(value = 0, message = "Age must be zero or greater")
     private int age;
 
+    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Appointment> appointments = new HashSet<>();
+
     // Many-to-One relationship with User (owner)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private Client client;
+
+    public Animal(Integer id, String name, String species, int age, Client client) {
+        this.id = id;
+        this.name = name;
+        this.species = species;
+        this.age = age;
+        this.client = client;
+    }
 
     // Constructor to create an Animal from AnimalDTO
     public Animal(AnimalDTO dto) {

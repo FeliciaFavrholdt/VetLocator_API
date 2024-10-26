@@ -88,14 +88,30 @@ public class ClientDAO implements IDAO<ClientDTO, Integer> {
         try {
             em.getTransaction().begin();
             Client client = em.find(Client.class, id);
-            if (client != null) {
-                em.remove(client);
+
+            if (client == null) {
+                throw new IllegalArgumentException("Client with id " + id + " does not exist.");
             }
+
+            // Temporarily remove relationship clearing to test deletion
+            em.remove(client);
             em.getTransaction().commit();
+
+        } catch (IllegalArgumentException e) {
+            em.getTransaction().rollback();
+            throw e;
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw new RuntimeException("Failed to delete Client with id: " + id + ". Root cause: " + e.getMessage(), e);
         } finally {
             em.close();
         }
     }
+
+
+
+
+
 
     @Override
     public boolean validatePrimaryKey(Integer id) {
