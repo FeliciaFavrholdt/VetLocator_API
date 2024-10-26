@@ -4,6 +4,8 @@ import dat.dao.IDAO;
 import dat.dto.ClinicDTO;
 import dat.entities.Clinic;
 import dat.entities.City;
+import dat.enums.Weekday;
+import dat.exceptions.ApiException;
 import dat.exceptions.JpaException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -14,6 +16,9 @@ import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
@@ -30,6 +35,33 @@ public class ClinicDAO implements IDAO<ClinicDTO, Integer> {
             instance = new ClinicDAO();
         }
         return instance;
+    }
+
+    public List<ClinicDTO> onDutyClinics() throws ApiException {
+
+        // Find den aktuelle ugedag og tid
+        Weekday currentWeekday = Weekday.valueOf(LocalDate.now().getDayOfWeek().name().toUpperCase());
+        LocalTime currentTime = LocalTime.now();  // Definerer currentTime korrekt her
+
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<ClinicDTO> query = em.createQuery("SELECT new dat.dto.ClinicDTO(c) " +
+                    "FROM Clinic c " +
+                    "JOIN c.openingHours oh " +
+                    "WHERE oh.weekday = :currentWeekday " +
+                    "AND oh.startTime <= :currentTime " +
+                    "AND oh.endTime >= :currentTime", ClinicDTO.class);
+
+            // Sæt parametrene for ugedag og tid
+            query.setParameter("currentWeekday", currentWeekday);
+            query.setParameter("currentTime", currentTime);
+
+            // Udfør query og returner resultatet
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiException(500, "Error fetching clinics on duty");
+        }
+
     }
 
     @Override

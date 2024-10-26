@@ -173,4 +173,21 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
             throw new ApiException(400, "Invalid clinic entity");
         }
     }
+
+    // Endpoint to get clinics on duty
+
+    public void getOnDutyClinics(Context ctx) throws ApiException {
+        try {
+            List<ClinicDTO> onDutyClinics = dao.onDutyClinics(); // Hent data fra DAO
+            ctx.json(onDutyClinics); // Send resultatet som JSON-svar til klienten
+        } catch (ApiException e) {
+            e.printStackTrace();
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiException(500, "An unexpected error occurred while fetching on-duty clinics");
+        }
+    }
+
+
 }
