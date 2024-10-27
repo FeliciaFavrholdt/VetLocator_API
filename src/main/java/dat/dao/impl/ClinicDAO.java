@@ -1,73 +1,131 @@
-package dat.entities;
+package dat.dao.impl;
 
+import dat.dao.IDAO;
 import dat.dto.ClinicDTO;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import dat.entities.Clinic;
+import dat.entities.City;
+import dat.exceptions.JpaException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Table(name = "clinics")
-public class Clinic {
+public class ClinicDAO implements IDAO<ClinicDTO, Long> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+    private static ClinicDAO instance;
+    private static EntityManagerFactory emf;
 
-    @NotBlank(message = "Clinic name is required")
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
+    private ClinicDAO() {}
 
-    @NotBlank(message = "Address is required")
-    @Column(name = "address", nullable = false, length = 255)
-    private String address;
-
-    @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^\\+45\\s\\d{2}\\s\\d{2}\\s\\d{2}\\s\\d{2}$", message = "Phone number must match +45 xx xx xx xx format")
-    @Column(name = "contact_phone", nullable = false, length = 15)
-    private String contactPhone;
-
-    @NotNull(message = "City is required")
-    @ManyToOne
-    @JoinColumn(name = "city_id", nullable = false)
-    private City city;
-
-    @NotNull(message = "Emergency services status is required")
-    @Column(name = "emergency_services", nullable = false)
-    private Boolean emergencyServices;
-
-    // One-to-many relationship with OpeningHours
-    @OneToMany(mappedBy = "clinic", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OpeningHours> openingHours = new ArrayList<>();
-
-    // Helper method to add an opening hour
-    public void addOpeningHour(OpeningHours openingHour) {
-        openingHours.add(openingHour);
-        openingHour.setClinic(this);
+    public static ClinicDAO getInstance(EntityManagerFactory _emf) {
+        if (instance == null) {
+            emf = _emf;
+            instance = new ClinicDAO();
+        }
+        return instance;
     }
 
-    // Helper method to remove an opening hour
-    public void removeOpeningHour(OpeningHours openingHour) {
-        openingHours.remove(openingHour);
-        openingHour.setClinic(null);
+    @Override
+    public ClinicDTO create(ClinicDTO clinicDTO) {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+
+            // Find the city by ID (this assumes city is passed via DTO)
+            City city = em.find(City.class, clinicDTO.getCityId());
+            if (city == null) {
+                throw new JpaException(400, "City not found for ID: " + clinicDTO.getCityId());
+            }
+
+            // Create a new clinic and populate its fields from the DTO
+            Clinic clinic = new Clinic();
+            clinic.convertFromDTO(clinicDTO, city);
+
+            // Persist the clinic entity
+            em.persist(clinic);
+            em.getTransaction().commit();
+
+            // Return the created entity as a DTO
+            return new ClinicDTO(clinic);
+        } catch (PersistenceException e) {
+            throw new JpaException(500, "Error creating clinic in the database.");
+        }
     }
 
-    // Method to convert entity from DTO
-    public void convertFromDTO(ClinicDTO clinicDTO, City city) {
-        this.name = clinicDTO.getName();
-        this.address = clinicDTO.getAddress();
-        this.contactPhone = clinicDTO.getContactPhone();
-        this.emergencyServices = clinicDTO.getEmergencyServices();
-        this.city = city;  // The City entity is passed separately (fetched before conversion)
+    @Override
+    public ClinicDTO read(Long id) {
+        try (EntityManager em = emf.createEntityManager()) {
+            Clinic clinic = em.find(Clinic.class, id);
+            if (clinic == null) {
+                throw new JpaException(404, "Clinic not found for ID: " + id);
+            }
+            return new ClinicDTO(clinic);
+        } catch (PersistenceException e) {
+            throw new JpaException(500, "Error reading clinic from the database.");
+        }
+    }
+
+    @Override
+    public List<ClinicDTO> readAll() {
+        try (EntityManager em = emf.createEntityManager()) {
+            return em.createQuery("SELECT new dat.dto.ClinicDTO(c) FROM Clinic c", ClinicDTO.class)
+                    .getResultList();
+        } catch (PersistenceException e) {
+            throw new JpaException(500, "Error fetching clinics from the database.");
+        }
+    }
+
+    @Override
+    public ClinicDTO update(Long id, ClinicDTO clinicDTO) {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+
+            // Find the existing clinic by ID
+            Clinic clinic = em.find(Clinic.class, id);
+            if (clinic == null) {
+                throw new JpaException(404, "Clinic not found for ID: " + id);
+            }
+
+            // Find the city by ID (in case it's updated)
+            City city = em.find(City.class, clinicDTO.getCityId());
+            if (city == null) {
+                throw new JpaException(400, "City not found for ID: " + clinicDTO.getCityId());
+            }
+
+            // Update the clinic with data from the DTO
+            clinic.convertFromDTO(clinicDTO, city);
+
+            // Merge and commit the changes
+            Clinic updatedClinic = em.merge(clinic);
+            em.getTransaction().commit();
+
+            return new ClinicDTO(updatedClinic);
+        } catch (PersistenceException e) {
+            throw new JpaException(500, "Error updating clinic in the database.");
+        }
+    }
+
+    @Override
+    public void delete(Long id) {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            Clinic clinic = em.find(Clinic.class, id);
+            if (clinic == null) {
+                throw new JpaException(404, "Clinic not found for ID: " + id);
+            }
+            em.remove(clinic);
+            em.getTransaction().commit();
+        } catch (PersistenceException e) {
+            throw new JpaException(500, "Error deleting clinic from the database.");
+        }
+    }
+
+    @Override
+    public boolean validatePrimaryKey(Long id) {
+        try (EntityManager em = emf.createEntityManager()) {
+            return em.find(Clinic.class, id) != null;
+        } catch (PersistenceException e) {
+            throw new JpaException(500, "Error validating clinic primary key.");
+        }
     }
 }
