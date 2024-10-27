@@ -79,7 +79,7 @@ public class VeterinarianDAO implements IDAO<VeterinarianDTO, Integer> {
             if (veterinarian == null) {
                 throw new JpaException(404, "Veterinarian not found for ID: " + id);
             }
-            veterinarian.updateFromDTO(veterinarianDTO);
+            veterinarian.convertFromDTO(veterinarianDTO);
 
             if (!veterinarian.getClinic().getId().equals(veterinarianDTO.getClinicId())) {
                 Clinic clinic = em.find(Clinic.class, veterinarianDTO.getClinicId());

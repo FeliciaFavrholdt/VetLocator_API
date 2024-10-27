@@ -70,7 +70,7 @@ public class ClientDAO implements IDAO<ClientDTO, Integer> {
             if (client == null) {
                 throw new JpaException(404, "Client not found for ID: " + id);
             }
-            client.updateFromDTO(clientDTO);
+            client.convertFromDTO(clientDTO);
             em.merge(client);
             em.getTransaction().commit();
             return new ClientDTO(client);

@@ -1,20 +1,26 @@
 package dat.entities;
 
+import dat.dto.ClientDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "clients")
 public class Client {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
     @NotBlank(message = "Name is required")
@@ -41,4 +47,12 @@ public class Client {
     @ManyToOne
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
+
+    // Method to convert from DTO
+    public void convertFromDTO(ClientDTO clientDTO) {
+        this.name = clientDTO.getName();
+        this.email = clientDTO.getEmail();
+        this.phoneNumber = clientDTO.getPhoneNumber();
+        this.address = clientDTO.getAddress();
+    }
 }

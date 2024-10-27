@@ -87,7 +87,7 @@ public class AppointmentDAO implements IDAO<AppointmentDTO, Integer> {
             if (appointment == null) {
                 throw new JpaException(404, "Appointment not found for ID: " + id);
             }
-            appointment.updateFromDTO(appointmentDTO);
+            appointment.convertFromDTO(appointmentDTO);
             Animal animal = em.find(Animal.class, appointmentDTO.getAnimalId());
             Veterinarian veterinarian = em.find(Veterinarian.class, appointmentDTO.getVeterinarianId());
             Clinic clinic = em.find(Clinic.class, appointmentDTO.getClinicId());

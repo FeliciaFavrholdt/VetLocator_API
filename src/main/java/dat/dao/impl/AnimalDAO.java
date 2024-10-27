@@ -81,7 +81,7 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
             if (animal == null) {
                 throw new JpaException(404, "Animal not found for ID: " + id);
             }
-            animal.updateFromDTO(animalDTO);
+            animal.convertFromDTO(animalDTO);
 
             if (!animal.getOwner().getId().equals(animalDTO.getOwnerId())) {
                 Client client = em.find(Client.class, animalDTO.getOwnerId());

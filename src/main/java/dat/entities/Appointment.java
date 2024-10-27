@@ -1,20 +1,27 @@
 package dat.entities;
 
+import dat.dto.AppointmentDTO;
+import dat.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
-import dat.enums.AppointmentStatus;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "appointments")
 public class Appointment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
     @NotNull(message = "Animal is required")
@@ -45,4 +52,11 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private AppointmentStatus status;
+
+    // Method to convert entity from DTO
+    public void convertFromDTO(AppointmentDTO appointmentDTO) {
+        this.appointmentTime = appointmentDTO.getAppointmentTime();
+        this.reason = appointmentDTO.getReason();
+        this.status = AppointmentStatus.valueOf(appointmentDTO.getStatus());
+    }
 }
