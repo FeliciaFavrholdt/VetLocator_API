@@ -1,6 +1,5 @@
-package dat.populate;
+package dat.config;
 
-import dat.config.HibernateConfig;
 import dat.entities.*;
 import dat.enums.*;
 import jakarta.persistence.EntityManager;
@@ -8,6 +7,7 @@ import jakarta.persistence.EntityManagerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public class Populate {
 
@@ -78,36 +78,22 @@ public class Populate {
             // Persisting Opening Hours for Copenhagen Clinic
             em.persist(c1);
 
-            // Populate Clients
-            cl1 = new Client(null, "Mads", "m@gmail.com", "+45 30 30 30 30", "Kongevejen 27", copenhagen);
-            cl2 = new Client(null, "Lars", "LS@gmail.com", "+45 40 40 40 40", "Viborgvej 27", aarhus);
-            cl3 = new Client(null, "Sofie", "Sofie@gmail.com", "+45 50 50 50 50", "Hjallesevej 27", odense);
+            // Populate Animals
+            a1 = new Animal(null, "Coco", Animals.DOG, "Labrador", 5, null, MedicalHistory.DEWORMED);
+            a2 = new Animal(null, "Cleo", Animals.CAT, "Siamese", 3, null, MedicalHistory.DIETARY_RESTRICTIONS);
+            a3 = new Animal(null, "Buster", Animals.DOG, "Golden Retriever", 2, null, MedicalHistory.FLEA_TREATED);
+            a4 = new Animal(null, "Molly", Animals.RABBIT, "Normal", 4, null, MedicalHistory.VACCINATED);
+            a5 = new Animal(null, "Sofus", Animals.FISH, "Normal", 1, null, MedicalHistory.DEWORMED);
 
-            // Persisting Clients
+            // Populate Clients with animals, gender, and city references
+            cl1 = new Client(null, "Mads", Gender.MALE, "mads@gmail.com", "+45 30 30 30 30", "Kongevejen 27", copenhagen, List.of(a1, a2));
+            cl2 = new Client(null, "Lars", Gender.MALE, "lars@gmail.com", "+45 40 40 40 40", "Viborgvej 27", aarhus, List.of(a3));
+            cl3 = new Client(null, "Sofie", Gender.FEMALE, "sofie@gmail.com", "+45 50 50 50 50", "Hjallesevej 27", odense, List.of(a4, a5));
+
+            // Persisting Clients (this will also persist animals due to cascade setting)
             em.persist(cl1);
             em.persist(cl2);
             em.persist(cl3);
-
-            // Populate Animals
-            a1 = new Animal(null, "Coco", Animals.DOG, "Labrador", 5, cl1, MedicalHistory.DEWORMED);
-            a2 = new Animal(null, "Cleo", Animals.CAT, "Siamese", 3, cl1, MedicalHistory.DIETARY_RESTRICTIONS);
-            a3 = new Animal(null, "Buster", Animals.DOG, "Golden Retriever", 2, cl2, MedicalHistory.FLEA_TREATED);
-            a4 = new Animal(null, "Molly", Animals.RABBIT, "Normal", 4, cl3, MedicalHistory.VACCINATED);
-            a5 = new Animal(null, "Sofus", Animals.FISH, "Normal", 1, cl3, MedicalHistory.DEWORMED);
-
-            // Add animals to clients
-            cl1.addAnimal(a1);
-            cl1.addAnimal(a2);
-            cl2.addAnimal(a3);
-            cl3.addAnimal(a4);
-            cl3.addAnimal(a5);
-
-            // Persisting Animals
-            em.persist(a1);
-            em.persist(a2);
-            em.persist(a3);
-            em.persist(a4);
-            em.persist(a5);
 
             // Populate Appointments
             app1 = new Appointment(

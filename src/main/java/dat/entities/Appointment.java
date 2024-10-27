@@ -1,16 +1,15 @@
 package dat.entities;
 
-import dat.dto.AppointmentDTO;
 import dat.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 @NoArgsConstructor
@@ -24,39 +23,48 @@ public class Appointment {
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
-    @NotNull(message = "Animal is required")
-    @ManyToOne
-    @JoinColumn(name = "animal_id", nullable = false)
-    private Animal animal;
+    @NotNull(message = "Appointment date is required")
+    @Column(name = "appointment_date", nullable = false)
+    private LocalDate appointmentDate;
 
-    @NotNull(message = "Veterinarian is required")
-    @ManyToOne
-    @JoinColumn(name = "veterinarian_id", nullable = false)
-    private Veterinarian veterinarian;
+    @NotNull(message = "Appointment time is required")
+    @Column(name = "appointment_time", nullable = false)
+    private LocalTime appointmentTime;
+
+    @NotBlank(message = "Reason is required")
+    @Column(name = "reason", nullable = false, length = 255)
+    private String reason;
+
+    @NotNull(message = "Status is required")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private AppointmentStatus status;
 
     @NotNull(message = "Clinic is required")
     @ManyToOne
     @JoinColumn(name = "clinic_id", nullable = false)
     private Clinic clinic;
 
-    @NotNull(message = "Appointment time is required")
-    @Column(name = "appointment_time", nullable = false)
-    private LocalDateTime appointmentTime;
+    @NotNull(message = "Client is required")
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
 
-    @NotBlank(message = "Reason is required")
-    @Size(max = 255, message = "Reason must not exceed 255 characters")
-    @Column(name = "reason", nullable = false, length = 255)
-    private String reason;
+    @NotNull(message = "Animal is required")
+    @ManyToOne
+    @JoinColumn(name = "animal_id", nullable = false)
+    private Animal animal;
 
-    @NotNull(message = "Status is required")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 20)
-    private AppointmentStatus status;
-
-    // Method to convert entity from DTO
-    public void convertFromDTO(AppointmentDTO appointmentDTO) {
-        this.appointmentTime = appointmentDTO.getAppointmentTime();
-        this.reason = appointmentDTO.getReason();
-        this.status = AppointmentStatus.valueOf(appointmentDTO.getStatus());
+    // Constructor with required fields
+    public Appointment(Long id, LocalDate appointmentDate, LocalTime appointmentTime, String reason,
+                       AppointmentStatus status, Clinic clinic, Client client, Animal animal) {
+        this.id = id;
+        this.appointmentDate = appointmentDate;
+        this.appointmentTime = appointmentTime;
+        this.reason = reason;
+        this.status = status;
+        this.clinic = clinic;
+        this.client = client;
+        this.animal = animal;
     }
 }

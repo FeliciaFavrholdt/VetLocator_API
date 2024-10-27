@@ -1,6 +1,7 @@
 package dat.entities;
 
 import dat.dto.ClientDTO;
+import dat.enums.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +11,9 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -27,6 +31,11 @@ public class Client {
     @Size(max = 100, message = "Name must not exceed 100 characters")
     @Column(name = "name", nullable = false, length = 100)
     private String name;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", nullable = false, length = 10)
+    private Gender gender;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
@@ -48,11 +57,34 @@ public class Client {
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
-    // Method to convert from DTO
-    public void convertFromDTO(ClientDTO clientDTO) {
-        this.name = clientDTO.getName();
-        this.email = clientDTO.getEmail();
-        this.phoneNumber = clientDTO.getPhoneNumber();
-        this.address = clientDTO.getAddress();
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Animal> animals = new ArrayList<>();
+
+    // New constructor that takes a list of animals
+    public Client(Long id, String name, Gender gender, String email, String phoneNumber, String address, City city, List<Animal> animals) {
+        this.id = id;
+        this.name = name;
+        this.gender = gender;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.city = city;
+        this.animals = new ArrayList<>();  // Initialize the list
+        // Set the bidirectional relationship
+        for (Animal animal : animals) {
+            this.addAnimal(animal);  // Use addAnimal to maintain the relationship
+        }
+    }
+
+    // Method to add an animal and maintain the relationship
+    public void addAnimal(Animal animal) {
+        animals.add(animal);
+        animal.setOwner(this);  // Maintain the bidirectional relationship
+    }
+
+    // Method to remove an animal and maintain the relationship
+    public void removeAnimal(Animal animal) {
+        animals.remove(animal);
+        animal.setOwner(null);  // Break the relationship
     }
 }
