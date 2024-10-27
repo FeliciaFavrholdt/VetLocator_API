@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dat.routes.Routes;
 import dat.security.controllers.AccessController;
 import dat.security.controllers.SecurityController;
-import dat.security.enums.Role;
 import dat.security.exceptions.ApiException;
 import dat.security.routes.SecurityRoutes;
 import dat.utils.Utils;

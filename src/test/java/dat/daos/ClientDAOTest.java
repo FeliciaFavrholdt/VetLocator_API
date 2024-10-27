@@ -37,7 +37,7 @@
 //        client.setEmail("testuser@example.com");
 //        client.setPassword("password123");
 //        client.setFirstName("Test");
-//        client.setLastName("User");
+//        client.setLastName("dat.security.entities.User");
 //        client.setGender(Gender.FEMALE);
 //        client.setPhone("1234567890");
 //        em.persist(client);  // Persist the client to the test database
@@ -51,7 +51,7 @@
 //        // Prepare ClientCreateDTO for creation (includes password)
 //        ClientCreateDTO client = new ClientCreateDTO();
 //        client.setFirstName("New");
-//        client.setLastName("User");
+//        client.setLastName("dat.security.entities.User");
 //        client.setPhone("0987654321");
 //        client.setGender(Gender.MALE);
 //        client.setEmail("newuser@example.com");
@@ -65,7 +65,7 @@
 //        assertNotNull(createdClient);
 //
 //        // Verify the properties of the newly created client
-//        assertEquals("New User", createdClient.getFullName());
+//        assertEquals("New dat.security.entities.User", createdClient.getFullName());
 //        assertEquals("newuser@example.com", createdClient.getEmail());
 //        assertEquals("0987654321", createdClient.getPhone());
 //    }
@@ -80,7 +80,7 @@
 //        assertNotNull(clientDTO);
 //
 //        // Verify the client's properties
-//        assertEquals("Test User", clientDTO.getFullName());
+//        assertEquals("Test dat.security.entities.User", clientDTO.getFullName());
 //        assertEquals("testuser@example.com", clientDTO.getEmail());
 //        assertEquals("1234567890", clientDTO.getPhone());
 //    }
@@ -96,14 +96,14 @@
 //
 //        // Verify the properties of the first client in the list
 //        ClientDTO firstClient = clients.get(0);
-//        assertEquals("Test User", firstClient.getFullName());
+//        assertEquals("Test dat.security.entities.User", firstClient.getFullName());
 //    }
 //
 //    @Test
 //    void updateClient() {
 //        // Prepare updated ClientDTO
 //        ClientDTO updatedClientDTO = new ClientDTO();
-//        updatedClientDTO.setFullName("Updated User");
+//        updatedClientDTO.setFullName("Updated dat.security.entities.User");
 //        updatedClientDTO.setEmail("updateduser@example.com");
 //        updatedClientDTO.setPhone("1122334455");
 //
@@ -114,7 +114,7 @@
 //        assertNotNull(updatedClient);
 //
 //        // Verify the updated properties of the client
-//        assertEquals("Updated User", updatedClient.getFullName());
+//        assertEquals("Updated dat.security.entities.User", updatedClient.getFullName());
 //        assertEquals("updateduser@example.com", updatedClient.getEmail());
 //        assertEquals("1122334455", updatedClient.getPhone());
 //    }
