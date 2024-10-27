@@ -1,6 +1,6 @@
 package dat.routes;
 
-import dat.controllers.impl.ClientController;
+import dat.controller.impl.ClientController;
 import io.javalin.apibuilder.EndpointGroup;
 import static io.javalin.apibuilder.ApiBuilder.*;
 

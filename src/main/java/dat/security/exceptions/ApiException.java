@@ -1,6 +1,6 @@
 package dat.security.exceptions;
 
-import dat.utils.Utils;
+import dat.util.Utils;
 import lombok.Getter;
 
 import java.util.Map;

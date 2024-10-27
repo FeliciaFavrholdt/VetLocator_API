@@ -1,6 +1,6 @@
 package dat.routes;
 
-import dat.controllers.impl.AnimalController;
+import dat.controller.impl.AnimalController;
 import io.javalin.apibuilder.EndpointGroup;
 import static io.javalin.apibuilder.ApiBuilder.*;
 

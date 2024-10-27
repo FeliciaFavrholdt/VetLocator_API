@@ -1,5 +1,7 @@
 package dat.exceptions;
 
+import dat.exception.Message;
+
 public class JpaException extends RuntimeException {
 
     private final Message messageRecord;
@@ -18,7 +20,7 @@ public class JpaException extends RuntimeException {
         return messageRecord.message();  // Retrieve message from Message record
     }
 
-    public Message getMessageRecord() {
+    public Object getMessageRecord() {
         return messageRecord;  // Optionally expose the entire Message record
     }
 }

@@ -1,7 +1,7 @@
-package dat.controllers.impl;
+package dat.controller.impl;
 
 import dat.config.HibernateConfig;
-import dat.controllers.IController;
+import dat.controller.IController;
 import dat.dao.impl.ClientDAO;  // Use ClientDAO, not UserDAO
 import dat.dto.ClientDTO;
 import dat.exceptions.JpaException;

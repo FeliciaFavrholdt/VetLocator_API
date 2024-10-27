@@ -1,7 +1,7 @@
 package dat.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dat.controllers.impl.ExceptionController;
+import dat.controller.impl.ExceptionController;
 import dat.routes.Routes;
 import dat.security.controllers.AccessController;
 import dat.security.controllers.SecurityController;
@@ -54,7 +54,7 @@ public class ApplicationConfig {
 
         // Global exception handlers delegated to ExceptionController
         app.exception(Exception.class, exceptionController::exceptionHandler);
-        app.exception(dat.exceptions.ApiException.class, exceptionController::apiExceptionHandler);
+        app.exception(dat.exception.ApiException.class, exceptionController::apiExceptionHandler);
 
         // Start the server
         app.start(port);
