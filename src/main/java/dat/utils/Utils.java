@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import dat.dto.ClientCreateDTO;
-import dat.dto.ClientDTO;
 import dat.security.exceptions.ApiException;
 import io.javalin.http.Context;
 

@@ -1,7 +1,5 @@
 package dat.config;
 
-import dat.entities.*;
-import dat.entities.Client;
 import dat.security.entities.Role;
 import dat.security.entities.User;
 import dat.utils.Utils;
@@ -43,15 +41,7 @@ public class HibernateConfig {
 
     // TODO: IMPORTANT: Add Entity classes here for them to be registered with Hibernate
     private static void getAnnotationConfiguration(Configuration configuration) {
-        configuration.addAnnotatedClass(Client.class);
-        configuration.addAnnotatedClass(Animal.class);
-        configuration.addAnnotatedClass(Appointment.class);
-        configuration.addAnnotatedClass(City.class);
-        configuration.addAnnotatedClass(Clinic.class);
-        configuration.addAnnotatedClass(OpeningHours.class);
-        configuration.addAnnotatedClass(Veterinarian.class);
-        configuration.addAnnotatedClass((User.class));
-        configuration.addAnnotatedClass((Role.class));
+
     }
 
     private static EntityManagerFactory createEMF(boolean forTest) {
@@ -119,8 +109,8 @@ public class HibernateConfig {
         props.put("hibernate.connection.password", "postgres");
         props.put("hibernate.archive.autodetection", "class");
         props.put("hibernate.show_sql", "true");
-        //props.put("hibernate.hbm2ddl.auto", "create-drop");
-        props.put("hibernate.hbm2ddl.auto", "update"); // update for production
+        props.put("hibernate.hbm2ddl.auto", "create-drop");
+        //props.put("hibernate.hbm2ddl.auto", "update"); // update for production
         return props;
     }
 }

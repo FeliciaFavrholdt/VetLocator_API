@@ -1,10 +1,6 @@
 package dat.daos;
 
 import dat.config.HibernateConfig;
-import dat.dao.impl.AnimalDAO;
-import dat.dto.AnimalDTO;
-import dat.entities.Animal;
-import dat.entities.Client;
 import dat.enums.Gender;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;

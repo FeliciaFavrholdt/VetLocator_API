@@ -1,11 +1,6 @@
 package dat.daos;
 
 import dat.config.HibernateConfig;
-import dat.dao.impl.ClinicDAO;
-import dat.dto.ClinicDTO;
-import dat.entities.City;
-import dat.entities.Clinic;
-import dat.entities.OpeningHours;
 import dat.enums.Specialization;
 import dat.enums.Weekday;
 import jakarta.persistence.EntityManager;
