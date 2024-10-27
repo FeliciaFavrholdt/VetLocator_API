@@ -1,5 +1,11 @@
 package dat.security.exceptions;
 
+import dat.utils.Utils;
+
+/**
+ * Purpose: To handle exceptions in the API
+ * Author: Thomas Hartmann
+ */
 public class ApiException extends RuntimeException {
     private int code;
     public ApiException (int code, String msg) {
@@ -7,7 +13,7 @@ public class ApiException extends RuntimeException {
         this.code = code;
     }
 
-    public int getStatusCode() {
+    public int getCode() {
         return code;
     }
 }

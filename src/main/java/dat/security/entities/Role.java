@@ -1,33 +1,50 @@
 package dat.security.entities;
 
 import jakarta.persistence.*;
+import lombok.ToString;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Purpose: To handle security in the API
+ *  Author: Thomas Hartmann
+ */
 @Entity
-public class Role {
+@Table(name = "roles")
+@NamedQueries(@NamedQuery(name = "Role.deleteAllRows", query = "DELETE from Role"))
+public class Role implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Basic(optional = false)
+    @Column(name = "name", length = 20)
+    private String name;
 
-    @Column(unique = true, nullable = false)
-    private String roleName;
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users = new HashSet<>();
 
-    // Constructors, getters, and setters
     public Role() {}
 
     public Role(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public Long getId() {
-        return id;
+        this.name = roleName;
     }
 
     public String getRoleName() {
-        return roleName;
+        return name;
     }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    @Override
+    public String toString() {
+        return "Role{" + "roleName='" + name + '\'' + '}';
     }
 }
