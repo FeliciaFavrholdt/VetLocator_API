@@ -1,0 +1,52 @@
+/* Body styling to center all content vertically and horizontally */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;                 /* Use flexbox */
+    justify-content: center;        /* Center content horizontally */
+    align-items: center;            /* Center content vertically */
+    min-height: 100vh;              /* Make sure the body takes up full viewport height */
+    margin: 0;                      /* Remove default body margin */
+    flex-direction: column;         /* Stack the content vertically */
+}
+
+/* Image container styling */
+.image-container {
+    text-align: center;  /* Centers the image horizontally */
+    margin: 20px 0;      /* Adds space above and below the image */
+}
+
+/* Image styling */
+.vet-image {
+    width: 500px;        /* Sets the width to 300px (adjust as needed) */
+    height: auto;        /* Maintains the aspect ratio of the image */
+    border-radius: 8px;  /* Gives the image rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+}
+
+/* Styling the search bar and button */
+.search-container {
+    margin: 20px 0;      /* Adds space around the search bar */
+}
+
+#searchInput {
+    padding: 10px;
+    width: 300px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-left: 5px;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #45a049;
+}

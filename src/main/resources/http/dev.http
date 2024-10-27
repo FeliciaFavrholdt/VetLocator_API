@@ -1,9 +1,6 @@
 ### A simple get request to the test endpoint. No need for login
 GET {{url}}/auth/test/
 
-### Populate the database with some data
-GET {{url}}/hotels/populate/
-
 ### Create a new client - this one will only get a USER role by default
 POST {{url}}/auth/register/
 
