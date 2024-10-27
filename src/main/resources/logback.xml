@@ -1,11 +1,13 @@
 <configuration>
 
+    <!-- Console Appender: Logs will be output to the console -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
+    <!-- File Appender: Logs will be written to a file (info level and above) -->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>logs/javalin-app.log</file>
         <append>true</append>
@@ -14,6 +16,7 @@
         </encoder>
     </appender>
 
+    <!-- Debug File Appender: Debug logs will be written to a separate file -->
     <appender name="DEBUGFILE" class="ch.qos.logback.core.FileAppender">
         <file>logs/debug.log</file>
         <append>true</append>
@@ -22,14 +25,32 @@
         </encoder>
     </appender>
 
+    <!-- Exception File Appender: Exception logs will be written to a separate file -->
+    <appender name="EXCEPTIONFILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/exception.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root logger: Handles general logging (info level and above) -->
     <root level="info">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
 
-    <!-- Adjust log levels for specific packages if needed -->
-    <logger name="app" level="debug" additivity="false" >
+    <!-- Logger for application-specific debugging -->
+    <!-- Adjust for the package where your core classes (e.g., dat.*) are located -->
+    <logger name="dat" level="debug" additivity="false">
         <appender-ref ref="DEBUGFILE" />
         <appender-ref ref="CONSOLE" />
     </logger>
+
+    <!-- Optional: Fine-tuning logging for specific classes, e.g., ExceptionController -->
+    <logger name="dat.controllers.impl.ExceptionController" level="debug" additivity="false">
+        <appender-ref ref="EXCEPTIONFILE" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
 </configuration>

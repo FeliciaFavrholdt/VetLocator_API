@@ -1,0 +1,38 @@
+
+###
+GET {{url}}/clients
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+
+###
+GET {{url}}/clients/5
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+
+###
+POST http://localhost:7071/api/clients
+Content-Type: application/json
+
+{
+  "fullName": "Manuel Neuer",
+  "email": "Manuel@example.com",
+  "phone": "+45 12 34 56 78",
+  "gender": "MALE"
+}
+
+###
+PUT http://localhost:7071/api/clients/5
+Content-Type: application/json
+
+{
+  "fullName": "Ninna Jensen",
+  "email": "Ninna@example.com",
+  "phone": "+45 12312322",
+  "gender": "FEMALE"
+}
+
+###
+DELETE http://localhost:7071/api/clients/5
+Accept: application/json

@@ -1,5 +1,7 @@
 package dat.config;
 
+import dat.entities.*;
+import dat.entities.Client;
 import dat.security.entities.Role;
 import dat.security.entities.User;
 import dat.util.Utils;
@@ -41,8 +43,15 @@ public class HibernateConfig {
 
     // TODO: IMPORTANT: Add Entity classes here for them to be registered with Hibernate
     private static void getAnnotationConfiguration(Configuration configuration) {
-        configuration.addAnnotatedClass(User.class);
-        configuration.addAnnotatedClass(Role.class);
+        configuration.addAnnotatedClass(Client.class);
+        configuration.addAnnotatedClass(Animal.class);
+        configuration.addAnnotatedClass(Appointment.class);
+        configuration.addAnnotatedClass(City.class);
+        configuration.addAnnotatedClass(Clinic.class);
+        configuration.addAnnotatedClass(OpeningHours.class);
+        configuration.addAnnotatedClass(Veterinarian.class);
+        configuration.addAnnotatedClass((User.class));
+        configuration.addAnnotatedClass((Role.class));
     }
 
     private static EntityManagerFactory createEMF(boolean forTest) {
@@ -77,13 +86,14 @@ public class HibernateConfig {
     private static Properties setBaseProperties(Properties props) {
         props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         props.put("hibernate.connection.driver_class", "org.postgresql.Driver");
-        props.put("hibernate.hbm2ddl.auto", "create");
+        props.put("hibernate.hbm2ddl.auto", "update");
         props.put("hibernate.current_session_context_class", "thread");
         props.put("hibernate.show_sql", "true");
         props.put("hibernate.format_sql", "true");
         props.put("hibernate.use_sql_comments", "true");
         return props;
     }
+
 
     private static Properties setDeployedProperties(Properties props) {
         String DBName = System.getenv("DB_NAME");

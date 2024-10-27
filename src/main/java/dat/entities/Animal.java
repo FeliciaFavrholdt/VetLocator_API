@@ -1,0 +1,79 @@
+package dat.entities;
+
+import dat.dto.AnimalDTO;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = "clients")  // Avoid recursive toString calls
+@Table(name = "animals")
+public class Animal {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
+    private Integer id;
+
+    @Column(name = "name", nullable = false, length = 50)
+    @NotBlank(message = "Name cannot be blank")
+    @Size(max = 50, message = "Name must be less than or equal to 50 characters")
+    private String name;
+
+    @Column(name = "species", nullable = false, length = 50)
+    @NotBlank(message = "Species cannot be blank")
+    @Size(max = 50, message = "Species must be less than or equal to 50 characters")
+    private String species;
+
+    @Column(name = "age", nullable = false)
+    @Min(value = 0, message = "Age must be zero or greater")
+    private int age;
+
+    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Appointment> appointments = new HashSet<>();
+
+    // Many-to-One relationship with User (owner)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true)
+    private Client client;
+
+    public Animal(Integer id, String name, String species, int age, Client client) {
+        this.id = id;
+        this.name = name;
+        this.species = species;
+        this.age = age;
+        this.client = client;
+    }
+
+    // Constructor to create an Animal from AnimalDTO
+    public Animal(AnimalDTO dto) {
+        this.id = dto.getId();
+        this.name = dto.getName();
+        this.species = dto.getSpecies();
+        this.age = dto.getAge();
+        // clients will be set after fetching from the database
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+        if (!client.getAnimals().contains(this)) {
+            client.getAnimals().add(this);  // Add this animal to the clients set of animals if it's not already present
+        }
+    }
+
+    public void updateFromDTO(AnimalDTO dto) {
+        this.name = dto.getName();
+        this.species = dto.getSpecies();
+        this.age = dto.getAge();
+    }
+}
