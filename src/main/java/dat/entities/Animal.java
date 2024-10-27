@@ -1,7 +1,9 @@
-package dat.entities;
+package com.example.entities;
 
+import dat.entities.Client;
 import jakarta.persistence.*;
 import lombok.Data;
+import dat.enums.Animals;
 
 @Data
 @Entity
@@ -12,7 +14,10 @@ public class Animal {
     private Long id;
 
     private String name;
-    private String species;
+
+    @Enumerated(EnumType.STRING)
+    private Animals species;
+
     private String breed;
     private Integer age;
 
@@ -23,4 +28,3 @@ public class Animal {
     @Column(columnDefinition = "TEXT")
     private String medicalHistory;
 }
-

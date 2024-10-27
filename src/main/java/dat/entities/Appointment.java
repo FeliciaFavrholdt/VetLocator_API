@@ -3,6 +3,7 @@ package dat.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import dat.enums.AppointmentStatus;
 
 @Data
 @Entity
@@ -14,7 +15,7 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "animal_id")
-    private Animal animal;
+    private com.example.entities.Animal animal;
 
     @ManyToOne
     @JoinColumn(name = "veterinarian_id")
@@ -25,7 +26,9 @@ public class Appointment {
     private Clinic clinic;
 
     private LocalDateTime appointmentTime;
-    private String reason;
-    private String status;
-}
 
+    private String reason;
+
+    @Enumerated(EnumType.STRING)
+    private AppointmentStatus status;
+}

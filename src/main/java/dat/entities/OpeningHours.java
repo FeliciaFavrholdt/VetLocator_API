@@ -2,6 +2,7 @@ package dat.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import dat.enums.Weekday;
 
 @Data
 @Entity
@@ -15,7 +16,9 @@ public class OpeningHours {
     @JoinColumn(name = "clinic_id")
     private Clinic clinic;
 
-    private String dayOfWeek;
+    @Enumerated(EnumType.STRING)
+    private Weekday dayOfWeek;
+
     private String openingTime;
     private String closingTime;
 }

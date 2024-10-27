@@ -2,6 +2,8 @@ package dat.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import dat.enums.Specialization;
+import dat.enums.Availability;
 
 @Data
 @Entity
@@ -12,11 +14,14 @@ public class Veterinarian {
     private Long id;
 
     private String name;
-    private String specialties;  // This can be a comma-separated string or a one-to-many relationship
+
+    @Enumerated(EnumType.STRING)
+    private Specialization specialties;
 
     @ManyToOne
     @JoinColumn(name = "clinic_id")
     private Clinic clinic;
 
-    private Boolean availableForEmergency;
+    @Enumerated(EnumType.STRING)
+    private Availability availableForEmergency;
 }
