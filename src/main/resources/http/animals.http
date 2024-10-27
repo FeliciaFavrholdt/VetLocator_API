@@ -1,14 +1,14 @@
 
 ###
-GET http://localhost:7071/api/animals
+GET {{url}}/animals
 Accept: application/json
 
 ###
-GET http://localhost:7071/api/animals/1
+GET {{url}}/api/animals/1
 Accept: application/json
 
 ###
-POST http://localhost:7071/api/animals
+POST {{url}}/api/animals
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:7071/api/animals/13
+PUT {{url}}/api/animals/13
 Content-Type: application/json
 
 {
@@ -30,5 +30,5 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:7071/api/animals/13
+DELETE {{url}}/api/animals/13
 Accept: application/json

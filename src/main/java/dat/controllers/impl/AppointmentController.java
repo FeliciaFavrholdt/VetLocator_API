@@ -6,6 +6,7 @@ import dat.dao.impl.AppointmentDAO;
 import dat.dto.AppointmentDTO;
 import dat.exceptions.ApiException;
 import dat.exceptions.JpaException;
+import dat.security.enums.Role;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
@@ -96,15 +97,31 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
                     .check(this::validatePrimaryKey, "Not a valid id")
                     .get();
             logger.info("Updating appointment with ID: {}", id);
-            AppointmentDTO appointmentDTO = dao.update(id, validateEntity(ctx));
 
-            if (appointmentDTO != null) {
-                ctx.status(200);
-                ctx.json(appointmentDTO);
-                logger.info("Appointment with ID: {} updated successfully", id);
-            } else {
-                throw new ApiException(404, "Appointment not found or update failed");
+            AppointmentDTO existingAppointment = dao.read(id);
+            if (existingAppointment == null) {
+                throw new ApiException(404, "Appointment not found");
             }
+
+            // Ensure that the client updating the appointment is the owner or has the necessary permissions
+            Integer clientId = existingAppointment.getClientId();
+            Integer userId = ctx.attribute("user_id");  // Get the authenticated user's ID from the context
+            List<dat.security.entities.Role> userRoles = ctx.attribute("roles");  // Retrieve roles from the context
+
+            // Check if the client is the owner or if the user has VET/ADMIN roles
+            if (!clientId.equals(userId) && !userRoles.contains(Role.ADMIN) && !userRoles.contains(Role.VET)) {
+                throw new ApiException(403, "You are not authorized to update this appointment.");
+            }
+
+            AppointmentDTO updatedAppointment = dao.update(id, validateEntity(ctx));
+            ctx.status(200);
+            ctx.json(updatedAppointment);
+            logger.info("Appointment with ID: {} updated successfully", id);
+
+        } catch (ApiException e) {
+            logger.warn("API Error: {}", e.getMessage(), e);
+            ctx.status(e.getStatusCode());
+            ctx.json(e.getMessageRecord());
         } catch (JpaException e) {
             logger.error("JPA Error updating appointment: {}", e.getMessage(), e);
             throw new ApiException(500, "Error updating appointment in the database");
@@ -121,9 +138,29 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
                     .check(this::validatePrimaryKey, "Not a valid id")
                     .get();
             logger.info("Deleting appointment with ID: {}", id);
+
+            AppointmentDTO existingAppointment = dao.read(id);
+            if (existingAppointment == null) {
+                throw new ApiException(404, "Appointment not found");
+            }
+
+            // Ensure that the client deleting the appointment is the owner or has the necessary permissions
+            Integer clientId = existingAppointment.getClientId();
+            Integer userId = ctx.attribute("user_id");
+            List<dat.security.entities.Role> userRoles = ctx.attribute("roles");
+
+            // Check if the client is the owner or if the user has VET/ADMIN roles
+            if (!clientId.equals(userId) && !userRoles.contains(Role.ADMIN) && !userRoles.contains(Role.VET)) {
+                throw new ApiException(403, "You are not authorized to delete this appointment.");
+            }
+
             dao.delete(id);
             ctx.status(204);
             logger.info("Appointment with ID: {} deleted successfully", id);
+        } catch (ApiException e) {
+            logger.warn("API Error: {}", e.getMessage(), e);
+            ctx.status(e.getStatusCode());
+            ctx.json(e.getMessageRecord());
         } catch (JpaException e) {
             logger.error("JPA Error deleting appointment: {}", e.getMessage(), e);
             throw new ApiException(500, "Error deleting appointment from the database");

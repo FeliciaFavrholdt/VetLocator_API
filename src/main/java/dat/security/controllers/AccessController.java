@@ -25,7 +25,7 @@ public class AccessController implements IAccessController {
 
         // If no roles are specified on the endpoint, then anyone can access the route
         if (ctx.routeRoles().isEmpty() || ctx.routeRoles().contains(Role.ANYONE)){
-           return;
+            return;
         }
 
         // Check if the user is authenticated

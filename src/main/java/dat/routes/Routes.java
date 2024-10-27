@@ -12,21 +12,12 @@ public class Routes {
 
     public EndpointGroup getRoutes() {
         return () -> {
-            // Define the root path to serve the index.html page
-            path("/", () -> {
-                get(ctx -> {
-                    // Redirect to /index.html, which is served from /public directory
-                    ctx.redirect("/api/index.html");
-                });
-            });
+            // Redirect root path to the index.html page (public access)
+            get("/", ctx -> ctx.redirect("/api/index.html"), Role.ANYONE);
 
-            // Animal routes
+            // Grouped routes for animals, clients, and clinics
             path("/animals", animalRoute.getRoutes());
-
-            // Client routes
             path("/clients", clientRoutes.getRoutes());
-
-            // Clinic routes
             path("/clinics", clinicRoute.getRoutes());
         };
     }
