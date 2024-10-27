@@ -1,5 +1,6 @@
 package dat.entities;
 
+import dat.dto.AnimalDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import dat.enums.Animals;
@@ -32,4 +33,11 @@ public class Animal {
 
     @Column(name = "medical_history", columnDefinition = "TEXT")
     private String medicalHistory;
+
+    public void updateFromDTO(AnimalDTO animalDTO) {
+        this.name = animalDTO.getName();
+        this.species = Animals.valueOf(animalDTO.getSpecies());
+        this.age = animalDTO.getAge();
+    }
+
 }
