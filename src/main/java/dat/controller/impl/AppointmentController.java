@@ -1,11 +1,11 @@
-package dat.controllers.impl;
+package dat.controller.impl;
 
 import dat.config.HibernateConfig;
 import dat.controller.IController;
 import dat.dao.impl.AppointmentDAO;
 import dat.dto.AppointmentDTO;
 import dat.exception.ApiException;
-import dat.exceptions.JpaException;
+import dat.exception.JpaException;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;

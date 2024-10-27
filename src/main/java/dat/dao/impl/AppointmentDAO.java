@@ -6,7 +6,7 @@ import dat.entities.Animal;
 import dat.entities.Appointment;
 import dat.entities.Client;
 import dat.entities.Clinic;
-import dat.exceptions.JpaException;
+import dat.exception.JpaException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;

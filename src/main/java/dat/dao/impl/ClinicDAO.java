@@ -5,7 +5,7 @@ import dat.dto.ClinicDTO;
 import dat.entities.Clinic;
 import dat.enums.Weekday;
 import dat.exception.ApiException;
-import dat.exceptions.JpaException;
+import dat.exception.JpaException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;

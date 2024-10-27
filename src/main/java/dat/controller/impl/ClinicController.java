@@ -5,7 +5,7 @@ import dat.controller.IController;
 import dat.dao.impl.ClinicDAO;
 import dat.dto.ClinicDTO;
 import dat.exception.ApiException;
-import dat.exceptions.JpaException;
+import dat.exception.JpaException;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
