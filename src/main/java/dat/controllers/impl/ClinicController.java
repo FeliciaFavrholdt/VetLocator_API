@@ -2,8 +2,10 @@ package dat.controllers.impl;
 
 import dat.config.HibernateConfig;
 import dat.controllers.IController;
+import dat.dao.impl.AppointmentDAO;
 import dat.dao.impl.ClinicDAO;
 import dat.dto.ClinicDTO;
+import dat.entities.Appointment;
 import dat.exceptions.ApiException;
 import dat.exceptions.JpaException;
 import io.javalin.http.Context;
@@ -14,15 +16,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClinicController implements IController<ClinicDTO, Long> {  // Primary key type changed to Long
 
     private static final Logger logger = LoggerFactory.getLogger(ClinicController.class);  // Logger instance
-    private final ClinicDAO dao;
+    private final ClinicDAO clinicDAO;
+    private final AppointmentDAO appointmentDAO;
 
     public ClinicController() {
         EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
-        this.dao = ClinicDAO.getInstance(emf);
+        this.clinicDAO = ClinicDAO.getInstance(emf);
+        this.appointmentDAO = AppointmentDAO.getInstance(emf);
     }
 
     @Override
@@ -31,7 +36,7 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
             Long id = ctx.pathParamAsClass("id", Long.class)  // Changed to Long
                     .check(this::validatePrimaryKey, "Not a valid id")
                     .get();
-            ClinicDTO clinicDTO = dao.read(id);
+            ClinicDTO clinicDTO = clinicDAO.read(id);
 
             if (clinicDTO != null) {
                 ctx.status(HttpStatus.OK);  // 200 OK
@@ -58,7 +63,7 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
     @Override
     public void readAll(@NotNull Context ctx) {
         try {
-            List<ClinicDTO> clinicDTOS = dao.readAll();
+            List<ClinicDTO> clinicDTOS = clinicDAO.readAll();
             ctx.status(HttpStatus.OK);  // 200 OK
             ctx.json(clinicDTOS);
             logger.info("Successfully fetched all clinics.");
@@ -75,7 +80,7 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
     public void create(@NotNull Context ctx) {
         try {
             ClinicDTO jsonRequest = ctx.bodyAsClass(ClinicDTO.class);
-            ClinicDTO clinicDTO = dao.create(jsonRequest);
+            ClinicDTO clinicDTO = clinicDAO.create(jsonRequest);
             ctx.status(HttpStatus.CREATED);  // 201 Created
             ctx.json(clinicDTO);
             logger.info("Successfully created new clinic with ID {}", clinicDTO.getId());
@@ -94,7 +99,7 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
             Long id = ctx.pathParamAsClass("id", Long.class)  // Changed to Long
                     .check(this::validatePrimaryKey, "Not a valid id")
                     .get();
-            ClinicDTO clinicDTO = dao.update(id, validateEntity(ctx));
+            ClinicDTO clinicDTO = clinicDAO.update(id, validateEntity(ctx));
 
             if (clinicDTO != null) {
                 ctx.status(HttpStatus.OK);  // 200 OK
@@ -119,7 +124,7 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
             Long id = ctx.pathParamAsClass("id", Long.class)  // Changed to Long
                     .check(this::validatePrimaryKey, "Not a valid id")
                     .get();
-            dao.delete(id);
+            clinicDAO.delete(id);
             ctx.status(HttpStatus.NO_CONTENT);  // 204 No Content
             logger.info("Clinic with ID {} successfully deleted.", id);
         } catch (JpaException e) {
@@ -134,7 +139,7 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
     @Override
     public boolean validatePrimaryKey(Long id) {  // Changed to Long
         try {
-            boolean isValid = dao.validatePrimaryKey(id);
+            boolean isValid = clinicDAO.validatePrimaryKey(id);
             if (!isValid) {
                 logger.warn("Invalid primary key: {}", id);
                 throw new ApiException(HttpStatus.BAD_REQUEST.getCode(), "Invalid primary key");
@@ -159,4 +164,50 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
             throw new ApiException(HttpStatus.BAD_REQUEST.getCode(), "Invalid or missing parameters in the clinic entity");
         }
     }
+
+    // Fetch opening hours for a specific clinic
+    public void getOpeningHours(Context ctx) {
+        long clinicId = ctx.pathParamAsClass("id", Long.class).get();
+        ClinicDTO clinic = clinicDAO.read(clinicId);
+
+        if (clinic == null) {
+            ctx.status(404).json("Clinic not found");
+            return;
+        }
+
+        // Assuming ClinicDTO has a method to retrieve opening hours
+        ctx.json(clinic.getOpeningHours());
+    }
+
+
+    // Fetch all clinics and filter by city using Java Streams
+    public void getClinicsByCity(Context ctx) {
+        long cityId = ctx.queryParamAsClass("cityId", Long.class).get(); // Get city ID from query parameter
+
+        // Retrieve all clinics and filter by city using streams
+        List<ClinicDTO> filteredClinics = clinicDAO.readAll().stream()
+                .filter(clinicDTO -> clinicDTO.getCityId() == cityId)  // Filter clinics by cityId
+                .collect(Collectors.toList());  // Collect the results to a list
+
+        if (filteredClinics.isEmpty()) {
+            ctx.status(404).json("No clinics found for the given city.");
+        } else {
+            ctx.status(200).json(filteredClinics);
+        }
+    }
+
+   /* // Get total number of appointments for a specific clinic using streams
+    public void getAppointmentCount(Context ctx) {
+        long clinicId = ctx.pathParamAsClass("id", Long.class).get();
+
+        // Fetch all appointments for this clinic
+        List<Appointment> appointments = appointmentDAO.findByClinicId(clinicId);
+
+        // Use stream to count appointments
+        long appointmentCount = appointments.stream().count();
+
+        // Respond with the total count
+        ctx.json("Total appointments: " + appointmentCount);
+        ctx.status(200);
+    }*/
 }
