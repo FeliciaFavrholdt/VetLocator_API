@@ -15,7 +15,7 @@ public class AnimalEndpointTest extends BaseHttpTest {
             "name": "Buddy",
             "species": "Dog",
             "age": 5,
-            "ownerId": 1  // Assuming the owner with ID 1 exists
+            "ownerId": 1  
         }""";
 
         // Send POST request to create the Animal
@@ -50,7 +50,7 @@ public class AnimalEndpointTest extends BaseHttpTest {
             "name": "Whiskers",
             "species": "Cat",
             "age": 3,
-            "ownerId": 1  // Assuming the owner with ID 1 exists
+            "ownerId": 1  
         }""";
 
         Integer animalId = given()
@@ -149,7 +149,7 @@ public class AnimalEndpointTest extends BaseHttpTest {
             "name": "Max",
             "species": "Dog",
             "age": 4,
-            "ownerId": 1  // Assuming the owner with ID 1 exists
+            "ownerId": 1  
         }""";
 
         Integer animalId = given()

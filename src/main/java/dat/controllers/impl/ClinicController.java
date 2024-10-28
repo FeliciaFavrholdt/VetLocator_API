@@ -175,7 +175,6 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
             return;
         }
 
-        // Assuming ClinicDTO has a method to retrieve opening hours
         ctx.json(clinic.getOpeningHours());
     }
 
@@ -197,6 +196,7 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
     }
 
     public void addOpeningHours(@NotNull Context context) {
+
     }
 
     public void getClinicsByName(@NotNull Context context) {

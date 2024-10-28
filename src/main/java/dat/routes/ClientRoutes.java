@@ -28,7 +28,7 @@ public class ClientRoutes {
             put("{id}", clientController::update, Role.ANYONE);
 
             // DELETE /clients/{id} - Delete a client
-            delete("{id}", clientController::delete, Role.ANYONE);
+            delete("{id}", clientController::delete, Role.ADMIN);
 
             // GET /clients/search-by-email?email=email@example.com - Search client by email
             get("/search-by-email", clientController::searchByEmail, Role.ANYONE);

@@ -49,7 +49,7 @@ public class ClinicRoutes {
             get("{clinicId}/veterinarians", clinicController::getVeterinariansInClinic, Role.ANYONE);
 
             // DELETE /clinics/{clinicId}/veterinarians/{vetId} - Remove a veterinarian from a clinic
-            delete("{clinicId}/veterinarians/{vetId}", clinicController::removeVeterinarianFromClinic, Role.ANYONE);
+            delete("{clinicId}/veterinarians/{vetId}", clinicController::removeVeterinarianFromClinic, Role.ADMIN);
         };
     }
 }
