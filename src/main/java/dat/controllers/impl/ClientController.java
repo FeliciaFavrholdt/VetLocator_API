@@ -159,4 +159,16 @@ public class ClientController implements IController<ClientDTO, Integer> {
             throw new ApiException(HttpStatus.BAD_REQUEST.getCode(), "Invalid or missing parameters in the client entity");
         }
     }
+
+    public void searchByEmail(@NotNull Context context) {
+    }
+
+    public void getClientAnimals(@NotNull Context context) {
+    }
+
+    public void addAnimalToClient(@NotNull Context context) {
+    }
+
+    public void getClientAppointments(@NotNull Context context) {
+    }
 }

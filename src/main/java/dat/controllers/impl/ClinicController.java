@@ -196,6 +196,25 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
         }
     }
 
+    public void addOpeningHours(@NotNull Context context) {
+    }
+
+    public void getClinicsByName(@NotNull Context context) {
+    }
+
+    public void addVeterinarianToClinic(@NotNull Context context) {
+    }
+
+    public void getVeterinariansInClinic(@NotNull Context context) {
+    }
+
+    public void removeVeterinarianFromClinic(@NotNull Context context) {
+    }
+
+    
+    
+    
+    
    /* // Get total number of appointments for a specific clinic using streams
     public void getAppointmentCount(Context ctx) {
         long clinicId = ctx.pathParamAsClass("id", Long.class).get();

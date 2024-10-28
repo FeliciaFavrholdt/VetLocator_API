@@ -161,4 +161,19 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             throw new ApiException(HttpStatus.BAD_REQUEST.getCode(), "Invalid or missing parameters in the animal entity");
         }
     }
+
+    public void searchBySpecies(@NotNull Context context) {
+    }
+
+    public void searchByName(@NotNull Context context) {
+    }
+
+    public void getMedicalHistory(@NotNull Context context) {
+    }
+
+    public void addMedicalHistory(@NotNull Context context) {
+    }
+
+    public void getAnimalAppointments(@NotNull Context context) {
+    }
 }
