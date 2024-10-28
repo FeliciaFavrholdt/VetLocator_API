@@ -1,4 +1,4 @@
-package dat.exceptions;
+package dat.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class JpaException extends RuntimeException {
         return messageRecord.message();
     }
 
-    public Message getMessageRecord() {
+    public Object getMessageRecord() {
         return messageRecord;
     }
 }

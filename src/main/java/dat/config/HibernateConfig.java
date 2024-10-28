@@ -3,7 +3,7 @@ package dat.config;
 import dat.entities.*;
 import dat.security.entities.Role;
 import dat.security.entities.User;
-import dat.utils.Utils;
+import dat.util.Utils;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;

@@ -7,7 +7,7 @@ import dat.security.controllers.AccessController;
 import dat.security.controllers.SecurityController;
 import dat.security.enums.Role;
 import dat.security.routes.SecurityRoutes;
-import dat.utils.Utils;
+import dat.util.Utils;
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
@@ -50,7 +50,7 @@ public class ApplicationConfig {
 
         // Global exception handlers delegated to ExceptionController
         app.exception(Exception.class, exceptionController::exceptionHandler);
-        app.exception(dat.exceptions.ApiException.class, exceptionController::apiExceptionHandler);
+        app.exception(dat.exception.ApiException.class, exceptionController::apiExceptionHandler);
 
         // Start the server
         app.start(port);

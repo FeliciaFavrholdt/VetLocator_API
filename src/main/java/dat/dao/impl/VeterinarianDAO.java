@@ -4,7 +4,7 @@ import dat.dao.IDAO;
 import dat.dto.VeterinarianDTO;
 import dat.entities.Veterinarian;
 import dat.entities.Clinic;
-import dat.exceptions.JpaException;
+import dat.exception.JpaException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;

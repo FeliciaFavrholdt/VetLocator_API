@@ -1,13 +1,13 @@
-package dat.controllers.impl;
+package dat.controller.impl;
 
 import dat.config.HibernateConfig;
-import dat.controllers.IController;
+import dat.controller.IController;
 import dat.dao.impl.AppointmentDAO;
 import dat.dao.impl.ClinicDAO;
 import dat.dto.ClinicDTO;
 import dat.entities.Appointment;
-import dat.exceptions.ApiException;
-import dat.exceptions.JpaException;
+import dat.exception.ApiException;
+import dat.exception.JpaException;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import jakarta.persistence.EntityManagerFactory;
