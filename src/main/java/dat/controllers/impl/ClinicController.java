@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ClinicController implements IController<ClinicDTO, Integer> {
+public class ClinicController implements IController<ClinicDTO, Long> {  // Primary key type changed to Long
 
     private final ClinicDAO dao;
 
@@ -24,7 +24,7 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
     @Override
     public void read(@NotNull Context ctx) {
         try {
-            int id = ctx.pathParamAsClass("id", Integer.class)
+            Long id = ctx.pathParamAsClass("id", Long.class)  // Changed to Long
                     .check(this::validatePrimaryKey, "Not a valid id")
                     .get();
             ClinicDTO clinicDTO = dao.read(id);
@@ -76,7 +76,7 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
     @Override
     public void update(@NotNull Context ctx) {
         try {
-            int id = ctx.pathParamAsClass("id", Integer.class)
+            Long id = ctx.pathParamAsClass("id", Long.class)  // Changed to Long
                     .check(this::validatePrimaryKey, "Not a valid id")
                     .get();
             ClinicDTO clinicDTO = dao.update(id, validateEntity(ctx));
@@ -97,7 +97,7 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
     @Override
     public void delete(@NotNull Context ctx) {
         try {
-            int id = ctx.pathParamAsClass("id", Integer.class)
+            Long id = ctx.pathParamAsClass("id", Long.class)  // Changed to Long
                     .check(this::validatePrimaryKey, "Not a valid id")
                     .get();
             dao.delete(id);
@@ -110,7 +110,7 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
     }
 
     @Override
-    public boolean validatePrimaryKey(Integer id) {
+    public boolean validatePrimaryKey(Long id) {  // Changed to Long
         try {
             return dao.validatePrimaryKey(id);
         } catch (JpaException e) {
@@ -129,6 +129,5 @@ public class ClinicController implements IController<ClinicDTO, Integer> {
         } catch (Exception e) {
             throw new ApiException(400, "Invalid or missing parameters in the clinic entity");
         }
-
     }
 }

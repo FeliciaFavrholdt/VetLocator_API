@@ -122,7 +122,7 @@ public class AppointmentController implements IController<AppointmentDTO, Intege
     public AppointmentDTO validateEntity(@NotNull Context ctx) {
         try {
             AppointmentDTO appointmentDTO = ctx.bodyValidator(AppointmentDTO.class)
-                    .check(a -> a.getDate() != null, "Appointment date must be set")
+                    .check(a -> a.getAppointmentDateTime() != null, "Appointment date must be set")
                     .check(a -> a.getVeterinarianId() != null, "Veterinarian ID must be set")
                     .check(a -> a.getAnimalId() != null, "Animal ID must be set")
                     .get();

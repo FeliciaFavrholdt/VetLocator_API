@@ -1,6 +1,10 @@
 package dat.dto;
 
-import dat.entities.*;
+import dat.entities.Animal;
+import dat.entities.Appointment;
+import dat.entities.Clinic;
+import dat.entities.Client;
+import dat.entities.Veterinarian;
 import dat.enums.AppointmentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +20,7 @@ import java.time.LocalDateTime;
 public class AppointmentDTO {
 
     private Long id;
-    private LocalDateTime appointmentDateTime;  // This field matches the entity
+    private LocalDateTime appointmentDateTime;
     private String reason;
     private String status;
     private Long clinicId;
@@ -24,10 +28,9 @@ public class AppointmentDTO {
     private Long animalId;
     private Long veterinarianId;
 
-    // Constructor to convert from Appointment entity to DTO
     public AppointmentDTO(Appointment appointment) {
         this.id = appointment.getId();
-        this.appointmentDateTime = appointment.getAppointmentDateTime();  // Correct method name
+        this.appointmentDateTime = appointment.getAppointmentDateTime();
         this.reason = appointment.getReason();
         this.status = appointment.getStatus().name();
         this.clinicId = appointment.getClinic().getId();
@@ -36,11 +39,10 @@ public class AppointmentDTO {
         this.veterinarianId = appointment.getVeterinarian().getId();
     }
 
-    // Method to convert from DTO to Entity
     public Appointment toEntity(Clinic clinic, Client client, Animal animal, Veterinarian veterinarian) {
         Appointment appointment = new Appointment();
         appointment.setId(this.id);
-        appointment.setAppointmentDateTime(this.appointmentDateTime);  // Correct field
+        appointment.setAppointmentDateTime(this.appointmentDateTime);
         appointment.setReason(this.reason);
         appointment.setStatus(AppointmentStatus.valueOf(this.status));
         appointment.setClinic(clinic);
