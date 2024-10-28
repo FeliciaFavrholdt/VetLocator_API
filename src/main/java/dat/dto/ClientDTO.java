@@ -37,11 +37,22 @@ public class ClientDTO {
         Client client = new Client();
         client.setId(this.id);
         client.setName(this.name);
-        client.setGender(this.gender != null ? Gender.valueOf(this.gender) : null);  // Convert String back to Gender enum
+
+        // Handling gender as an enum conversion from String
+        if (this.gender != null) {
+            try {
+                client.setGender(this.gender != null ? Gender.valueOf(this.gender.toUpperCase()) : null);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid gender value: " + this.gender);  // Handle invalid enum values
+            }
+        } else {
+            client.setGender(null);  // Handle case where gender is not set
+        }
+
         client.setEmail(this.email);
         client.setPhoneNumber(this.phoneNumber);
         client.setAddress(this.address);
-        // City should be set elsewhere (in the DAO or service layer)
+        // City should be set in the service layer (for example, DAO) using cityId
         return client;
     }
 }

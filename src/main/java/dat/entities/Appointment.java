@@ -1,5 +1,6 @@
 package dat.entities;
 
+import dat.dto.AppointmentDTO;
 import dat.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -8,8 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -23,13 +23,9 @@ public class Appointment {
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
-    @NotNull(message = "Appointment date is required")
-    @Column(name = "appointment_date", nullable = false)
-    private LocalDate appointmentDate;
-
-    @NotNull(message = "Appointment time is required")
-    @Column(name = "appointment_time", nullable = false)
-    private LocalTime appointmentTime;
+    @NotNull(message = "Appointment date and time are required")
+    @Column(name = "appointment_datetime", nullable = false)
+    private LocalDateTime appointmentDateTime;
 
     @NotBlank(message = "Reason is required")
     @Column(name = "reason", nullable = false, length = 255)
@@ -55,16 +51,16 @@ public class Appointment {
     @JoinColumn(name = "animal_id", nullable = false)
     private Animal animal;
 
-    // Constructor with required fields
-    public Appointment(Long id, LocalDate appointmentDate, LocalTime appointmentTime, String reason,
-                       AppointmentStatus status, Clinic clinic, Client client, Animal animal) {
-        this.id = id;
-        this.appointmentDate = appointmentDate;
-        this.appointmentTime = appointmentTime;
-        this.reason = reason;
-        this.status = status;
-        this.clinic = clinic;
-        this.client = client;
-        this.animal = animal;
+    @NotNull(message = "Veterinarian is required")
+    @ManyToOne
+    @JoinColumn(name = "veterinarian_id", nullable = false)
+    private Veterinarian veterinarian;
+
+    // Method to convert from DTO
+    public void convertFromDTO(AppointmentDTO appointmentDTO) {
+        this.appointmentDateTime = appointmentDTO.getAppointmentDateTime();  // Corrected to match the field in DTO
+        this.reason = appointmentDTO.getReason();
+        this.status = AppointmentStatus.valueOf(appointmentDTO.getStatus());
+        // Clinic, Client, Animal, and Veterinarian should be set in the DAO or service layer
     }
 }

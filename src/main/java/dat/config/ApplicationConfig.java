@@ -16,9 +16,6 @@ public class ApplicationConfig {
         config.bundledPlugins.enableRouteOverview("/routes", Role.ANYONE);
         config.http.defaultContentType = "application/json"; // default content type for requests
         config.router.apiBuilder(routes.getRoutes());
-
-        // Plugins
-        config.bundledPlugins.enableRouteOverview("/routes"); // enables route overview at /routes
     }
 
     public static Javalin startServer(int port, EntityManagerFactory emf) {

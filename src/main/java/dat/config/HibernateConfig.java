@@ -47,6 +47,7 @@ public class HibernateConfig {
         configuration.addAnnotatedClass(Animal.class);
         configuration.addAnnotatedClass(Appointment.class);
         configuration.addAnnotatedClass(City.class);
+        configuration.addAnnotatedClass(Client.class);
         configuration.addAnnotatedClass(Clinic.class);
         configuration.addAnnotatedClass(OpeningHours.class);
         configuration.addAnnotatedClass(Veterinarian.class);

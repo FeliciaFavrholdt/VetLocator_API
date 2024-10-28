@@ -6,6 +6,7 @@ import dat.entities.Appointment;
 import dat.entities.Animal;
 import dat.entities.Veterinarian;
 import dat.entities.Clinic;
+import dat.entities.Client;
 import dat.exceptions.JpaException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -38,19 +39,21 @@ public class AppointmentDAO implements IDAO<AppointmentDTO, Integer> {
     public AppointmentDTO create(AppointmentDTO appointmentDTO) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            Appointment appointment = appointmentDTO.toEntity();
 
+            // Fetch related entities (Clinic, Client, Animal, Veterinarian)
             Animal animal = em.find(Animal.class, appointmentDTO.getAnimalId());
             Veterinarian veterinarian = em.find(Veterinarian.class, appointmentDTO.getVeterinarianId());
             Clinic clinic = em.find(Clinic.class, appointmentDTO.getClinicId());
+            Client client = em.find(Client.class, appointmentDTO.getClientId());
 
+            // Validation
             if (animal == null) throw new JpaException(400, "Animal not found");
             if (veterinarian == null) throw new JpaException(400, "Veterinarian not found");
             if (clinic == null) throw new JpaException(400, "Clinic not found");
+            if (client == null) throw new JpaException(400, "Client not found");
 
-            appointment.setAnimal(animal);
-            appointment.setVeterinarian(veterinarian);
-            appointment.setClinic(clinic);
+            // Convert DTO to Entity and pass required entities
+            Appointment appointment = appointmentDTO.toEntity(clinic, client, animal, veterinarian);
 
             em.persist(appointment);
             em.getTransaction().commit();
@@ -87,18 +90,25 @@ public class AppointmentDAO implements IDAO<AppointmentDTO, Integer> {
             if (appointment == null) {
                 throw new JpaException(404, "Appointment not found for ID: " + id);
             }
-            appointment.convertFromDTO(appointmentDTO);
+
+            // Fetch related entities (Clinic, Client, Animal, Veterinarian)
             Animal animal = em.find(Animal.class, appointmentDTO.getAnimalId());
             Veterinarian veterinarian = em.find(Veterinarian.class, appointmentDTO.getVeterinarianId());
             Clinic clinic = em.find(Clinic.class, appointmentDTO.getClinicId());
+            Client client = em.find(Client.class, appointmentDTO.getClientId());
 
+            // Validation
             if (animal == null) throw new JpaException(400, "Animal not found");
             if (veterinarian == null) throw new JpaException(400, "Veterinarian not found");
             if (clinic == null) throw new JpaException(400, "Clinic not found");
+            if (client == null) throw new JpaException(400, "Client not found");
 
+            // Update appointment fields from DTO
+            appointment.convertFromDTO(appointmentDTO);
             appointment.setAnimal(animal);
             appointment.setVeterinarian(veterinarian);
             appointment.setClinic(clinic);
+            appointment.setClient(client);
 
             Appointment mergedAppointment = em.merge(appointment);
             em.getTransaction().commit();

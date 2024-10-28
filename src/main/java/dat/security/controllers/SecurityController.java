@@ -13,6 +13,7 @@ import dat.security.exceptions.NotAuthorizedException;
 import dat.security.exceptions.ValidationException;
 import dk.bugelhartmann.ITokenSecurity;
 import dk.bugelhartmann.TokenSecurity;
+import dk.bugelhartmann.TokenVerificationException;
 import dk.bugelhartmann.UserDTO;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -169,9 +170,11 @@ public class SecurityController implements ISecurityController {
             } else {
                 throw new NotAuthorizedException(403, "Token is not valid");
             }
-        } catch (ParseException | JOSEException | NotAuthorizedException e) {
+        } catch (ParseException | NotAuthorizedException e) {
             e.printStackTrace();
             throw new ApiException(HttpStatus.UNAUTHORIZED.getCode(), "Unauthorized. Could not verify token");
+        } catch (TokenVerificationException e) {
+            throw new RuntimeException(e);
         }
     }
 

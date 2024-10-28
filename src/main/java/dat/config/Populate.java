@@ -5,7 +5,7 @@ import dat.enums.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -68,65 +68,67 @@ public class Populate {
             em.persist(v5);
             em.persist(v6);
 
-            // Populate Opening Hours for Clinic Copenhagen
-            c1.addOpeningHour(new OpeningHours(null, Weekday.MONDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), c1));
-            c1.addOpeningHour(new OpeningHours(null, Weekday.TUESDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), c1));
-            c1.addOpeningHour(new OpeningHours(null, Weekday.WEDNESDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), c1));
-            c1.addOpeningHour(new OpeningHours(null, Weekday.THURSDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), c1));
-            c1.addOpeningHour(new OpeningHours(null, Weekday.FRIDAY, LocalTime.of(8, 0), LocalTime.of(16, 0), c1));
+            // Populate Clients with gender and city references
+            cl1 = new Client(null, "Mads", Gender.MALE, "mads@gmail.com", "+45 30 30 30 30", "Kongevejen 27", copenhagen, null);
+            cl2 = new Client(null, "Lars", Gender.MALE, "lars@gmail.com", "+45 40 40 40 40", "Viborgvej 27", aarhus, null);
+            cl3 = new Client(null, "Sofie", Gender.FEMALE, "sofie@gmail.com", "+45 50 50 50 50", "Hjallesevej 27", odense, null);
 
-            // Persisting Opening Hours for Copenhagen Clinic
-            em.persist(c1);
-
-            // Populate Animals
-            a1 = new Animal(null, "Coco", Animals.DOG, "Labrador", 5, null, MedicalHistory.DEWORMED);
-            a2 = new Animal(null, "Cleo", Animals.CAT, "Siamese", 3, null, MedicalHistory.DIETARY_RESTRICTIONS);
-            a3 = new Animal(null, "Buster", Animals.DOG, "Golden Retriever", 2, null, MedicalHistory.FLEA_TREATED);
-            a4 = new Animal(null, "Molly", Animals.RABBIT, "Normal", 4, null, MedicalHistory.VACCINATED);
-            a5 = new Animal(null, "Sofus", Animals.FISH, "Normal", 1, null, MedicalHistory.DEWORMED);
-
-            // Populate Clients with animals, gender, and city references
-            cl1 = new Client(null, "Mads", Gender.MALE, "mads@gmail.com", "+45 30 30 30 30", "Kongevejen 27", copenhagen, List.of(a1, a2));
-            cl2 = new Client(null, "Lars", Gender.MALE, "lars@gmail.com", "+45 40 40 40 40", "Viborgvej 27", aarhus, List.of(a3));
-            cl3 = new Client(null, "Sofie", Gender.FEMALE, "sofie@gmail.com", "+45 50 50 50 50", "Hjallesevej 27", odense, List.of(a4, a5));
-
-            // Persisting Clients (this will also persist animals due to cascade setting)
+            // Persist Clients first (without animals)
             em.persist(cl1);
             em.persist(cl2);
             em.persist(cl3);
 
+            // Populate Animals (set owners after creating clients)
+            a1 = new Animal(null, "Coco", Animals.DOG, "Labrador", 5, cl1, MedicalHistory.DEWORMED);
+            a2 = new Animal(null, "Cleo", Animals.CAT, "Siamese", 3, cl1, MedicalHistory.DIETARY_RESTRICTIONS);
+            a3 = new Animal(null, "Buster", Animals.DOG, "Golden Retriever", 2, cl2, MedicalHistory.FLEA_TREATED);
+            a4 = new Animal(null, "Molly", Animals.RABBIT, "Normal", 4, cl3, MedicalHistory.VACCINATED);
+            a5 = new Animal(null, "Sofus", Animals.FISH, "Normal", 1, cl3, MedicalHistory.DEWORMED);
+
+            // Persist Animals
+            em.persist(a1);
+            em.persist(a2);
+            em.persist(a3);
+            em.persist(a4);
+            em.persist(a5);
+
+            // Now set the animals for clients
+            cl1.setAnimals(List.of(a1, a2));
+            cl2.setAnimals(List.of(a3));
+            cl3.setAnimals(List.of(a4, a5));
+
             // Populate Appointments
             app1 = new Appointment(
                     null,
-                    LocalDate.now().plusDays(2),  // Two days from now
-                    LocalTime.of(10, 0),
+                    LocalDateTime.of(2024, 10, 10, 10, 0),  // Example of LocalDateTime
                     "Checkup for Coco",
                     AppointmentStatus.SCHEDULED,
                     c1,  // Clinic
                     cl1,  // Client
-                    a1    // Animal (Coco)
+                    a1,   // Animal (Coco)
+                    v1    // Veterinarian (add this argument)
             );
 
             app2 = new Appointment(
                     null,
-                    LocalDate.now().plusDays(3),
-                    LocalTime.of(11, 0),
+                    LocalDateTime.of(2024, 1, 15, 11, 0),  // Specific date and time
                     "Vaccination for Cleo",
                     AppointmentStatus.SCHEDULED,
                     c1,
                     cl1,
-                    a2
+                    a2,
+                    v2
             );
 
             app3 = new Appointment(
                     null,
-                    LocalDate.now().plusDays(4),
-                    LocalTime.of(9, 0),
+                    LocalDateTime.of(2024, 1, 16, 9, 0),
                     "Dental check for Buster",
                     AppointmentStatus.SCHEDULED,
                     c2,
                     cl2,
-                    a3
+                    a3,
+                    v3
             );
 
             // Persisting Appointments

@@ -2,7 +2,6 @@ package dat.routes;
 
 import io.javalin.apibuilder.EndpointGroup;
 import jakarta.persistence.EntityManagerFactory;
-
 import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class Routes {
@@ -10,7 +9,7 @@ public class Routes {
     private final ClinicRoutes clinicRoutes;
 
     public Routes(EntityManagerFactory emf) {
-        clinicRoutes = new ClinicRoutes(emf);
+        clinicRoutes = new ClinicRoutes();
     }
 
     public EndpointGroup getRoutes() {

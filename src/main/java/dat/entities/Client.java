@@ -5,7 +5,6 @@ import dat.enums.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -32,14 +31,8 @@ public class Client {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "gender", nullable = false, length = 10)
-    private Gender gender;
-
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
-    @Size(max = 100, message = "Email must not exceed 100 characters")
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
@@ -48,19 +41,23 @@ public class Client {
     @Column(name = "phone_number", nullable = false, length = 15)
     private String phoneNumber;
 
+    @NotBlank(message = "Address is required")
     @Size(max = 255, message = "Address must not exceed 255 characters")
-    @Column(name = "address", length = 255)
+    @Column(name = "address", nullable = false, length = 255)
     private String address;
 
-    @NotNull(message = "City is required")
-    @ManyToOne
-    @JoinColumn(name = "city_id", nullable = false)
-    private City city;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", nullable = false, length = 6)
+    private Gender gender;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Animal> animals = new ArrayList<>();
 
-    // New constructor that takes a list of animals
+    @ManyToOne(fetch = FetchType.LAZY)  // Optional: Lazy loading
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;  // Many Clients belong to one City
+
+    // Constructor without validation annotations (to use in DTOs, etc.)
     public Client(Long id, String name, Gender gender, String email, String phoneNumber, String address, City city, List<Animal> animals) {
         this.id = id;
         this.name = name;
@@ -69,22 +66,26 @@ public class Client {
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.city = city;
-        this.animals = new ArrayList<>();  // Initialize the list
-        // Set the bidirectional relationship
-        for (Animal animal : animals) {
-            this.addAnimal(animal);  // Use addAnimal to maintain the relationship
+        this.animals = animals != null ? animals : new ArrayList<>();
+    }
+
+    // Method to convert from ClientDTO to Client
+    public void convertFromDTO(ClientDTO clientDTO) {
+        this.name = clientDTO.getName();
+        this.email = clientDTO.getEmail();
+        this.phoneNumber = clientDTO.getPhoneNumber();
+        this.address = clientDTO.getAddress();
+        this.city = city;  // Set city during conversion
+
+        // Handle gender conversion
+        if (clientDTO.getGender() != null) {
+            try {
+                this.gender = Gender.valueOf(clientDTO.getGender().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid gender value: " + clientDTO.getGender());
+            }
+        } else {
+            this.gender = null;  // If gender is null, set it to null
         }
-    }
-
-    // Method to add an animal and maintain the relationship
-    public void addAnimal(Animal animal) {
-        animals.add(animal);
-        animal.setOwner(this);  // Maintain the bidirectional relationship
-    }
-
-    // Method to remove an animal and maintain the relationship
-    public void removeAnimal(Animal animal) {
-        animals.remove(animal);
-        animal.setOwner(null);  // Break the relationship
     }
 }

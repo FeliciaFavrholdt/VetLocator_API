@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "animals")
 public class Animal {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
@@ -32,7 +33,7 @@ public class Animal {
     @Column(name = "age")
     private Integer age;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)  // Optional: Lazy loading to avoid unnecessary fetches
     @JoinColumn(name = "owner_id", nullable = false)
     private Client owner;
 
@@ -40,9 +41,28 @@ public class Animal {
     @Column(name = "medical_history", nullable = false, length = 50)
     private MedicalHistory medicalHistory;
 
+    // Method to convert from AnimalDTO to Animal
     public void convertFromDTO(AnimalDTO animalDTO) {
+        if (animalDTO == null) {
+            throw new IllegalArgumentException("AnimalDTO cannot be null");
+        }
         this.name = animalDTO.getName();
-        this.species = Animals.valueOf(animalDTO.getSpecies());
+
+        if (animalDTO.getSpecies() != null) {
+            this.species = Animals.valueOf(animalDTO.getSpecies());
+        } else {
+            this.species = null;
+        }
+
         this.age = animalDTO.getAge();
+        this.breed = animalDTO.getBreed();
+
+        if (animalDTO.getMedicalHistory() != null) {
+            this.medicalHistory = MedicalHistory.valueOf(animalDTO.getMedicalHistory());
+        } else {
+            this.medicalHistory = null;
+        }
+
+        // The owner is handled outside of this method since it typically involves fetching an existing entity.
     }
 }

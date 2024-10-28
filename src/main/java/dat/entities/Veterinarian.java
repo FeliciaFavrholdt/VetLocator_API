@@ -39,7 +39,7 @@ public class Veterinarian {
 
     @NotNull(message = "Availability for emergency is required")
     @Enumerated(EnumType.STRING)
-    @Column(name = "available_for_emergency", nullable = false, length = 10)
+    @Column(name = "available_for_emergency", nullable = false, length = 100)
     private Availability availableForEmergency;
 
     public void convertFromDTO(VeterinarianDTO veterinarianDTO) {
