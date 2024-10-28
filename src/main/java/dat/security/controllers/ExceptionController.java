@@ -1,8 +1,5 @@
-<<<<<<<< HEAD:src/main/java/dat/controller/impl/ExceptionController.java
-package dat.controller.impl;
-========
 package dat.security.controllers;
->>>>>>>> origin/develop2:src/main/java/dat/security/controllers/ExceptionController.java
+
 
 import dat.exception.ApiException;
 import dat.exception.Message;

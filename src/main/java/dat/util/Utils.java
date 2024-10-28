@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import dat.exceptions.ApiException;
+import dat.exception.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.javalin.http.Context;
@@ -33,11 +33,11 @@ public class Utils {
                 return value.trim();
             } else {
                 logger.error("Property '{}' not found in '{}'", propName, resourceName);
-                throw new ApiException(ErrorCodes.E4_STATUS, String.format("Property %s not found in %s", propName, resourceName));
+                throw new ApiException(dat.utils.ErrorCodes.E4_STATUS, String.format("Property %s not found in %s", propName, resourceName));
             }
         } catch (IOException ex) {
             logger.error("Error reading property '{}': {}", propName, ex.getMessage());
-            throw new ApiException(ErrorCodes.E4_STATUS, String.format("Could not read property %s. Ensure the project is built with Maven.", propName));
+            throw new ApiException(dat.utils.ErrorCodes.E4_STATUS, String.format("Could not read property %s. Ensure the project is built with Maven.", propName));
         }
     }
 
