@@ -7,13 +7,17 @@ import dat.dto.ClinicDTO;
 import dat.exceptions.ApiException;
 import dat.exceptions.JpaException;
 import io.javalin.http.Context;
+import io.javalin.http.HttpStatus;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class ClinicController implements IController<ClinicDTO, Long> {  // Primary key type changed to Long
 
+    private static final Logger logger = LoggerFactory.getLogger(ClinicController.class);  // Logger instance
     private final ClinicDAO dao;
 
     public ClinicController() {
@@ -30,19 +34,24 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
             ClinicDTO clinicDTO = dao.read(id);
 
             if (clinicDTO != null) {
-                ctx.status(200);
+                ctx.status(HttpStatus.OK);  // 200 OK
                 ctx.json(clinicDTO);
+                logger.info("Clinic with ID {} successfully retrieved.", id);
             } else {
-                throw new ApiException(404, "Clinic not found");
+                logger.warn("Clinic with ID {} not found.", id);
+                throw new ApiException(HttpStatus.NOT_FOUND.getCode(), "Clinic not found");
             }
         } catch (ApiException e) {
+            logger.error("API Exception while fetching clinic: {}", e.getMessage());
             ctx.status(e.getStatusCode());
             ctx.json(e.getMessageRecord());
         } catch (JpaException e) {
+            logger.error("JPA Exception while fetching clinic: {}", e.getMessage());
             ctx.status(e.getStatusCode());
             ctx.json(e.getMessageRecord());
         } catch (Exception e) {
-            throw new ApiException(500, "Internal Server Error");
+            logger.error("Unexpected error occurred while fetching clinic: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Internal Server Error");
         }
     }
 
@@ -50,12 +59,15 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
     public void readAll(@NotNull Context ctx) {
         try {
             List<ClinicDTO> clinicDTOS = dao.readAll();
-            ctx.status(200);
+            ctx.status(HttpStatus.OK);  // 200 OK
             ctx.json(clinicDTOS);
+            logger.info("Successfully fetched all clinics.");
         } catch (JpaException e) {
-            throw new ApiException(500, "Error fetching clinics from database");
+            logger.error("JPA Exception while fetching all clinics: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Error fetching clinics from database");
         } catch (Exception e) {
-            throw new ApiException(500, "An unexpected error occurred on the server");
+            logger.error("Unexpected error occurred while fetching clinics: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "An unexpected error occurred on the server");
         }
     }
 
@@ -64,12 +76,15 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
         try {
             ClinicDTO jsonRequest = ctx.bodyAsClass(ClinicDTO.class);
             ClinicDTO clinicDTO = dao.create(jsonRequest);
-            ctx.status(201);
+            ctx.status(HttpStatus.CREATED);  // 201 Created
             ctx.json(clinicDTO);
+            logger.info("Successfully created new clinic with ID {}", clinicDTO.getId());
         } catch (JpaException e) {
-            throw new ApiException(500, "Error creating clinic in the database");
+            logger.error("JPA Exception while creating clinic: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Error creating clinic in the database");
         } catch (Exception e) {
-            throw new ApiException(500, "An unexpected error occurred");
+            logger.error("Unexpected error occurred while creating clinic: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "An unexpected error occurred");
         }
     }
 
@@ -82,15 +97,19 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
             ClinicDTO clinicDTO = dao.update(id, validateEntity(ctx));
 
             if (clinicDTO != null) {
-                ctx.status(200);
+                ctx.status(HttpStatus.OK);  // 200 OK
                 ctx.json(clinicDTO);
+                logger.info("Clinic with ID {} successfully updated.", id);
             } else {
-                throw new ApiException(404, "Clinic not found or update failed");
+                logger.warn("Clinic with ID {} not found or update failed.", id);
+                throw new ApiException(HttpStatus.NOT_FOUND.getCode(), "Clinic not found or update failed");
             }
         } catch (JpaException e) {
-            throw new ApiException(500, "Error updating clinic in the database");
+            logger.error("JPA Exception while updating clinic: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Error updating clinic in the database");
         } catch (Exception e) {
-            throw new ApiException(500, "An unexpected error occurred on the server");
+            logger.error("Unexpected error occurred while updating clinic: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "An unexpected error occurred on the server");
         }
     }
 
@@ -101,20 +120,29 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
                     .check(this::validatePrimaryKey, "Not a valid id")
                     .get();
             dao.delete(id);
-            ctx.status(204);
+            ctx.status(HttpStatus.NO_CONTENT);  // 204 No Content
+            logger.info("Clinic with ID {} successfully deleted.", id);
         } catch (JpaException e) {
-            throw new ApiException(500, "Error deleting clinic from the database");
+            logger.error("JPA Exception while deleting clinic: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Error deleting clinic from the database");
         } catch (Exception e) {
-            throw new ApiException(500, "An unexpected error occurred on the server");
+            logger.error("Unexpected error occurred while deleting clinic: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "An unexpected error occurred on the server");
         }
     }
 
     @Override
     public boolean validatePrimaryKey(Long id) {  // Changed to Long
         try {
-            return dao.validatePrimaryKey(id);
+            boolean isValid = dao.validatePrimaryKey(id);
+            if (!isValid) {
+                logger.warn("Invalid primary key: {}", id);
+                throw new ApiException(HttpStatus.BAD_REQUEST.getCode(), "Invalid primary key");
+            }
+            return isValid;
         } catch (JpaException e) {
-            throw new ApiException(500, "Database error during primary key validation");
+            logger.error("JPA Exception during primary key validation: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Database error during primary key validation");
         }
     }
 
@@ -127,7 +155,8 @@ public class ClinicController implements IController<ClinicDTO, Long> {  // Prim
                     .get();
             return clinicDTO;
         } catch (Exception e) {
-            throw new ApiException(400, "Invalid or missing parameters in the clinic entity");
+            logger.error("Invalid or missing parameters in the clinic entity: {}", e.getMessage());
+            throw new ApiException(HttpStatus.BAD_REQUEST.getCode(), "Invalid or missing parameters in the clinic entity");
         }
     }
 }
