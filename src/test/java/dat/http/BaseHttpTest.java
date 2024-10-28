@@ -1,4 +1,4 @@
-package dat.integration;
+package dat.http;
 
 import dat.config.ApplicationConfig;
 import dat.config.HibernateConfig;
