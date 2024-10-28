@@ -1,16 +1,33 @@
 package dat.routes;
 
+import dat.controllers.impl.ClientController;
 import io.javalin.apibuilder.EndpointGroup;
-import org.jetbrains.annotations.NotNull;
-
-import static io.javalin.apibuilder.ApiBuilder.get;
+import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class ClientRoutes {
-    public @NotNull EndpointGroup getRoutes() {
+
+    private final ClientController clientController;
+
+    public ClientRoutes() {
+        this.clientController = new ClientController();
+    }
+
+    public EndpointGroup getRoutes() {
         return () -> {
-            get("/clients", ctx -> {
-                ctx.json("Clients");
-            });
+            // GET /clients
+            get(clientController::readAll);
+
+            // GET /clients/{id}
+            get("{id}", clientController::read);
+
+            // POST /clients
+            post(clientController::create);
+
+            // PUT /clients/{id}
+            put("{id}", clientController::update);
+
+            // DELETE /clients/{id}
+            delete("{id}", clientController::delete);
         };
     }
 }

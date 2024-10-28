@@ -1,15 +1,33 @@
 package dat.routes;
 
+import dat.controllers.impl.AnimalController;
 import io.javalin.apibuilder.EndpointGroup;
-import org.jetbrains.annotations.NotNull;
-import static io.javalin.apibuilder.ApiBuilder.get;
+import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class AnimalRoutes {
-    public @NotNull EndpointGroup getRoutes() {
+
+    private final AnimalController animalController;
+
+    public AnimalRoutes() {
+        this.animalController = new AnimalController();
+    }
+
+    public EndpointGroup getRoutes() {
         return () -> {
-            get("/animals", ctx -> {
-                ctx.json("Animals");
-            });
+            // GET /animals
+            get(animalController::readAll);
+
+            // GET /animals/{id}
+            get("{id}", animalController::read);
+
+            // POST /animals
+            post(animalController::create);
+
+            // PUT /animals/{id}
+            put("{id}", animalController::update);
+
+            // DELETE /animals/{id}
+            delete("{id}", animalController::delete);
         };
     }
 }
