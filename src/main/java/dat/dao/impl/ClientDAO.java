@@ -9,12 +9,15 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class ClientDAO implements IDAO<ClientDTO, Integer> {
 
+    private static final Logger logger = LoggerFactory.getLogger(ClientDAO.class);  // Logger instance
     private static ClientDAO instance;
     private static EntityManagerFactory emf;
 
@@ -32,73 +35,115 @@ public class ClientDAO implements IDAO<ClientDTO, Integer> {
 
     @Override
     public ClientDTO create(ClientDTO clientDTO) {
-        try (EntityManager em = emf.createEntityManager()) {
+        EntityManager em = emf.createEntityManager();
+        try {
             em.getTransaction().begin();
             Client client = clientDTO.toEntity();
             em.persist(client);
             em.getTransaction().commit();
+            logger.info("Client created successfully with ID {}", client.getId());
             return new ClientDTO(client);
         } catch (PersistenceException e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error("Error creating client in the database: {}", e.getMessage());
             throw new JpaException(500, "Error creating client in the database.");
+        } finally {
+            em.close();
         }
     }
 
     @Override
     public ClientDTO read(Integer id) {
-        try (EntityManager em = emf.createEntityManager()) {
+        EntityManager em = emf.createEntityManager();
+        try {
             Client client = em.find(Client.class, id);
             if (client == null) {
+                logger.warn("Client not found for ID: {}", id);
                 throw new JpaException(404, "Client not found for ID: " + id);
             }
+            logger.info("Client with ID {} successfully retrieved.", id);
             return new ClientDTO(client);
+        } finally {
+            em.close();
         }
     }
 
     @Override
     public List<ClientDTO> readAll() {
-        try (EntityManager em = emf.createEntityManager()) {
-            return em.createQuery("SELECT new dat.dto.ClientDTO(c) FROM Client c", ClientDTO.class)
+        EntityManager em = emf.createEntityManager();
+        try {
+            List<ClientDTO> clients = em.createQuery("SELECT new dat.dto.ClientDTO(c) FROM Client c", ClientDTO.class)
                     .getResultList();
+            logger.info("Successfully retrieved {} clients.", clients.size());
+            return clients;
+        } finally {
+            em.close();
         }
     }
 
     @Override
     public ClientDTO update(Integer id, ClientDTO clientDTO) {
-        try (EntityManager em = emf.createEntityManager()) {
+        EntityManager em = emf.createEntityManager();
+        try {
             em.getTransaction().begin();
             Client client = em.find(Client.class, id);
             if (client == null) {
+                logger.warn("Client not found for ID: {}", id);
                 throw new JpaException(404, "Client not found for ID: " + id);
             }
             client.convertFromDTO(clientDTO);
             em.merge(client);
             em.getTransaction().commit();
+            logger.info("Client with ID {} successfully updated.", id);
             return new ClientDTO(client);
         } catch (PersistenceException e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error("Error updating client in the database: {}", e.getMessage());
             throw new JpaException(500, "Error updating client in the database.");
+        } finally {
+            em.close();
         }
     }
 
     @Override
     public void delete(Integer id) {
-        try (EntityManager em = emf.createEntityManager()) {
+        EntityManager em = emf.createEntityManager();
+        try {
             em.getTransaction().begin();
             Client client = em.find(Client.class, id);
             if (client == null) {
+                logger.warn("Client not found for ID: {}", id);
                 throw new JpaException(404, "Client not found for ID: " + id);
             }
             em.remove(client);
             em.getTransaction().commit();
+            logger.info("Client with ID {} successfully deleted.", id);
         } catch (PersistenceException e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error("Error deleting client from the database: {}", e.getMessage());
             throw new JpaException(500, "Error deleting client from the database.");
+        } finally {
+            em.close();
         }
     }
 
     @Override
     public boolean validatePrimaryKey(Integer id) {
-        try (EntityManager em = emf.createEntityManager()) {
-            return em.find(Client.class, id) != null;
+        EntityManager em = emf.createEntityManager();
+        try {
+            boolean isValid = em.find(Client.class, id) != null;
+            if (!isValid) {
+                logger.warn("Invalid primary key: {}", id);
+            }
+            return isValid;
+        } finally {
+            em.close();
         }
     }
 }
-
