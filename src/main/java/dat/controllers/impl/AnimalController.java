@@ -7,13 +7,17 @@ import dat.dto.AnimalDTO;
 import dat.exceptions.ApiException;
 import dat.exceptions.JpaException;
 import io.javalin.http.Context;
+import io.javalin.http.HttpStatus;
 import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class AnimalController implements IController<AnimalDTO, Integer> {
 
+    private static final Logger logger = LoggerFactory.getLogger(AnimalController.class);  // Logger instance
     private final AnimalDAO dao;
 
     public AnimalController() {
@@ -30,19 +34,24 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             AnimalDTO animalDTO = dao.read(id);
 
             if (animalDTO != null) {
-                ctx.status(200);
+                ctx.status(HttpStatus.OK);
                 ctx.json(animalDTO);
+                logger.info("Animal with ID {} successfully retrieved.", id);
             } else {
-                throw new ApiException(404, "Animal not found");
+                logger.warn("Animal with ID {} not found.", id);
+                throw new ApiException(HttpStatus.NOT_FOUND.getCode(), "Animal not found");
             }
         } catch (ApiException e) {
+            logger.error("API Exception while fetching animal: {}", e.getMessage());
             ctx.status(e.getStatusCode());
             ctx.json(e.getMessageRecord());
         } catch (JpaException e) {
+            logger.error("JPA Exception while fetching animal: {}", e.getMessage());
             ctx.status(e.getStatusCode());
             ctx.json(e.getMessageRecord());
         } catch (Exception e) {
-            throw new ApiException(500, "Internal Server Error");
+            logger.error("Unexpected error occurred while fetching animal: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Internal Server Error");
         }
     }
 
@@ -50,12 +59,15 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
     public void readAll(@NotNull Context ctx) {
         try {
             List<AnimalDTO> animalDTOS = dao.readAll();
-            ctx.status(200);
+            ctx.status(HttpStatus.OK);
             ctx.json(animalDTOS);
+            logger.info("Successfully fetched all animals.");
         } catch (JpaException e) {
-            throw new ApiException(500, "Error fetching animals from database");
+            logger.error("JPA Exception while fetching all animals: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Error fetching animals from the database");
         } catch (Exception e) {
-            throw new ApiException(500, "An unexpected error occurred on the server");
+            logger.error("Unexpected error occurred while fetching all animals: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "An unexpected error occurred on the server");
         }
     }
 
@@ -64,12 +76,15 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
         try {
             AnimalDTO jsonRequest = ctx.bodyAsClass(AnimalDTO.class);
             AnimalDTO animalDTO = dao.create(jsonRequest);
-            ctx.status(201);
+            ctx.status(HttpStatus.CREATED);  // 201 Created
             ctx.json(animalDTO);
+            logger.info("Successfully created new animal: {}", animalDTO.getName());
         } catch (JpaException e) {
-            throw new ApiException(500, "Error creating animal in the database");
+            logger.error("JPA Exception while creating animal: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Error creating animal in the database");
         } catch (Exception e) {
-            throw new ApiException(500, "An unexpected error occurred");
+            logger.error("Unexpected error occurred while creating animal: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "An unexpected error occurred");
         }
     }
 
@@ -82,15 +97,19 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
             AnimalDTO animalDTO = dao.update(id, validateEntity(ctx));
 
             if (animalDTO != null) {
-                ctx.status(200);
+                ctx.status(HttpStatus.OK);  // 200 OK
                 ctx.json(animalDTO);
+                logger.info("Animal with ID {} successfully updated.", id);
             } else {
-                throw new ApiException(404, "Animal not found or update failed");
+                logger.warn("Animal with ID {} not found or update failed.", id);
+                throw new ApiException(HttpStatus.NOT_FOUND.getCode(), "Animal not found or update failed");
             }
         } catch (JpaException e) {
-            throw new ApiException(500, "Error updating animal in the database");
+            logger.error("JPA Exception while updating animal: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Error updating animal in the database");
         } catch (Exception e) {
-            throw new ApiException(500, "An unexpected error occurred on the server");
+            logger.error("Unexpected error occurred while updating animal: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "An unexpected error occurred on the server");
         }
     }
 
@@ -101,20 +120,29 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
                     .check(this::validatePrimaryKey, "Not a valid id")
                     .get();
             dao.delete(id);
-            ctx.status(204);
+            ctx.status(HttpStatus.NO_CONTENT);  // 204 No Content
+            logger.info("Animal with ID {} successfully deleted.", id);
         } catch (JpaException e) {
-            throw new ApiException(500, "Error deleting animal from the database");
+            logger.error("JPA Exception while deleting animal: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Error deleting animal from the database");
         } catch (Exception e) {
-            throw new ApiException(500, "An unexpected error occurred on the server");
+            logger.error("Unexpected error occurred while deleting animal: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "An unexpected error occurred on the server");
         }
     }
 
     @Override
     public boolean validatePrimaryKey(Integer id) {
         try {
-            return dao.validatePrimaryKey(id);
+            boolean isValid = dao.validatePrimaryKey(id);
+            if (!isValid) {
+                logger.warn("Invalid primary key: {}", id);
+                throw new ApiException(HttpStatus.BAD_REQUEST.getCode(), "Invalid primary key");
+            }
+            return isValid;
         } catch (JpaException e) {
-            throw new ApiException(500, "Database error during primary key validation");
+            logger.error("JPA Exception during primary key validation: {}", e.getMessage());
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), "Database error during primary key validation");
         }
     }
 
@@ -129,8 +157,8 @@ public class AnimalController implements IController<AnimalDTO, Integer> {
                     .get();
             return animalDTO;
         } catch (Exception e) {
-            throw new ApiException(400, "Invalid or missing parameters in the animal entity");
+            logger.error("Invalid or missing parameters in the animal entity: {}", e.getMessage());
+            throw new ApiException(HttpStatus.BAD_REQUEST.getCode(), "Invalid or missing parameters in the animal entity");
         }
     }
 }
-

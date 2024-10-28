@@ -7,17 +7,21 @@ import static io.javalin.apibuilder.ApiBuilder.*;
 public class Routes {
 
     private final ClinicRoutes clinicRoutes;
+    private final AnimalRoutes animalRoutes;
+    private final ClientRoutes clientRoutes;
 
     public Routes(EntityManagerFactory emf) {
         clinicRoutes = new ClinicRoutes();
+        animalRoutes = new AnimalRoutes();
+        clientRoutes = new ClientRoutes();
     }
 
     public EndpointGroup getRoutes() {
-
         return () -> {
-            // Redirect root path to the index.html page (public access)
-            get("/", ctx -> ctx.redirect("/api/index.html"));
-            path("clinics", clinicRoutes.getRoutes());
+            path("/clinics", clinicRoutes.getRoutes());
+            path("/animals", animalRoutes.getRoutes());
+            path("/clients", clientRoutes.getRoutes());
         };
+
     }
 }
