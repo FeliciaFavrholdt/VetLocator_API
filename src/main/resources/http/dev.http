@@ -1,0 +1,189 @@
+# Define base URL variable
+@url = http://localhost:7000/api
+
+# Clinic Routes
+
+### Get all clinics
+GET {{url}}/clinics
+Accept: application/json
+
+### Get clinic by ID
+GET {{url}}/clinics/1
+Accept: application/json
+
+### Create a new clinic
+POST {{url}}/clinics
+Content-Type: application/json
+
+{
+  "name": "New Clinic",
+  "address": "123 Main St",
+  "contactPhone": "123-456-7890",
+  "emergencyServices": true,
+  "cityId": 1
+}
+
+### Update an existing clinic
+PUT {{url}}/clinics/1
+Content-Type: application/json
+
+{
+  "name": "Updated Clinic",
+  "address": "456 Elm St",
+  "contactPhone": "987-654-3210",
+  "emergencyServices": false,
+  "cityId": 2
+}
+
+### Delete a clinic
+DELETE {{url}}/clinics/1
+
+### Get opening hours of a clinic
+GET {{url}}/clinics/1/opening-hours
+Accept: application/json
+
+### Add a veterinarian to a clinic
+POST {{url}}/clinics/1/veterinarians/3
+Accept: application/json
+
+
+# Animal Routes
+
+### Get all animals
+GET {{url}}/animals
+Accept: application/json
+
+### Get animal by ID
+GET {{url}}/animals/1
+Accept: application/json
+
+### Create a new animal
+POST {{url}}/animals
+Content-Type: application/json
+
+{
+  "name": "Buddy",
+  "species": "Dog",
+  "age": 4,
+  "ownerId": 1
+}
+
+### Update an existing animal
+PUT {{url}}/animals/1
+Content-Type: application/json
+
+{
+  "name": "Buddy Updated",
+  "species": "Dog",
+  "age": 5,
+  "ownerId": 1
+}
+
+### Delete an animal
+DELETE {{url}}/animals/1
+
+
+# Client Routes
+
+### Get all clients
+GET {{url}}/clients
+Accept: application/json
+
+### Get client by ID
+GET {{url}}/clients/1
+Accept: application/json
+
+### Create a new client
+POST {{url}}/clients
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com"
+}
+
+### Update an existing client
+PUT {{url}}/clients/1
+Content-Type: application/json
+
+{
+  "name": "John Updated",
+  "email": "john.updated@example.com"
+}
+
+### Delete a client
+DELETE {{url}}/clients/1
+
+
+# Veterinarian Routes
+
+### Get all veterinarians
+GET {{url}}/veterinarians
+Accept: application/json
+
+### Get veterinarian by ID
+GET {{url}}/veterinarians/1
+Accept: application/json
+
+### Create a new veterinarian
+POST {{url}}/veterinarians
+Content-Type: application/json
+
+{
+  "name": "Dr. Smith",
+  "clinicId": 1
+}
+
+### Update an existing veterinarian
+PUT {{url}}/veterinarians/1
+Content-Type: application/json
+
+{
+  "name": "Dr. Jane Smith",
+  "clinicId": 1
+}
+
+### Delete a veterinarian
+DELETE {{url}}/veterinarians/1
+
+
+# Appointment Routes
+
+### Get all appointments
+GET {{url}}/appointments
+Accept: application/json
+
+### Get appointment by ID
+GET {{url}}/appointments/1
+Accept: application/json
+
+### Create a new appointment
+POST {{url}}/appointments
+Content-Type: application/json
+
+{
+  "appointmentDateTime": "2024-10-28T14:00:00",
+  "reason": "Routine Checkup",
+  "status": "SCHEDULED",
+  "clinicId": 1,
+  "clientId": 1,
+  "animalId": 1,
+  "veterinarianId": 1
+}
+
+### Update an existing appointment
+PUT {{url}}/appointments/1
+Content-Type: application/json
+
+{
+  "appointmentDateTime": "2024-10-28T15:00:00",
+  "reason": "Updated Reason",
+  "status": "RESCHEDULED",
+  "clinicId": 1,
+  "clientId": 1,
+  "animalId": 1,
+  "veterinarianId": 1
+}
+
+### Delete an appointment
+DELETE {{url}}/appointments/1

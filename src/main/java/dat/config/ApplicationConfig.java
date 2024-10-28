@@ -39,7 +39,7 @@ public class ApplicationConfig {
         config.staticFiles.add("/public", Location.CLASSPATH);
     }
 
-    public static Javalin startServer(int port) {
+    public static Javalin startServer(int port, EntityManagerFactory emf) {
         Javalin app = Javalin.create(ApplicationConfig::configuration);
 
         // Access control for requests
