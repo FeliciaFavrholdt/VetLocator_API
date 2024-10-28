@@ -7,7 +7,7 @@ GET {{url}}/auth/test/
 POST {{url}}/auth/register/
 
 {
-    "username": "user",
+    "username": "admin",
     "password": "test123"
 }
 
@@ -15,7 +15,7 @@ POST {{url}}/auth/register/
 POST {{url}}/auth/login/
 
 {
-    "username": "user",
+    "username": "admin",
     "password": "test123"
 }
 
@@ -24,7 +24,16 @@ POST {{url}}/auth/login/
     console.log("JWT Token:", client.global.get("jwt_token"));
 %}
 
-# Clinic Routes
+### Add admin role to user
+POST {{url}}/auth/user/addrole/
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+    "role": "admin"
+}
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
 
 ### Get all clinics
 GET {{url}}/clinics
@@ -36,7 +45,10 @@ Accept: application/json
 
 ### Create a new clinic
 POST {{url}}/clinics
+Accept: application/json
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
+
 
 {
   "name": "Dyrelæge Tester",

@@ -25,22 +25,22 @@ public class ClientRoutes {
             post(clientController::create, Role.ANYONE);
 
             // PUT /clients/{id} - Update an existing client
-            put("{id}", clientController::update, Role.ANYONE);
+            put("{id}", clientController::update, Role.ADMIN);
 
             // DELETE /clients/{id} - Delete a client
             delete("{id}", clientController::delete, Role.ADMIN);
 
             // GET /clients/search-by-email?email=email@example.com - Search client by email
-            get("/search-by-email", clientController::searchByEmail, Role.ANYONE);
+            get("/search-by-email", clientController::searchByEmail, Role.ADMIN, Role.VET);
 
             // GET /clients/{id}/animals - Get all animals belonging to a specific client
-            get("{id}/animals", clientController::getClientAnimals, Role.ANYONE);
+            get("{id}/animals", clientController::getClientAnimals, Role.ADMIN, Role.VET);
 
             // POST /clients/{id}/animals - Add a new animal to a client
-            post("{id}/animals", clientController::addAnimalToClient, Role.ANYONE);
+            post("{id}/animals", clientController::addAnimalToClient, Role.ADMIN, Role.VET);
 
             // GET /clients/{id}/appointments - Get all appointments for a specific client
-            get("{id}/appointments", clientController::getClientAppointments, Role.ANYONE);
+            get("{id}/appointments", clientController::getClientAppointments, Role.ADMIN, Role.VET);
         };
     }
 }
