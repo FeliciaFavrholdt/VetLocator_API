@@ -1,10 +1,17 @@
 package dat.dto;
 
+import dat.entities.Animal;
+import dat.entities.Appointment;
+import dat.entities.Clinic;
+import dat.entities.Client;
+import dat.entities.Veterinarian;
 import dat.enums.AppointmentStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -12,19 +19,36 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class AppointmentDTO {
 
-    private Integer id;           // Unique identifier for the appointment
+    private Long id;
+    private LocalDateTime appointmentDateTime;
+    private String reason;
+    private String status;
+    private Long clinicId;
+    private Long clientId;
+    private Long animalId;
+    private Long veterinarianId;
 
-    private LocalDate date;       // Date of the appointment
-    private LocalTime time;       // Time of the appointment
-    private String reason;        // Reason for the appointment
-    private AppointmentStatus status;  // Status of the appointment (enum)
+    public AppointmentDTO(Appointment appointment) {
+        this.id = appointment.getId();
+        this.appointmentDateTime = appointment.getAppointmentDateTime();
+        this.reason = appointment.getReason();
+        this.status = appointment.getStatus().name();
+        this.clinicId = appointment.getClinic().getId();
+        this.clientId = appointment.getClient().getId();
+        this.animalId = appointment.getAnimal().getId();
+        this.veterinarianId = appointment.getVeterinarian().getId();
+    }
 
-    private Integer veterinarianId;    // ID of the veterinarian (Clinic entity in this case)
-    private String veterinarianName;   // Veterinarian's name (optional for display purposes)
-
-    private Integer clientId;      // ID of the client who made the appointment
-    private String clientName;     // Client's name (optional for display purposes)
-
-    private Integer animalId;      // ID of the pet associated with the appointment
-    private String animalName;     // Pet's name (optional for display purposes)
+    public Appointment toEntity(Clinic clinic, Client client, Animal animal, Veterinarian veterinarian) {
+        Appointment appointment = new Appointment();
+        appointment.setId(this.id);
+        appointment.setAppointmentDateTime(this.appointmentDateTime);
+        appointment.setReason(this.reason);
+        appointment.setStatus(AppointmentStatus.valueOf(this.status));
+        appointment.setClinic(clinic);
+        appointment.setClient(client);
+        appointment.setAnimal(animal);
+        appointment.setVeterinarian(veterinarian);
+        return appointment;
+    }
 }

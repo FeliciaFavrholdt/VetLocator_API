@@ -1,56 +1,66 @@
 package dat.entities;
 
+import dat.dto.AppointmentDTO;
 import dat.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
-@Entity
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"veterinaryClinic", "user", "animal"})  // Exclude relationships from toString to avoid recursion
-@Table(name = "appointments", indexes = {
-        @Index(name = "idx_veterinarian_id", columnList = "veterinarian_id"),
-        @Index(name = "idx_user_id", columnList = "user_id"),
-        @Index(name = "idx_animal_id", columnList = "animal_id")
-})
+@Entity
+@Table(name = "appointments")
 public class Appointment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    private Integer id;  // Unique identifier
+    private Long id;
 
-    @Column(name = "date", nullable = false)
-    private LocalDate date;
+    @NotNull(message = "Appointment date and time are required")
+    @Column(name = "appointment_datetime", nullable = false)
+    private LocalDateTime appointmentDateTime;
 
-    @Column(name = "time", nullable = false)
-    private LocalTime time;
-
+    @NotBlank(message = "Reason is required")
     @Column(name = "reason", nullable = false, length = 255)
-    @NotBlank(message = "Reason cannot be blank")
-    @Size(max = 255, message = "Reason must be less than or equal to 255 characters")
     private String reason;
 
+    @NotNull(message = "Status is required")
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private AppointmentStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "veterinarian_id", nullable = false)
-    private Clinic veterinaryClinic;  // Veterinarian assigned to the appointment
+    @NotNull(message = "Clinic is required")
+    @ManyToOne
+    @JoinColumn(name = "clinic_id", nullable = false)
+    private Clinic clinic;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private Client client;  // Person who made the appointment
+    @NotNull(message = "Client is required")
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull(message = "Animal is required")
+    @ManyToOne
     @JoinColumn(name = "animal_id", nullable = false)
-    private Animal animal;  // Pet for which the appointment is scheduled
+    private Animal animal;
+
+    @NotNull(message = "Veterinarian is required")
+    @ManyToOne
+    @JoinColumn(name = "veterinarian_id", nullable = false)
+    private Veterinarian veterinarian;
+
+    // Method to convert from DTO
+    public void convertFromDTO(AppointmentDTO appointmentDTO) {
+        this.appointmentDateTime = appointmentDTO.getAppointmentDateTime();  // Corrected to match the field in DTO
+        this.reason = appointmentDTO.getReason();
+        this.status = AppointmentStatus.valueOf(appointmentDTO.getStatus());
+        // Clinic, Client, Animal, and Veterinarian should be set in the DAO or service layer
+    }
 }

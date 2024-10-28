@@ -1,38 +1,50 @@
 package dat.entities;
 
+import dat.dto.VeterinarianDTO;
 import jakarta.persistence.*;
-import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import dat.enums.Specialization;
+import dat.enums.Availability;
+import lombok.NoArgsConstructor;
 
-@Entity
-@Getter
-@Setter
-@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name = "veterinarians")
 public class Veterinarian {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    private Integer id;
+    private Long id;
 
-    @Column(name = "name", nullable = false, length = 50)
+    @NotBlank(message = "Name is required")
+    @Size(max = 100, message = "Name must not exceed 100 characters")
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "phone", nullable = false, length = 20)
-    private String phone;
-
+    @NotNull(message = "Specialization is required")
     @Enumerated(EnumType.STRING)
-    @Column(name = "availability", nullable = false)
-    private Availability availability;
+    @Column(name = "specialties", nullable = false, length = 50)
+    private Specialization specialties;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull(message = "Clinic is required")
+    @ManyToOne
     @JoinColumn(name = "clinic_id", nullable = false)
     private Clinic clinic;
 
-    public enum Availability {
-        BOOKED,
-        AVAILABLE
+    @NotNull(message = "Availability for emergency is required")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "available_for_emergency", nullable = false, length = 100)
+    private Availability availableForEmergency;
+
+    public void convertFromDTO(VeterinarianDTO veterinarianDTO) {
+        this.name = veterinarianDTO.getName();
+        this.specialties = Specialization.valueOf(veterinarianDTO.getSpecialties());
+        this.availableForEmergency = Availability.valueOf(veterinarianDTO.getAvailableForEmergency());
     }
 }

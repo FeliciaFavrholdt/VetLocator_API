@@ -1,6 +1,5 @@
 package dat.entities;
 
-
 import dat.dto.ClientDTO;
 import dat.enums.Gender;
 import jakarta.persistence.*;
@@ -10,106 +9,83 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
-@Entity
-@Getter
-@Setter
-@Builder
-@ToString(exclude = "animals")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@Entity
 @Table(name = "clients")
 public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    private Integer id;
+    private Long id;
 
-    @Column(name = "username", nullable = false, unique = true, length = 50)
-    @NotBlank(message = "Username cannot be blank")
-    @Size(max = 50, message = "Username must be less than or equal to 50 characters")
-    private String username;
+    @NotBlank(message = "Name is required")
+    @Size(max = 100, message = "Name must not exceed 100 characters")
+    @Column(name = "name", nullable = false, length = 100)
+    private String name;
 
-    @Column(name = "password", nullable = false, length = 255)
-    @NotBlank(message = "Password cannot be blank")
-    private String password;
-
-    @Column(name = "first_name", nullable = false, length = 15)
-    @NotBlank(message = "First name cannot be blank")
-    @Size(max = 15, message = "First name must be less than or equal to 15 characters")
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false, length = 50)
-    @NotBlank(message = "Last name cannot be blank")
-    @Size(max = 50, message = "Last name must be less than or equal to 50 characters")
-    private String lastName;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "gender", nullable = false)
-    private Gender gender;
-
+    @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
-    @NotBlank(message = "Email cannot be blank")
-    @Size(max = 100, message = "Email must be less than or equal to 100 characters")
-    @Column(name = "email", nullable = false, length = 100, unique = true)
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(name = "phone", nullable = false, length = 20)
-    @NotBlank(message = "Phone cannot be blank")
-    @Pattern(regexp = "\\+\\d{1,4} \\d{2} \\d{2} \\d{2} \\d{2}", message = "Phone must be a valid format (e.g., +45 XX XX XX XX)")
-    private String phone;
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^\\+45\\s\\d{2}\\s\\d{2}\\s\\d{2}\\s\\d{2}$", message = "Phone number must match +45 xx xx xx xx format")
+    @Column(name = "phone_number", nullable = false, length = 15)
+    private String phoneNumber;
 
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Animal> animals = new HashSet<>();
+    @NotBlank(message = "Address is required")
+    @Size(max = 255, message = "Address must not exceed 255 characters")
+    @Column(name = "address", nullable = false, length = 255)
+    private String address;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", nullable = false, length = 6)
+    private Gender gender;
 
-    public Client(String username, String password, String firstName, String lastName, Gender gender, String email, String phone) {
-        this.username = username;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Animal> animals = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)  // Optional: Lazy loading
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;  // Many Clients belong to one City
+
+    // Constructor without validation annotations (to use in DTOs, etc.)
+    public Client(Long id, String name, Gender gender, String email, String phoneNumber, String address, City city, List<Animal> animals) {
+        this.id = id;
+        this.name = name;
         this.gender = gender;
         this.email = email;
-        this.phone = phone;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.city = city;
+        this.animals = animals != null ? animals : new ArrayList<>();
     }
 
-    public void addAnimal(Animal animal) {
-        animals.add(animal);
-        animal.setClient(this);  // Ensure bidirectional relationship
-    }
+    // Method to convert from ClientDTO to Client
+    public void convertFromDTO(ClientDTO clientDTO) {
+        this.name = clientDTO.getName();
+        this.email = clientDTO.getEmail();
+        this.phoneNumber = clientDTO.getPhoneNumber();
+        this.address = clientDTO.getAddress();
+        this.city = city;  // Set city during conversion
 
-    public void removeAnimal(Animal animal) {
-        animals.remove(animal);
-        animal.setClient(null);
-    }
-
-    public Client(ClientDTO dto) {
-        this.username = dto.getFullName().toLowerCase().replaceAll(" ", "_");
-        this.firstName = dto.getFullName().split(" ")[0];
-        this.lastName = dto.getFullName().split(" ")[1];
-        this.email = dto.getEmail();
-        this.phone = dto.getPhone();
-        this.gender = dto.getGender();
-        this.password = "password";
-        if (dto.getAnimals() != null) {
-            this.animals = dto.getAnimals().stream().map(Animal::new).collect(Collectors.toSet());
-            this.animals.forEach(animal -> animal.setClient(this));  // Ensure bidirectional association
-        }
-    }
-
-    public void updateFromDTO(ClientDTO dto) {
-        this.firstName = dto.getFullName().split(" ")[0];
-        this.lastName = dto.getFullName().split(" ")[1];
-        this.email = dto.getEmail();
-        this.phone = dto.getPhone();
-        if (dto.getAnimals() != null) {
-            this.animals = dto.getAnimals().stream().map(Animal::new).collect(Collectors.toSet());
-            this.animals.forEach(animal -> animal.setClient(this));  // Ensure bidirectional association
+        // Handle gender conversion
+        if (clientDTO.getGender() != null) {
+            try {
+                this.gender = Gender.valueOf(clientDTO.getGender().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid gender value: " + clientDTO.getGender());
+            }
+        } else {
+            this.gender = null;  // If gender is null, set it to null
         }
     }
 }
-

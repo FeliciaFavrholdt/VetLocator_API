@@ -19,8 +19,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AnimalDAO.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(AnimalDAO.class);  // Logger instance
     private static AnimalDAO instance;
     private static EntityManagerFactory emf;
 
@@ -41,31 +40,28 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
+            Animal animal = animalDTO.toEntity();
+            Client client = em.find(Client.class, animalDTO.getOwnerId());
 
-            // Convert DTO to entity
-            Animal animal = new Animal(animalDTO);
-
-            // Find and set the Client entity based on userId in the DTO
-            Client client = em.find(Client.class, animalDTO.getUserId());
             if (client == null) {
-                throw new JpaException(400, "Client not found for userId: " + animalDTO.getUserId());
+                logger.warn("Client not found for userId: {}", animalDTO.getOwnerId());
+                throw new JpaException(400, "Client not found for userId: " + animalDTO.getOwnerId());
             }
-            animal.setClient(client);
 
-            // Persist the animal entity
+            animal.setOwner(client);
             em.persist(animal);
             em.getTransaction().commit();
 
-            // Return the persisted entity as a DTO
+            logger.info("Animal created successfully with ID {}", animal.getId());
             return new AnimalDTO(animal);
         } catch (PersistenceException e) {
-            em.getTransaction().rollback();
-            logger.error("Error creating animal: {}", e.getMessage(), e);
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error("Error creating animal in the database: {}", e.getMessage());
             throw new JpaException(500, "Error creating animal in the database.");
         } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
+            em.close();
         }
     }
 
@@ -75,16 +71,13 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
         try {
             Animal animal = em.find(Animal.class, id);
             if (animal == null) {
+                logger.warn("Animal not found for ID: {}", id);
                 throw new JpaException(404, "Animal not found for ID: " + id);
             }
+            logger.info("Animal with ID {} successfully retrieved.", id);
             return new AnimalDTO(animal);
-        } catch (PersistenceException e) {
-            logger.error("Error reading animal with ID {}: {}", id, e.getMessage(), e);
-            throw new JpaException(500, "Error reading animal from the database.");
         } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
+            em.close();
         }
     }
 
@@ -93,14 +86,11 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<AnimalDTO> query = em.createQuery("SELECT new dat.dto.AnimalDTO(a) FROM Animal a", AnimalDTO.class);
-            return query.getResultList();
-        } catch (PersistenceException e) {
-            logger.error("Error fetching all animals: {}", e.getMessage(), e);
-            throw new JpaException(500, "Error fetching animals from the database.");
+            List<AnimalDTO> animals = query.getResultList();
+            logger.info("Successfully retrieved {} animals.", animals.size());
+            return animals;
         } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
+            em.close();
         }
     }
 
@@ -110,37 +100,35 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
         try {
             em.getTransaction().begin();
 
-            // Find the existing animal by ID
             Animal animal = em.find(Animal.class, id);
             if (animal == null) {
+                logger.warn("Animal not found for ID: {}", id);
                 throw new JpaException(404, "Animal not found for ID: " + id);
             }
 
-            // Update the entity with the new DTO data
-            animal.updateFromDTO(animalDTO);
+            animal.convertFromDTO(animalDTO);
 
-            // Optionally, update the Client relationship based on userId in DTO
-            if (!animal.getClient().getId().equals(animalDTO.getUserId())) {
-                Client client = em.find(Client.class, animalDTO.getUserId());
+            if (!animal.getOwner().getId().equals(animalDTO.getOwnerId())) {
+                Client client = em.find(Client.class, animalDTO.getOwnerId());
                 if (client == null) {
-                    throw new JpaException(400, "Client not found for userId: " + animalDTO.getUserId());
+                    logger.warn("Client not found for userId: {}", animalDTO.getOwnerId());
+                    throw new JpaException(400, "Client not found for userId: " + animalDTO.getOwnerId());
                 }
-                animal.setClient(client);
+                animal.setOwner(client);
             }
 
-            // Merge and commit the changes
             Animal mergedAnimal = em.merge(animal);
             em.getTransaction().commit();
-
+            logger.info("Animal with ID {} successfully updated.", id);
             return new AnimalDTO(mergedAnimal);
         } catch (PersistenceException e) {
-            em.getTransaction().rollback();
-            logger.error("Error updating animal with ID {}: {}", id, e.getMessage(), e);
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error("Error updating animal in the database: {}", e.getMessage());
             throw new JpaException(500, "Error updating animal in the database.");
         } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
+            em.close();
         }
     }
 
@@ -151,18 +139,20 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
             em.getTransaction().begin();
             Animal animal = em.find(Animal.class, id);
             if (animal == null) {
+                logger.warn("Animal not found for ID: {}", id);
                 throw new JpaException(404, "Animal not found for ID: " + id);
             }
             em.remove(animal);
             em.getTransaction().commit();
+            logger.info("Animal with ID {} successfully deleted.", id);
         } catch (PersistenceException e) {
-            em.getTransaction().rollback();
-            logger.error("Error deleting animal with ID {}: {}", id, e.getMessage(), e);
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error("Error deleting animal from the database: {}", e.getMessage());
             throw new JpaException(500, "Error deleting animal from the database.");
         } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
+            em.close();
         }
     }
 
@@ -170,15 +160,13 @@ public class AnimalDAO implements IDAO<AnimalDTO, Integer> {
     public boolean validatePrimaryKey(Integer id) {
         EntityManager em = emf.createEntityManager();
         try {
-            Animal animal = em.find(Animal.class, id);
-            return animal != null;
-        } catch (PersistenceException e) {
-            logger.error("Error validating animal primary key with ID {}: {}", id, e.getMessage(), e);
-            throw new JpaException(500, "Error validating animal primary key.");
-        } finally {
-            if (em.isOpen()) {
-                em.close();
+            boolean isValid = em.find(Animal.class, id) != null;
+            if (!isValid) {
+                logger.warn("Invalid primary key: {}", id);
             }
+            return isValid;
+        } finally {
+            em.close();
         }
     }
 }

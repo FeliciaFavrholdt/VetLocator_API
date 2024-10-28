@@ -1,32 +1,57 @@
 package dat.dto;
 
 import dat.entities.Clinic;
-import dat.enums.Specialization;
-import lombok.Getter;
+import dat.entities.OpeningHours;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class ClinicDTO {
 
-    private Integer id;
-    private String clinicName;
-    private Specialization specialization;
-    private String phone;
-    private String email;
-    private String address;       // Clinic's address
-    private int postalCode;       // City postal code
+    private Long id;
+    private String name;
+    private String address;
+    private String contactPhone;
+    private Boolean emergencyServices;
+    private Long cityId;
+    private List<OpeningHoursDTO> openingHours;  // List of opening hours
 
-    // Constructor to create ClinicDTO from Clinic entity
+    // Constructor to convert from Clinic entity to ClinicDTO
     public ClinicDTO(Clinic clinic) {
-        this.id = clinic.getId();
-        this.clinicName = clinic.getClinicName();
-        this.specialization = clinic.getSpecialization();
-        this.phone = clinic.getPhone();
-        this.email = clinic.getEmail();
-        this.address = clinic.getAddress();
-        this.postalCode = clinic.getPostalCode();
+        if (clinic != null) {
+            this.id = clinic.getId();
+            this.name = clinic.getName();
+            this.address = clinic.getAddress();
+            this.contactPhone = clinic.getContactPhone();
+            this.emergencyServices = clinic.getEmergencyServices();
+            // Convert City to cityId (if city exists)
+            this.cityId = clinic.getCity() != null ? clinic.getCity().getId() : null;
+
+            // Convert OpeningHours entity list to OpeningHoursDTO list
+            this.openingHours = clinic.getOpeningHours() != null ?
+                    clinic.getOpeningHours().stream().map(OpeningHoursDTO::new).collect(Collectors.toList()) :
+                    null;
+        }
+    }
+
+    // Method to convert from DTO to Clinic entity (excluding City)
+    public Clinic toEntity() {
+        Clinic clinic = new Clinic();
+        clinic.setId(this.id);
+        clinic.setName(this.name);
+        clinic.setAddress(this.address);
+        clinic.setContactPhone(this.contactPhone);
+        clinic.setEmergencyServices(this.emergencyServices);
+        // City association should be handled separately in the service/DAO layer
+        // OpeningHours should also be set in the service/DAO layer
+        return clinic;
     }
 }

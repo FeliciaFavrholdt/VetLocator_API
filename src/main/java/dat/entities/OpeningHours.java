@@ -2,16 +2,16 @@ package dat.entities;
 
 import dat.enums.Weekday;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalTime;
 
-@Entity
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "veterinaryClinic")  // Exclude relationship from toString to avoid recursion
+@Entity
 @Table(name = "opening_hours")
 public class OpeningHours {
 
@@ -20,32 +20,18 @@ public class OpeningHours {
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
-    // Enum to represent the day of the week
     @Enumerated(EnumType.STRING)
     @Column(name = "weekday", nullable = false)
-    @NotNull(message = "Weekday cannot be null")
     private Weekday weekday;
 
-    // Start and end times for the shift
-    @Column(name = "start_time", nullable = false)
-    @NotNull(message = "Start time cannot be null")
-    private LocalTime startTime;
+    @Column(name = "open_time", nullable = false)
+    private LocalTime openTime;
 
-    @Column(name = "end_time", nullable = false)
-    @NotNull(message = "End time cannot be null")
-    private LocalTime endTime;
+    @Column(name = "close_time", nullable = false)
+    private LocalTime closeTime;
 
-    // Many-to-One relationship with VeterinaryClinic, lazy load to improve performance
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "veterinary_clinic_id", nullable = false)
-    @NotNull(message = "Veterinary clinic cannot be null")
-    private Clinic veterinaryClinic;
-
-    // Method to check if a vet is currently on duty for the given day and time
-    public boolean isOnDuty(LocalTime currentTime, Weekday currentWeekday) {
-        if (this.weekday != currentWeekday) {
-            return false;
-        }
-        return !currentTime.isBefore(startTime) && !currentTime.isAfter(endTime);
-    }
+    // Many-to-one relationship with Clinic
+    @ManyToOne
+    @JoinColumn(name = "clinic_id", nullable = false)
+    private Clinic clinic;
 }

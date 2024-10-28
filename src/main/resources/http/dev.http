@@ -1,44 +1,271 @@
-### A simple get request to the test endpoint. No need for login
-GET {{url}}/auth/test/
+# Clinic Routes
 
-### Create a new client - this one will only get a USER role by default
-POST {{url}}/auth/register/
+### Get all clinics
+GET {{url}}/clinics
+Accept: application/json
+
+### Get clinic by ID
+GET {{url}}/clinics/1
+Accept: application/json
+
+### Create a new clinic
+POST {{url}}/clinics
+Content-Type: application/json
 
 {
-    "username": "client",
-    "password": "test123"
+  "name": "Dyrelæge Tester",
+  "address": "Kongevejen 1",
+  "contactPhone": "+45 12345678",
+  "emergencyServices": true,
+  "cityId": 1
 }
 
-###
-POST {{url}}/auth/login/
+### Update an existing clinic
+PUT {{url}}/clinics/7
+Content-Type: application/json
 
 {
-    "username": "client",
-    "password": "test123"
+  "name": "Dyrelæge Opdateret",
+  "address": "Kongevejen 10",
+  "contactPhone": "+45 12345678",
+  "emergencyServices": false,
+  "cityId": 1
 }
 
-> {%
-    client.global.set("jwt_token", response.body.token);
-    console.log("JWT Token:", client.global.get("jwt_token"));
-%}
+### Delete a clinic
+DELETE {{url}}/clinics/6
 
-###
-GET {{url}}/protected/user_demo/
+### Add opening hours to a clinic
+POST {{url}}/clinics/1/opening-hours
+Content-Type: application/json
+
+{
+  "dayOfWeek": "MONDAY",
+  "startTime": "09:00",
+  "endTime": "17:00"
+}
+
+### Get opening hours of a clinic
+GET {{url}}/clinics/1/opening-hours
+Accept: application/json
+
+### Search clinics by city
+GET {{url}}/clinics/search-by-city?cityId=1
+Accept: application/json
+
+### Search clinics by name
+GET {{url}}/clinics/search-by-name?name=VetCare
+Accept: application/json
+
+### Add a veterinarian to a clinic
+POST {{url}}/clinics/1/veterinarians/3
+Accept: application/json
+
+### Get all veterinarians in a clinic
+GET {{url}}/clinics/1/veterinarians
+Accept: application/json
+
+### Remove a veterinarian from a clinic
+DELETE {{url}}/clinics/1/veterinarians/3
+
+
+# Animal Routes
+
+### Get all animals
+GET {{url}}/animals
+Accept: application/json
+
+### Get animal by ID
+GET {{url}}/animals/1
+Accept: application/json
+
+### Create a new animal
+POST {{url}}/animals
+Content-Type: application/json
+
+{
+  "name": "Buddy",
+  "species": "Dog",
+  "age": 5,
+  "ownerId": 1
+}
+
+### Update an existing animal
+PUT {{url}}/animals/1
+Content-Type: application/json
+
+{
+  "name": "Buddy",
+  "species": "Dog",
+  "age": 6,
+  "ownerId": 1
+}
+
+### Delete an animal
+DELETE {{url}}/animals/1
 Accept: application/json
 Authorization: Bearer {{jwt_token}}
 
-###
-GET {{url}}/protected/admin_demo/
-Accept: application/json
-Authorization: Bearer {{jwt_token}}
 
-### Add admin role to client
-POST {{url}}/auth/client/addrole/
+### Search animals by species
+GET {{url}}/animals/search-by-species?species=Dog
+Accept: application/json
+
+### Search animals by name
+GET {{url}}/animals/search-by-name?name=Max
+Accept: application/json
+
+### Get medical history of an animal
+GET {{url}}/animals/1/medical-history
+Accept: application/json
+
+### Add medical history to an animal
+POST {{url}}/animals/1/medical-history
 Accept: application/json
 Authorization: Bearer {{jwt_token}}
 
 {
-    "role": "admin"
+  "description": "Routine check-up, vaccinations administered",
+  "date": "2024-10-10"
 }
+
+### Get all appointments of an animal
+GET {{url}}/animals/1/appointments
 Accept: application/json
+
+
+# Client Routes
+
+### Get all clients
+GET {{url}}/clients
+Accept: application/json
+
+### Get client by ID
+GET {{url}}/clients/1
+Accept: application/json
+
+### Create a new client
+POST {{url}}/clients
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "phone": "123456789",
+  "address": "123 Main St",
+  "cityId": 1
+}
+
+### Update an existing client
+PUT {{url}}/clients/1
+Content-Type: application/json
+
+{
+  "name": "John Doe Updated",
+  "email": "john.updated@example.com",
+  "phone": "987654321",
+  "address": "456 Elm St",
+  "cityId": 1
+}
+
+### Delete a client
+DELETE {{url}}/clients/1
 Authorization: Bearer {{jwt_token}}
+
+### Search client by email
+GET {{url}}/clients/search-by-email?email=john@example.com
+Accept: application/json
+
+### Get all animals of a client
+GET {{url}}/clients/1/animals
+Accept: application/json
+
+### Add a new animal to a client
+POST {{url}}/clients/1/animals
+Content-Type: application/json
+
+{
+  "name": "Bella",
+  "species": "Dog",
+  "age": 4
+}
+
+### Get all appointments of a client
+GET {{url}}/clients/1/appointments
+Accept: application/json
+
+
+# Veterinarian Routes
+
+### Get all veterinarians
+GET {{url}}/veterinarians
+Accept: application/json
+
+### Get veterinarian by ID
+GET {{url}}/veterinarians/1
+Accept: application/json
+
+### Create a new veterinarian
+POST {{url}}/veterinarians
+Content-Type: application/json
+
+{
+  "name": "Dr. Smith",
+  "specialization": "Dentistry",
+  "clinicId": 1
+}
+
+### Update an existing veterinarian
+PUT {{url}}/veterinarians/1
+Content-Type: application/json
+
+{
+  "name": "Dr. John Smith",
+  "specialization": "Surgery",
+  "clinicId": 1
+}
+
+### Delete a veterinarian
+DELETE {{url}}/veterinarians/1
+
+
+# Appointment Routes
+
+### Get all appointments
+GET {{url}}/appointments
+Accept: application/json
+
+### Get appointment by ID
+GET {{url}}/appointments/1
+Accept: application/json
+
+### Create a new appointment
+POST {{url}}/appointments
+Content-Type: application/json
+
+{
+  "appointmentDateTime": "2024-10-28T14:00:00",
+  "reason": "Routine Checkup",
+  "status": "SCHEDULED",
+  "clinicId": 1,
+  "clientId": 1,
+  "animalId": 1,
+  "veterinarianId": 1
+}
+
+### Update an existing appointment
+PUT {{url}}/appointments/1
+Content-Type: application/json
+
+{
+  "appointmentDateTime": "2024-10-28T15:00:00",
+  "reason": "Updated Reason",
+  "status": "RESCHEDULED",
+  "clinicId": 1,
+  "clientId": 1,
+  "animalId": 1,
+  "veterinarianId": 1
+}
+
+### Delete an appointment
+DELETE {{url}}/appointments/1

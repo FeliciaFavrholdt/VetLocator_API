@@ -1,29 +1,24 @@
 package dat.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity
 @Data
-@Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "cities", indexes = @Index(name = "idx_postal_code", columnList = "postal_code"))  // Index for postal code
+@Entity
+@Table(name = "cities")
 public class City {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    private Integer id;
+    private Long id;
 
-    @Column(name = "city_name", nullable = false, length = 100)
-    @NotBlank(message = "City name cannot be blank")
-    @Size(max = 100, message = "City name must be less than or equal to 100 characters")
-    private String cityName;
+    @Column(name = "name", nullable = false, length = 100)
+    private String name;
 
-    @Column(name = "postal_code", nullable = false)
-    private int postalCode;
+    @Column(name = "postal_code", nullable = false, length = 10)
+    private String postalCode;
 }

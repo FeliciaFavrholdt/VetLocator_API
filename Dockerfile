@@ -14,6 +14,4 @@ EXPOSE 7071
 CMD ["java", "-jar", "/app.jar"]
 
 # Run the Populate class
-ENTRYPOINT ["sh", "-c", "java -jar /app.jar && java -cp /app.jar dat.config.Populate"]
-
-
+ENTRYPOINT ["sh", "-c", "java -jar /app.jar" ]

@@ -2,57 +2,87 @@ package dat.dao.impl;
 
 import dat.dao.IDAO;
 import dat.dto.AppointmentDTO;
-import dat.entities.Animal;
 import dat.entities.Appointment;
-import dat.entities.Client;
+import dat.entities.Animal;
+import dat.entities.Veterinarian;
 import dat.entities.Clinic;
-import dat.exception.JpaException;
+import dat.entities.Client;
+import dat.exceptions.JpaException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.PersistenceException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class AppointmentDAO implements IDAO<AppointmentDTO, Integer> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppointmentDAO.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentDAO.class);  // Logger instance
     private static AppointmentDAO instance;
-    private final EntityManagerFactory emf;
+    private static EntityManagerFactory emf;
 
-    private AppointmentDAO(EntityManagerFactory emf) {
-        this.emf = emf;
+    public AppointmentDAO(EntityManagerFactory emf) {
+        AppointmentDAO.emf = emf;
     }
 
-    public static AppointmentDAO getInstance(EntityManagerFactory emf) {
+    public static AppointmentDAO getInstance(EntityManagerFactory _emf) {
         if (instance == null) {
-            instance = new AppointmentDAO(emf);
+            emf = _emf;
+            instance = new AppointmentDAO();
         }
         return instance;
     }
 
     @Override
-    public AppointmentDTO create(AppointmentDTO dto) {
+    public AppointmentDTO create(AppointmentDTO appointmentDTO) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            Appointment appointment = new Appointment();
-            mapDTOtoEntity(dto, appointment, em);
+
+            // Fetch related entities (Clinic, Client, Animal, Veterinarian)
+            Animal animal = em.find(Animal.class, appointmentDTO.getAnimalId());
+            Veterinarian veterinarian = em.find(Veterinarian.class, appointmentDTO.getVeterinarianId());
+            Clinic clinic = em.find(Clinic.class, appointmentDTO.getClinicId());
+            Client client = em.find(Client.class, appointmentDTO.getClientId());
+
+            // Validation
+            if (animal == null) {
+                logger.warn("Animal not found for ID: {}", appointmentDTO.getAnimalId());
+                throw new JpaException(400, "Animal not found");
+            }
+            if (veterinarian == null) {
+                logger.warn("Veterinarian not found for ID: {}", appointmentDTO.getVeterinarianId());
+                throw new JpaException(400, "Veterinarian not found");
+            }
+            if (clinic == null) {
+                logger.warn("Clinic not found for ID: {}", appointmentDTO.getClinicId());
+                throw new JpaException(400, "Clinic not found");
+            }
+            if (client == null) {
+                logger.warn("Client not found for ID: {}", appointmentDTO.getClientId());
+                throw new JpaException(400, "Client not found");
+            }
+
+            // Convert DTO to Entity and pass required entities
+            Appointment appointment = appointmentDTO.toEntity(clinic, client, animal, veterinarian);
+
             em.persist(appointment);
             em.getTransaction().commit();
-            logger.info("Appointment created successfully with ID: {}", appointment.getId());
-            return mapEntityToDTO(appointment);
+            logger.info("Appointment created successfully with ID {}", appointment.getId());
+            return new AppointmentDTO(appointment);
         } catch (PersistenceException e) {
-            em.getTransaction().rollback();
-            logger.error("Error creating appointment: {}", e.getMessage(), e);
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error("Error creating appointment in the database: {}", e.getMessage());
             throw new JpaException(500, "Error creating appointment in the database.");
         } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
+            em.close();
         }
     }
 
@@ -62,16 +92,13 @@ public class AppointmentDAO implements IDAO<AppointmentDTO, Integer> {
         try {
             Appointment appointment = em.find(Appointment.class, id);
             if (appointment == null) {
+                logger.warn("Appointment not found for ID: {}", id);
                 throw new JpaException(404, "Appointment not found for ID: " + id);
             }
-            return mapEntityToDTO(appointment);
-        } catch (PersistenceException e) {
-            logger.error("Error reading appointment with ID {}: {}", id, e.getMessage(), e);
-            throw new JpaException(500, "Error reading appointment from the database.");
+            logger.info("Appointment with ID {} successfully retrieved.", id);
+            return new AppointmentDTO(appointment);
         } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
+            em.close();
         }
     }
 
@@ -79,42 +106,69 @@ public class AppointmentDAO implements IDAO<AppointmentDTO, Integer> {
     public List<AppointmentDTO> readAll() {
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<Appointment> query = em.createQuery("SELECT a FROM Appointment a", Appointment.class);
-            List<Appointment> appointments = query.getResultList();
-            logger.info("Fetched {} appointments from the database.", appointments.size());
-            return appointments.stream().map(this::mapEntityToDTO).toList();
-        } catch (PersistenceException e) {
-            logger.error("Error fetching all appointments: {}", e.getMessage(), e);
-            throw new JpaException(500, "Error fetching appointments from the database.");
+            TypedQuery<AppointmentDTO> query = em.createQuery("SELECT new dat.dto.AppointmentDTO(a) FROM Appointment a", AppointmentDTO.class);
+            List<AppointmentDTO> appointments = query.getResultList();
+            logger.info("Successfully retrieved {} appointments.", appointments.size());
+            return appointments;
         } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
+            em.close();
         }
     }
 
     @Override
-    public AppointmentDTO update(Integer id, AppointmentDTO dto) {
+    public AppointmentDTO update(Integer id, AppointmentDTO appointmentDTO) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             Appointment appointment = em.find(Appointment.class, id);
             if (appointment == null) {
+                logger.warn("Appointment not found for ID: {}", id);
                 throw new JpaException(404, "Appointment not found for ID: " + id);
             }
-            mapDTOtoEntity(dto, appointment, em);
-            em.merge(appointment);
+
+            // Fetch related entities (Clinic, Client, Animal, Veterinarian)
+            Animal animal = em.find(Animal.class, appointmentDTO.getAnimalId());
+            Veterinarian veterinarian = em.find(Veterinarian.class, appointmentDTO.getVeterinarianId());
+            Clinic clinic = em.find(Clinic.class, appointmentDTO.getClinicId());
+            Client client = em.find(Client.class, appointmentDTO.getClientId());
+
+            // Validation
+            if (animal == null) {
+                logger.warn("Animal not found for ID: {}", appointmentDTO.getAnimalId());
+                throw new JpaException(400, "Animal not found");
+            }
+            if (veterinarian == null) {
+                logger.warn("Veterinarian not found for ID: {}", appointmentDTO.getVeterinarianId());
+                throw new JpaException(400, "Veterinarian not found");
+            }
+            if (clinic == null) {
+                logger.warn("Clinic not found for ID: {}", appointmentDTO.getClinicId());
+                throw new JpaException(400, "Clinic not found");
+            }
+            if (client == null) {
+                logger.warn("Client not found for ID: {}", appointmentDTO.getClientId());
+                throw new JpaException(400, "Client not found");
+            }
+
+            // Update appointment fields from DTO
+            appointment.convertFromDTO(appointmentDTO);
+            appointment.setAnimal(animal);
+            appointment.setVeterinarian(veterinarian);
+            appointment.setClinic(clinic);
+            appointment.setClient(client);
+
+            Appointment mergedAppointment = em.merge(appointment);
             em.getTransaction().commit();
-            logger.info("Appointment updated successfully with ID: {}", appointment.getId());
-            return mapEntityToDTO(appointment);
+            logger.info("Appointment with ID {} successfully updated.", id);
+            return new AppointmentDTO(mergedAppointment);
         } catch (PersistenceException e) {
-            em.getTransaction().rollback();
-            logger.error("Error updating appointment with ID {}: {}", id, e.getMessage(), e);
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error("Error updating appointment in the database: {}", e.getMessage());
             throw new JpaException(500, "Error updating appointment in the database.");
         } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
+            em.close();
         }
     }
 
@@ -125,19 +179,20 @@ public class AppointmentDAO implements IDAO<AppointmentDTO, Integer> {
             em.getTransaction().begin();
             Appointment appointment = em.find(Appointment.class, id);
             if (appointment == null) {
+                logger.warn("Appointment not found for ID: {}", id);
                 throw new JpaException(404, "Appointment not found for ID: " + id);
             }
             em.remove(appointment);
             em.getTransaction().commit();
-            logger.info("Appointment deleted successfully with ID: {}", id);
+            logger.info("Appointment with ID {} successfully deleted.", id);
         } catch (PersistenceException e) {
-            em.getTransaction().rollback();
-            logger.error("Error deleting appointment with ID {}: {}", id, e.getMessage(), e);
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            logger.error("Error deleting appointment from the database: {}", e.getMessage());
             throw new JpaException(500, "Error deleting appointment from the database.");
         } finally {
-            if (em.isOpen()) {
-                em.close();
-            }
+            em.close();
         }
     }
 
@@ -145,55 +200,13 @@ public class AppointmentDAO implements IDAO<AppointmentDTO, Integer> {
     public boolean validatePrimaryKey(Integer id) {
         EntityManager em = emf.createEntityManager();
         try {
-            Appointment appointment = em.find(Appointment.class, id);
-            return appointment != null;
-        } catch (PersistenceException e) {
-            logger.error("Error validating appointment primary key with ID {}: {}", id, e.getMessage(), e);
-            throw new JpaException(500, "Error validating appointment primary key.");
-        } finally {
-            if (em.isOpen()) {
-                em.close();
+            boolean isValid = em.find(Appointment.class, id) != null;
+            if (!isValid) {
+                logger.warn("Invalid primary key: {}", id);
             }
+            return isValid;
+        } finally {
+            em.close();
         }
-    }
-
-    // Helper method to map AppointmentDTO to Appointment entity
-    private void mapDTOtoEntity(AppointmentDTO dto, Appointment appointment, EntityManager em) {
-        appointment.setDate(dto.getDate());
-        appointment.setTime(dto.getTime());
-        appointment.setReason(dto.getReason());
-        appointment.setStatus(dto.getStatus());
-
-        if (dto.getVeterinarianId() != null) {
-            Clinic clinic = em.find(Clinic.class, dto.getVeterinarianId());
-            appointment.setVeterinaryClinic(clinic);
-        }
-
-        if (dto.getClientId() != null) {
-            Client client = em.find(Client.class, dto.getClientId());
-            appointment.setClient(client);
-        }
-
-        if (dto.getAnimalId() != null) {
-            Animal animal = em.find(Animal.class, dto.getAnimalId());
-            appointment.setAnimal(animal);
-        }
-    }
-
-    // Helper method to map Appointment entity to AppointmentDTO
-    private AppointmentDTO mapEntityToDTO(Appointment appointment) {
-        return AppointmentDTO.builder()
-                .id(appointment.getId())
-                .date(appointment.getDate())
-                .time(appointment.getTime())
-                .reason(appointment.getReason())
-                .status(appointment.getStatus())
-                .veterinarianId(appointment.getVeterinaryClinic() != null ? appointment.getVeterinaryClinic().getId() : null)
-                .veterinarianName(appointment.getVeterinaryClinic() != null ? appointment.getVeterinaryClinic().getClinicName() : null)
-                .clientId(appointment.getClient() != null ? appointment.getClient().getId() : null)
-                .clientName(appointment.getClient() != null ? appointment.getClient().getFirstName() + " " + appointment.getClient().getLastName() : null)
-                .animalId(appointment.getAnimal() != null ? appointment.getAnimal().getId() : null)
-                .animalName(appointment.getAnimal() != null ? appointment.getAnimal().getName() : null)
-                .build();
     }
 }

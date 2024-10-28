@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
  * Purpose: To handle security in the API
  * Author: Thomas Hartmann
  */
-
 public class SecurityDAO implements ISecurityDAO {
 
     private static ISecurityDAO instance;

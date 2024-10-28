@@ -1,13 +1,15 @@
 package dat;
 
 import dat.config.ApplicationConfig;
+import dat.config.HibernateConfig;
+import jakarta.persistence.EntityManagerFactory;
 
 
 public class Main {
 
+    private static final EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
+
     public static void main(String[] args) {
-        ApplicationConfig.startServer(7071);
-        System.out.println("Application started on port 7071");
-        System.out.println("Adding watchtower");
+        ApplicationConfig.startServer(7071, emf);
     }
 }

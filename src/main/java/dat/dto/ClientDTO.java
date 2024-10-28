@@ -2,9 +2,10 @@ package dat.dto;
 
 import dat.entities.Client;
 import dat.enums.Gender;
-import lombok.*;
-import java.util.Set;
-import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -12,24 +13,46 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ClientDTO {
 
-    private Integer id;
-    private String fullName;  // This will be firstName + lastName
+    private Long id;
+    private String name;
+    private String gender;  // Store gender as a string in DTO
     private String email;
-    private String phone;
-    private Gender gender;
-    private Set<AnimalDTO> animals;  // A set of AnimalDTOs to represent user's pets
+    private String phoneNumber;
+    private String address;
+    private Long cityId;  // Reference to the city
 
-    // Constructor to map from User entity to UserDTO
+    // Constructor to convert from Client entity to ClientDTO
     public ClientDTO(Client client) {
         this.id = client.getId();
-        this.fullName = client.getFirstName() + " " + client.getLastName();  // Combine first and last name
+        this.name = client.getName();
+        this.gender = client.getGender() != null ? client.getGender().toString() : null;  // Convert Gender enum to String
         this.email = client.getEmail();
-        this.phone = client.getPhone();
-        this.gender = client.getGender();
-        if (client.getAnimals() != null) {
-            this.animals = client.getAnimals().stream()
-                    .map(AnimalDTO::new)  // Convert Animal entities to AnimalDTOs
-                    .collect(Collectors.toSet());
+        this.phoneNumber = client.getPhoneNumber();
+        this.address = client.getAddress();
+        this.cityId = client.getCity() != null ? client.getCity().getId() : null;  // Fetch city ID if available
+    }
+
+    // Method to convert from DTO to Entity
+    public Client toEntity() {
+        Client client = new Client();
+        client.setId(this.id);
+        client.setName(this.name);
+
+        // Handling gender as an enum conversion from String
+        if (this.gender != null) {
+            try {
+                client.setGender(this.gender != null ? Gender.valueOf(this.gender.toUpperCase()) : null);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid gender value: " + this.gender);  // Handle invalid enum values
+            }
+        } else {
+            client.setGender(null);  // Handle case where gender is not set
         }
+
+        client.setEmail(this.email);
+        client.setPhoneNumber(this.phoneNumber);
+        client.setAddress(this.address);
+        // City should be set in the service layer (for example, DAO) using cityId
+        return client;
     }
 }

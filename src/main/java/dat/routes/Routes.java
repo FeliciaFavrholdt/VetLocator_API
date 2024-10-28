@@ -1,13 +1,20 @@
 package dat.routes;
 
 import io.javalin.apibuilder.EndpointGroup;
+
 import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class Routes {
 
-    private final AnimalRoutes animalRoute = new AnimalRoutes();
-    private final ClinicRoutes clinicRoute = new ClinicRoutes();
-    private final ClientRoutes clientRoutes = new ClientRoutes();
+    private final ClinicRoutes clinicRoutes;
+    private final AnimalRoutes animalRoutes;
+    private final ClientRoutes clientRoutes;
+
+    public Routes() {
+        clinicRoutes = new ClinicRoutes();
+        animalRoutes = new AnimalRoutes();
+        clientRoutes = new ClientRoutes();
+    }
 
     public EndpointGroup getRoutes() {
         return () -> {
@@ -19,14 +26,10 @@ public class Routes {
                 });
             });
 
-            // Animal routes
-            path("/animals", animalRoute.getRoutes());
-
-            // Client routes
+            path("/clinics", clinicRoutes.getRoutes());
+            path("/animals", animalRoutes.getRoutes());
             path("/clients", clientRoutes.getRoutes());
-
-            // Clinic routes
-            path("/clinics", clinicRoute.getRoutes());
         };
+
     }
 }
